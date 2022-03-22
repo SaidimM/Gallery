@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -21,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blankj.utilcode.util.AdaptScreenUtils
+import com.blankj.utilcode.util.PermissionUtils
 import com.blankj.utilcode.util.ScreenUtils
 import com.example.gallery.base.BaseApplication
 import com.example.gallery.base.bindings.DataBindingActivity
@@ -45,8 +45,8 @@ abstract class BaseActivity : DataBindingActivity() {
             return field
         }
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         lifecycle.addObserver(NetworkStateManager.instance)
         initPermission()
     }

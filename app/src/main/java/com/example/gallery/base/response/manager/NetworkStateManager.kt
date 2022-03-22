@@ -30,16 +30,11 @@ class NetworkStateManager private constructor() : LifecycleEventObserver {
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_RESUME -> {
-                run {
-                    val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-                    Utils.getApp().applicationContext.registerReceiver(mNetworkStateReceive, filter)
-                }
-                Utils.getApp().applicationContext.unregisterReceiver(mNetworkStateReceive)
-                run {}
+                val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+                Utils.getApp().applicationContext.registerReceiver(mNetworkStateReceive, filter)
             }
             Lifecycle.Event.ON_PAUSE -> {
                 Utils.getApp().applicationContext.unregisterReceiver(mNetworkStateReceive)
-                run {}
             }
             else -> {}
         }

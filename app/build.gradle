@@ -82,5 +82,5 @@ dependencies {
     //work
     implementation 'android.arch.work:work-runtime:1.0.1'
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    implementation 'com.alibaba:fastjson:1.2.79'
+    implementation 'com.alibaba:fastjson:1.2.73'
 }

@@ -15,6 +15,7 @@
                 android:textStyle="bold" android:gravity="center"/>
         <TextView
                 android:text="@string/music"
+                android:onClick="toMusic"
                 android:layout_width="match_parent"
                 android:layout_height="100dp" android:id="@+id/music"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"

@@ -1,7 +1,7 @@
 package com.example.gallery.base.bindings
 
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.util.SparseArray
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -10,7 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.example.gallery.R
 
-abstract class DataBindingActivity: AppCompatActivity() {
+abstract class DataBindingActivity : AppCompatActivity() {
     private lateinit var binding: ViewDataBinding
     private var mTvStrictModeTip: TextView? = null
 
@@ -30,14 +30,14 @@ abstract class DataBindingActivity: AppCompatActivity() {
 
     protected abstract fun getBindingConfig(): BindingConfig
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         initViewModel()
-        val bindingConfig: BindingConfig = getBindingConfig()
-        val binding = DataBindingUtil.setContentView<ViewDataBinding>(this, bindingConfig.getLayoutId())
+        val dataBindingConfig: BindingConfig = this.getBindingConfig()
+        val binding: ViewDataBinding = DataBindingUtil.setContentView(this, dataBindingConfig.getLayoutId())
         binding.lifecycleOwner = this
-        binding.setVariable(bindingConfig.getViewModelId(), bindingConfig.getViewModel())
-        bindingConfig.getBindingParams().forEach { key, value -> binding.setVariable(key, value) }
+        binding.setVariable(dataBindingConfig.getViewModelId(), dataBindingConfig.getViewModel())
+        dataBindingConfig.getBindingParams().forEach { key, value -> binding.setVariable(key, value) }
         this.binding = binding
     }
 

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable name="song" type="com.example.gallery.media.Music"/>
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/back"
+            android:layout_width="match_parent"
+            android:layout_height="88dp">
+        <com.google.android.material.card.MaterialCardView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="16dp"
+                android:id="@+id/album"/>
+        <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="24sp"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="@{song.name}"
+                android:textColor="@color/white"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintTop_toTopOf="@id/album"
+                app:layout_constraintStart_toEndOf="@id/album"
+                app:layout_constraintEnd_toStartOf="@id/mv"
+                android:layout_marginStart="16dp"
+                android:id="@+id/name"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/artist"
+                android:textColor="@color/gray_e5"
+                android:textSize="14sp"
+                android:ellipsize="end"
+                android:text="@{song.singer}"
+                android:lines="1"
+                android:layout_marginStart="16dp"
+                app:layout_constraintBottom_toBottomOf="@id/album"
+                app:layout_constraintStart_toEndOf="@id/album"/>
+        <ImageView
+                android:layout_width="40dp"
+                android:layout_height="24dp"
+                android:id="@+id/mv"
+                android:background="@drawable/ic_mv"
+                app:layout_constraintTop_toTopOf="@id/name"
+                app:layout_constraintBottom_toBottomOf="@id/name"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/watch_mv"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -15,6 +15,4 @@ class MainFragment : BaseFragment() {
     }
 
     override fun getBindingConfig() = BindingConfig(R.layout.fragment_main, BR.viewModel, viewModel)
-
-
 }

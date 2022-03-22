@@ -11,6 +11,7 @@
           <option value="androidx.test.ext:junit" />
           <option value="androidx.test.espresso:espresso-core" />
           <option value="com.blankj:utilcodex" />
+          <option value="com.yanzhenjie:permission" />
         </list>
       </option>
     </inspection_tool>

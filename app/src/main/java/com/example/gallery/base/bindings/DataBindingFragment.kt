@@ -2,6 +2,7 @@ package com.example.gallery.base.bindings
 
 import android.content.Context
 import android.os.Bundle
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,13 +47,13 @@ abstract class DataBindingFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val bindingConfig = getBindingConfig()
-        val binding = DataBindingUtil.setContentView<ViewDataBinding>(activity, bindingConfig.getLayoutId())
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(inflater, getBindingConfig().getLayoutId(), container, false)
         binding.lifecycleOwner = activity
         binding.setVariable(bindingConfig.getViewModelId(), bindingConfig.getViewModel())
         bindingConfig.getBindingParams().forEach { key, value -> binding.setVariable(key, value) }
-        return super.onCreateView(inflater, container, savedInstanceState)
+        this.binding = binding
+        return binding.root
     }
-
 
     open fun isDebug(): Boolean {
         return this.activity.applicationContext
