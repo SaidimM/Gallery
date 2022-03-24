@@ -14,5 +14,9 @@
               android:name="com.example.gallery.main.fragments.MusicFragment"
               android:label="MusicFragment">
         <action android:id="@+id/action_musicFragment_to_mainFragment" app:destination="@id/mainFragment"/>
+        <action android:id="@+id/action_musicFragment_to_lyricsFragment" app:destination="@id/lyricsFragment"/>
     </fragment>
+    <fragment android:id="@+id/lyricsFragment" tools:layout="@layout/fragment_lyrics"
+              android:name="com.example.gallery.main.fragments.LyricsFragment"
+              android:label="LyricsFragment"/>
 </navigation>

@@ -7,7 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import com.example.gallery.R
-import com.example.gallery.media.Music
+import com.example.gallery.media.local.Music
 import java.io.FileDescriptor
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -57,6 +57,7 @@ object LocalMusicUtils {
                         singer = str[0]
                         music!!.singer = singer
                         name = str[1]
+                        if (name.indexOf('.') != -1) name = name.substring(0, name.indexOf('.'))
                         music!!.name = name
                     } else {
                         music!!.name = name

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
-        <variable name="song" type="com.example.gallery.media.Music"/>
+        <variable name="song" type="com.example.gallery.media.local.Music"/>
+        <import type="android.view.View"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/back"
@@ -14,7 +15,13 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginStart="16dp"
-                android:id="@+id/album"/>
+                android:id="@+id/album">
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:id="@+id/album_image"/>
+        </com.google.android.material.card.MaterialCardView>
         <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -46,6 +53,7 @@
                 android:layout_width="40dp"
                 android:layout_height="24dp"
                 android:id="@+id/mv"
+                android:visibility="@{song.mvId == 0 ? View.GONE : View.VISIBLE}"
                 android:background="@drawable/ic_mv"
                 app:layout_constraintTop_toTopOf="@id/name"
                 app:layout_constraintBottom_toBottomOf="@id/name"
