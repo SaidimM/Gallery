@@ -74,13 +74,9 @@ abstract class VideoBehaviorView(context: Context, attr: AttributeSet? = null, d
         return false
     }
 
-    override fun onShowPress(e: MotionEvent?) {
-        TODO("Not yet implemented")
-    }
+    override fun onShowPress(e: MotionEvent?) {}
 
-    override fun onSingleTapUp(e: MotionEvent?): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun onSingleTapUp(e: MotionEvent?) = false
 
     override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
         Log.e(tag, "onScroll: e1" + e1?.x + " " + e1?.y)
@@ -141,9 +137,7 @@ abstract class VideoBehaviorView(context: Context, attr: AttributeSet? = null, d
         return false
     }
 
-    override fun onLongPress(e: MotionEvent?) {
-        TODO("Not yet implemented")
-    }
+    override fun onLongPress(e: MotionEvent?) {}
 
     override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float) = false
 }
