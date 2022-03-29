@@ -4,5 +4,5 @@ interface OnVideoControllerCallback {
     fun onStartPlay()
     fun onBack()
     fun onFullScreen()
-    fun onRetry()
+    fun onRetry(msg: String)
 }
