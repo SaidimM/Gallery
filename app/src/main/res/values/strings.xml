@@ -9,4 +9,7 @@
     <string name="downloads">downloads</string>
     <string name="setting">setting</string>
     <string name="watch_mv">watch mv</string>
+    <string name="menu">menu</string>
+    <string name="play">play</string>
+    <string name="back">back</string>
 </resources>

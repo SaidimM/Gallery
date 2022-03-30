@@ -34,14 +34,6 @@ class VideoProgressOverlay(context: Context, attributeSet: AttributeSet? = null,
         val targetProgress = getTargetProgress()
         position.text = targetProgress.toString()
         differ.text = difference.toString()
-        seekbar.progress = targetProgress * seekbar.max / duration
-    }
-
-    fun showProgress() {
-        seekbar.visibility = VISIBLE
-        seekbar.postDelayed({
-            seekbar.visibility = GONE
-        }, 3000)
     }
 
     fun getTargetProgress(): Int {

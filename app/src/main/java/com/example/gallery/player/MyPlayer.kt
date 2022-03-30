@@ -9,14 +9,15 @@ import com.example.gallery.player.listener.OnPlayerCallback
 class MyPlayer {
     private val tag = this.javaClass.simpleName
 
-    val STATE_ERROR = -1
-    val STATE_IDLE = 0
-    val STATE_PREPARING = 1
-    val STATE_PREPARED = 2
-    val STATE_PLAYING = 3
-    val STATE_PAUSED = 4
-    val STATE_PLAYBACK_COMPLETED = 5
-
+    companion object {
+        val STATE_ERROR = -1
+        val STATE_IDLE = 0
+        val STATE_PREPARING = 1
+        val STATE_PREPARED = 2
+        val STATE_PLAYING = 3
+        val STATE_PAUSED = 4
+        val STATE_PLAYBACK_COMPLETED = 5
+    }
     var player: MediaPlayer? = MediaPlayer()
     private var currentBufferingPercentage: Int = 0
     var path = ""
@@ -122,9 +123,9 @@ class MyPlayer {
         }
     }
 
-    fun getDuration() = if (isInPlaybackState()) player?.duration else -1
+    fun getDuration() = if (isInPlaybackState()) player!!.duration else -1
 
-    fun getCurrentPosition() = if (isInPlaybackState()) player?.currentPosition else 0
+    fun getCurrentPosition() = if (isInPlaybackState()) player!!.currentPosition else 0
 
     fun isPlaying() = if (player == null) false else player!!.isPlaying
 

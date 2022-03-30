@@ -27,7 +27,7 @@ abstract class VideoBehaviorView(context: Context, attr: AttributeSet? = null, d
     private var currentBrightness: Int = 0
     private var maxBrightness: Int = 255
 
-    private lateinit var audioManager: AudioManager
+    var audioManager: AudioManager
     private lateinit var activity: Activity
 
     val FINGER_BEHAVIOR_PROGRESS = 0x01

@@ -5,16 +5,6 @@
         android:background="@color/black"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:toold="http://schemas.android.com/tools">
-    <SeekBar
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:id="@+id/seekbar"
-            android:max="100"
-            android:progress="46"
-            android:layout_marginBottom="32dp"
-            android:progressDrawable="@drawable/seekbar_bg"
-            android:thumb="@drawable/seekbar_thumb"
-            app:layout_constraintBottom_toBottomOf="parent"/>
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
               app:layout_constraintTop_toTopOf="parent"
               app:layout_constraintStart_toStartOf="parent"

@@ -14,16 +14,18 @@ import com.example.gallery.player.listener.OnVideoControlListener
 
 class VideoErrorView(context: Context, attributeSet: AttributeSet? = null, defStyleAttr: Int = 0): FrameLayout(context, attributeSet, defStyleAttr) {
 
-    // 正常状态
-    val STATUS_NORMAL = 0
-    // 普通一场
-    val STATUS_VIDEO_DETAIL_ERROR = 1
-    // 资源错误
-    val STATUS_VIDEO_SRC_ERROR = 2
-    // 无WIFI
-    val STATUS_UN_WIFI_ERROR = 3
-    // 无网络
-    val STATUS_NO_NETWORK_ERROR = 4
+    companion object {
+        // 正常状态
+        val STATUS_NORMAL = 0
+        // 普通一场
+        val STATUS_VIDEO_DETAIL_ERROR = 1
+        // 资源错误
+        val STATUS_VIDEO_SRC_ERROR = 2
+        // 无WIFI
+        val STATUS_UN_WIFI_ERROR = 3
+        // 无网络
+        val STATUS_NO_NETWORK_ERROR = 4
+    }
     private var curStatus = 0
     private val video_error_info: TextView
     private val video_error_retry: Button
