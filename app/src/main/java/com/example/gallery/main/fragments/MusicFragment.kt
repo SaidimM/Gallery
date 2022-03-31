@@ -1,7 +1,6 @@
 package com.example.gallery.main.fragments
 
 import android.content.Intent
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
@@ -18,7 +17,6 @@ import com.example.gallery.main.state.MainActivityViewModel
 import com.example.gallery.main.state.MusicFragmentViewModel
 import com.example.gallery.media.MediaViewModel
 import com.example.gallery.media.local.Music
-import com.example.gallery.player.VideoInfoImp
 import kotlinx.android.synthetic.main.fragment_music.*
 
 class MusicFragment : BaseFragment() {
@@ -49,10 +47,11 @@ class MusicFragment : BaseFragment() {
             override fun onBindItem(binding: ItemSongBinding, item: Music, position: Int) {
                 binding.song = item
                 binding.mv.setOnClickListener {
-                    val intent = Intent(requireContext(), PlayerActivity::class.java)
-                    val videoInfo = VideoInfoImp(item.path.toString(), item.name.toString())
-                    intent.putExtra("video", videoInfo)
-                    startActivity(intent)
+                    mediaViewModel.getMv(item) {
+                        val intent = Intent(requireContext(), PlayerActivity::class.java)
+                        intent.putExtra("video", it.data.brs.`720`)
+                        startActivity(intent)
+                    }
                 }
                 val bitmap = viewModel.getArtistImage(item)
                 Glide.with(this@MusicFragment).load(bitmap).into(binding.albumImage)

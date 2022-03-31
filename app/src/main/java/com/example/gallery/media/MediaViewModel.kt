@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
 import com.example.gallery.media.remote.MusicRepository
+import com.example.gallery.media.remote.mv.MusicVideoResult
 import com.example.gallery.media.remote.search.Song
 import io.reactivex.schedulers.Schedulers
 
@@ -49,5 +50,16 @@ class MediaViewModel : ViewModel() {
             },{
                 Log.d(this.javaClass.simpleName, it.message.toString())
             })
+    }
+
+    fun getMv(music: Music, successfull: (MusicVideoResult) -> Unit){
+        if (music.mvId == 0) return
+        val disposable = repository.getMv(music.mvId.toString())
+            .observeOn(Schedulers.io())
+            .subscribeOn(Schedulers.io())
+            .subscribe {
+                if (!it.isSuccessful || it.body() == null) return@subscribe
+                successfull(it.body()!!)
+            }
     }
 }

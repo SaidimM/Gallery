@@ -9,34 +9,4 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/surface"/>
-
-    <com.example.gallery.player.view.VideoProgressOverlay
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/progress_view"/>
-
-    <com.example.gallery.player.view.VideoControllerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/controller_view"/>
-
-    <com.example.gallery.player.view.VideoSystemOverlay
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/system_view"/>
-
-    <com.example.gallery.player.view.VideoErrorView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/error_view"/>
-
-    <ProgressBar
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            style="?android:progressBarStyleInverse"
-            android:id="@+id/loading_view"
-            android:layout_width="40dp"
-            android:layout_height="40dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
