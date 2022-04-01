@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
-
+        android:layout_height="match_parent">
     <SurfaceView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clickable="true"
+            android:longClickable="true"
+            android:focusable="true"
             android:id="@+id/surface"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.example.gallery.player.VideoSystemOverlay
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/system_overlay"/>
+</FrameLayout>
