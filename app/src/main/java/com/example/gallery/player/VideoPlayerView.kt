@@ -23,11 +23,14 @@ class VideoPlayerView : VideoGestureView {
 
     private val player = Player()
 
-    var path: String = ""
+    var videoInfo: IVideoInfo? = null
         set(value) {
+            if (value == null) return
             field = value
-            player.path = value
+            player.path = value.getPath()
             player.initialize()
+            controller_overlay.setInfo(field!!)
+            controller_overlay.setPlayer(player)
         }
 
     private val playerListener = object : PlayerListener {
@@ -66,12 +69,12 @@ class VideoPlayerView : VideoGestureView {
     }
 
     override fun onDoubleTap() {
-        ToastUtils.showShort("screen double tapped!!")
         if (player.isPlaying()) player.pause() else player.start()
     }
 
     override fun onSingleTap() {
-        ToastUtils.showShort("screen single tapped!!")
+        if (controller_overlay.visibility == VISIBLE) controller_overlay.hide()
+        else controller_overlay.show()
     }
 
     override fun onLightsCHanged(changes: Int) {
@@ -79,13 +82,19 @@ class VideoPlayerView : VideoGestureView {
         system_overlay.updateBrightness(changes)
     }
 
-    override fun onProgressChanged(changes: Int) {
-        player.seekTo(player.getCurrentPosition() + changes)
-        Log.i(tag, "progress changed: $changes")
+    override fun onProgressChanged(changes: Int, changed: Int) {
+        val current = player.getCurrentPosition() + changed
+        Log.i(tag, "current position: ${player.getCurrentPosition()}, changes: $changes changed: $current")
+        progress_overlay.updateProgress(current, changes)
+        player.seekTo(current)
     }
 
     override fun onVolumeChanged(changes: Int) {
         Log.i(tag, "volume changed: $changes")
         system_overlay.updateVolume(changes)
+    }
+
+    override fun onActionUp(currentGesture: Int) {
+        progress_overlay.visibility = GONE
     }
 }

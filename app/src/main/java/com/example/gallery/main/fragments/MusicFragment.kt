@@ -17,6 +17,7 @@ import com.example.gallery.main.state.MainActivityViewModel
 import com.example.gallery.main.state.MusicFragmentViewModel
 import com.example.gallery.media.MediaViewModel
 import com.example.gallery.media.local.Music
+import com.example.gallery.player.VideoInfo
 import kotlinx.android.synthetic.main.fragment_music.*
 
 class MusicFragment : BaseFragment() {
@@ -49,7 +50,8 @@ class MusicFragment : BaseFragment() {
                 binding.mv.setOnClickListener {
                     mediaViewModel.getMv(item) {
                         val intent = Intent(requireContext(), PlayerActivity::class.java)
-                        intent.putExtra("video", it.data.brs.`720`)
+                        val info = VideoInfo(item.name.toString(), it.data.brs.`720`)
+                        intent.putExtra("video", info)
                         startActivity(intent)
                     }
                 }

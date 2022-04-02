@@ -5,8 +5,9 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.example.gallery.R
+import kotlinx.android.synthetic.main.video_overlay_progress.view.*
 
-class VideoProgressOverlay: FrameLayout {
+class VideoProgressOverlay : FrameLayout {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
@@ -20,7 +21,13 @@ class VideoProgressOverlay: FrameLayout {
         LayoutInflater.from(context).inflate(R.layout.video_overlay_progress, this)
     }
 
-    fun updateProgress() {
-
+    fun updateProgress(currentPosition: Int, difference: Int) {
+        val text = GeneralTools.millisecondToString(currentPosition)
+        position.text = text
+        var diff = GeneralTools.millisecondToString(difference)
+        if (text == "00 : 00") diff = "00 : 00"
+        val diffText = if (difference >= 0) "( + $diff )" else "( - $diff )"
+        differ.text = diffText
+        visibility = VISIBLE
     }
 }

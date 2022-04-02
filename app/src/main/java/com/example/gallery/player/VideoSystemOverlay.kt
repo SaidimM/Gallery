@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.example.gallery.R
-import kotlinx.android.synthetic.main.video_overlay_progress.view.*
 import kotlinx.android.synthetic.main.video_overlay_system.view.*
 
 class VideoSystemOverlay: FrameLayout {
@@ -25,9 +24,7 @@ class VideoSystemOverlay: FrameLayout {
         volume_bar.progress = value
     }
 
-    fun updateBrightness(currentPosition: Int, value: Int) {
-        val text = "${currentPosition / 60000} : ${currentPosition % 60000}"
-        position.text = text
-        differ.text = value.toString()
+    fun updateBrightness(value: Int) {
+        light_bar.progress = value
     }
 }

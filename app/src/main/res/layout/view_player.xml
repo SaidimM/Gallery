@@ -14,4 +14,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/system_overlay"/>
+    <com.example.gallery.player.VideoProgressOverlay
+            android:id="@+id/progress_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    <com.example.gallery.player.VideoControllerOverlay
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/controller_overlay"/>
 </FrameLayout>

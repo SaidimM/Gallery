@@ -22,6 +22,15 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     private var currentBehavior = -1
+    private var progress: Int = 0
+        set(value) {
+            if (value == 0 && currentBehavior == -1) {
+                field = value
+                return
+            }
+            field -= value
+            onProgressChanged(field, -value)
+        }
 
     private val maxBrightness = 255F
     private val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
@@ -62,7 +71,9 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
 
     protected abstract fun onVolumeChanged(changes: Int)
 
-    protected abstract fun onProgressChanged(changes: Int)
+    protected abstract fun onProgressChanged(changes: Int, changed: Int)
+
+    protected abstract fun onActionUp(currentGesture: Int)
 
     private val gestureDetector: GestureDetector by lazy { GestureDetector(context, simpleOnGestureListener) }
 
@@ -82,17 +93,11 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
                 }
             }
             when (currentBehavior) {
-                BEHAVIOR_PROGRESS -> onProgressChanged(- (distanceX / width * defaultInterval).toInt())
+                BEHAVIOR_PROGRESS -> progress = (distanceX / width * defaultInterval).toInt()
                 BEHAVIOR_LIGHT -> currentBrightness = distanceY
                 BEHAVIOR_VOLUME -> currentVolume = distanceY / height
             }
             return true
-        }
-
-        override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
-            Log.i(tag, "onFling")
-            if (e2?.action == MotionEvent.ACTION_UP) currentBehavior = -1
-            return super.onFling(e1, e2, velocityX, velocityY)
         }
 
         override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
@@ -107,7 +112,15 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        return gestureDetector.onTouchEvent(event)
+        gestureDetector.onTouchEvent(event)
+        if (event?.action == MotionEvent.ACTION_UP ||
+            event?.action == MotionEvent.ACTION_OUTSIDE ||
+            event?.action == MotionEvent.ACTION_CANCEL) {
+            onActionUp(currentBehavior)
+            currentBehavior = -1
+            progress = 0
+        }
+        return true
     }
 
     companion object {

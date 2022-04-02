@@ -29,23 +29,39 @@ class MediaViewModel : ViewModel() {
         val disposable = repository.searchMusic("${music.name.toString()}%20${music.singer.toString()}")
             .observeOn(Schedulers.io())
             .subscribeOn(Schedulers.io())
-            .subscribe({
+            .subscribe({ 
                 if (!it.isSuccessful || it.body() == null) return@subscribe
-                it.body()!!.result.songs.forEach { song->
-                    if (song.duration == music.duration) {
-                        music.mediaId = song.id.toString()
-                        music.artistId = song.artists[0].id.toString()
-                        music.mvId = song.mvid
-                        val temp = db.getDao().getMusicByMediaId(music.id.toString())
-                        if (temp == null) db.getDao().insert(music)
-                        else temp.apply {
-                            mediaId = song.id.toString()
-                            artistId = song.artists[0].id.toString()
-                            mvId = song.mvid
-                            db.getDao().update(this)
-                        }
-                    }
+                val item = it.body()!!.result.songs.find { song ->
+                    song.mvid != 0 && song.duration <= music.duration + 100 && song.duration >= music.duration - 100
                 }
+                if (item != null) {
+                    music.mediaId = item.id.toString()
+                    music.artistId = item.artists[0].id.toString()
+                    music.mvId = item.mvid
+                    val temp = db.getDao().getMusicByMediaId(music.id.toString())
+                    if (temp == null) db.getDao().insert(music)
+                    else temp.apply {
+                        mediaId = item.id.toString()
+                        artistId = item.artists[0].id.toString()
+                        mvId = item.mvid
+                        db.getDao().update(this)
+                    }
+                } else it.body()!!.result.songs.find { song->
+                        if (song.duration == music.duration) {
+                            music.mediaId = song.id.toString()
+                            music.artistId = song.artists[0].id.toString()
+                            music.mvId = song.mvid
+                            val temp = db.getDao().getMusicByMediaId(music.id.toString())
+                            if (temp == null) db.getDao().insert(music)
+                            else temp.apply {
+                                mediaId = song.id.toString()
+                                artistId = song.artists[0].id.toString()
+                                mvId = song.mvid
+                                db.getDao().update(this)
+                            }
+                        }
+                        true
+                    }
                 Log.d(this.javaClass.simpleName, it.toString())
             },{
                 Log.d(this.javaClass.simpleName, it.message.toString())
