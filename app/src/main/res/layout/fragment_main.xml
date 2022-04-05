@@ -8,7 +8,7 @@
             android:layout_height="match_parent">
         <TextView
                 android:text="@string/wallpaper"
-                android:layout_width="match_parent"
+                android:layout_width="match_parent" android:textColor="@color/white"
                 android:layout_height="100dp" android:id="@+id/wallpaper"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="150dp" android:textSize="24sp"
@@ -16,7 +16,7 @@
         <TextView
                 android:text="@string/music"
                 android:onClick="toMusic"
-                android:layout_width="match_parent"
+                android:layout_width="match_parent" android:textColor="@color/white"
                 android:layout_height="100dp" android:id="@+id/music"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
                 android:textSize="24sp"
@@ -24,7 +24,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/wallpaper" android:gravity="center"/>
         <TextView
                 android:text="@string/downloads"
-                android:layout_width="match_parent"
+                android:layout_width="match_parent" android:textColor="@color/white"
                 android:layout_height="100dp" android:id="@+id/downloads"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
                 android:textSize="24sp"
@@ -33,7 +33,7 @@
                 android:gravity="center"/>
         <TextView
                 android:text="@string/setting"
-                android:layout_width="match_parent"
+                android:layout_width="match_parent" android:textColor="@color/white"
                 android:layout_height="100dp" android:id="@+id/setting"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
                 android:textSize="24sp"

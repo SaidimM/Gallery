@@ -50,7 +50,10 @@ class MusicFragment : BaseFragment() {
                 binding.mv.setOnClickListener {
                     mediaViewModel.getMv(item) {
                         val intent = Intent(requireContext(), PlayerActivity::class.java)
-                        val info = VideoInfo(item.name.toString(), it.data.brs.`720`)
+                        val link = it.data.brs.let { br->
+                            br.`1080` ?: br.`720` ?: br.`480` ?: br.`240`
+                        }
+                        val info = VideoInfo(item.name.toString(), link!!)
                         intent.putExtra("video", info)
                         startActivity(intent)
                     }

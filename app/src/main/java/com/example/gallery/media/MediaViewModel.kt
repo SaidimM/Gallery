@@ -68,14 +68,16 @@ class MediaViewModel : ViewModel() {
             })
     }
 
-    fun getMv(music: Music, successfull: (MusicVideoResult) -> Unit){
+    fun getMv(music: Music, successful: (MusicVideoResult) -> Unit){
         if (music.mvId == 0) return
         val disposable = repository.getMv(music.mvId.toString())
             .observeOn(Schedulers.io())
             .subscribeOn(Schedulers.io())
-            .subscribe {
+            .subscribe ({
                 if (!it.isSuccessful || it.body() == null) return@subscribe
-                successfull(it.body()!!)
-            }
+                successful(it.body()!!)
+            },{
+                it.printStackTrace()
+            })
     }
 }

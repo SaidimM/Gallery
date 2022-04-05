@@ -97,4 +97,9 @@ class VideoPlayerView : VideoGestureView {
     override fun onActionUp(currentGesture: Int) {
         progress_overlay.visibility = GONE
     }
+
+    fun onDestroy() {
+        player.stop()
+        controller_overlay.release()
+    }
 }

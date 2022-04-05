@@ -43,7 +43,7 @@ class VideoControllerOverlay : FrameLayout {
         }
         seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (player == null) return
+                if (player == null || !dragging) return
                 player!!.seekTo(player!!.getDuration() * progress / 100)
             }
 
@@ -108,5 +108,9 @@ class VideoControllerOverlay : FrameLayout {
                 postDelayed(this, 1000)
             }
         }
+    }
+
+    fun release() {
+        removeCallbacks(mShowProgress)
     }
 }

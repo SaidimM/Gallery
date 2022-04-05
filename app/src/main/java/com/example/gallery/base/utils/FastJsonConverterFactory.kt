@@ -1,5 +1,6 @@
 package com.example.unpixs.media.ui.page
 
+import com.example.gallery.base.utils.FastJsonResponseBodyConverter
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Converter

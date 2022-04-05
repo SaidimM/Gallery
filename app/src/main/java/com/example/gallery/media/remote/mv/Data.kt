@@ -10,7 +10,7 @@ data class Data(
     val commentThreadId: String,
     val cover: String,
     val coverId: Long,
-    val desc: String,
+    val desc: String?,
     val duration: Int,
     val id: Int,
     val isReward: Boolean,
