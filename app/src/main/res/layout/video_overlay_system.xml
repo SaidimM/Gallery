@@ -8,21 +8,15 @@
         android:orientation="vertical"
         android:paddingBottom="12dip"
         android:paddingTop="10dip">
-    <ProgressBar
-            android:layout_width="wrap_content" android:layout_height="match_parent"
+    <com.example.gallery.player.VerticalProgressView
+            android:layout_width="8dp" android:layout_height="match_parent"
             android:id="@+id/volume_bar"
             android:layout_margin="16dp"
-            android:max="100"
-            style="@style/VideoProgressBarStyle"
-            android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"/>
-    <ProgressBar
-            android:layout_width="wrap_content" android:layout_height="match_parent"
+    <com.example.gallery.player.VerticalProgressView
+            android:layout_width="8dp" android:layout_height="match_parent"
             android:id="@+id/light_bar"
             android:layout_margin="16dp"
-            android:max="100"
-            style="@style/VideoProgressBarStyle"
-            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"/>
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
               android:id="@+id/text"
