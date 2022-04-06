@@ -69,7 +69,13 @@ class VideoPlayerView : VideoGestureView {
     }
 
     override fun onDoubleTap() {
-        if (player.isPlaying()) player.pause() else player.start()
+        if (player.isPlaying()) {
+            player.pause()
+            controller_overlay.paused()
+        } else {
+            player.start()
+            controller_overlay.played()
+        }
     }
 
     override fun onSingleTap() {

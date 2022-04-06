@@ -31,13 +31,13 @@ class VideoControllerOverlay : FrameLayout {
         LayoutInflater.from(context).inflate(R.layout.video_controller_overlay, this)
         play.setOnClickListener {
             if (player == null) {
-                play.setBackgroundResource(R.drawable.ic_play)
+                play.setBackgroundResource(R.drawable.ic_pause)
             } else if (player!!.isPlaying()) {
                 player?.pause()
-                play.setBackgroundResource(R.drawable.ic_pause)
+                play.setBackgroundResource(R.drawable.ic_play)
             } else {
                 player?.start()
-                play.setBackgroundResource(R.drawable.ic_play)
+                play.setBackgroundResource(R.drawable.ic_pause)
             }
             show()
         }
@@ -58,20 +58,30 @@ class VideoControllerOverlay : FrameLayout {
         })
     }
 
+    fun played() {
+        play.setBackgroundResource(R.drawable.ic_pause)
+    }
+
+    fun paused() {
+        play.setBackgroundResource(R.drawable.ic_play)
+    }
+
     fun show() {
         visibility = VISIBLE
-        postDelayed(action, 3000)
+        postDelayed(action, 5000)
         showing = true
         post(mShowProgress)
     }
 
     fun showProgress() {
         if (player == null || player?.getDuration() == 0) return
-        seekbar.progress = player!!.getCurrentPosition() * 100 / player!!.getDuration()
         val durationText = "${GeneralTools.millisecondToString(player!!.getCurrentPosition(), false)} / ${
             GeneralTools.millisecondToString(player!!.getDuration(), false)
         }"
         duration.text = durationText
+        val duration = player!!.getDuration()
+        val position = player!!.getCurrentPosition()
+        seekbar.progress = position * 100 / duration
     }
 
     fun hide() {
