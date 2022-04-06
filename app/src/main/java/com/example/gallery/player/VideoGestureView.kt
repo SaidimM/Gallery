@@ -3,12 +3,14 @@ package com.example.gallery.player
 import android.app.Activity
 import android.content.Context
 import android.media.AudioManager
+import android.provider.Settings
 import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import kotlinx.android.synthetic.main.video_overlay_system.view.*
 import kotlin.math.absoluteValue
 
 abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
@@ -36,7 +38,7 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
     private val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
     private val defaultInterval: Int = 30000
 
-    private var currentBrightness = 0F
+    private var currentBrightness = Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS).toFloat()
         set(value) {
             val progress = (value * maxBrightness / height) + field
             field = when {
@@ -50,7 +52,7 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
             onLightsCHanged((field * 100 / maxBrightness).toInt())
         }
 
-    private var currentVolume = 0f
+    private var currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toFloat()
         set(value) {
 //            field = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC).toFloat()
             val progress = maxVolume * value + field

@@ -22,9 +22,16 @@ class VideoSystemOverlay: FrameLayout {
 
     fun updateVolume(value: Int) {
         volume_bar.progress = value
+        volume_bar.visibility = VISIBLE
     }
 
     fun updateBrightness(value: Int) {
         light_bar.progress = value
+        light_bar.visibility = VISIBLE
+    }
+
+    fun hide() {
+        volume_bar.visibility = GONE
+        light_bar.visibility = GONE
     }
 }

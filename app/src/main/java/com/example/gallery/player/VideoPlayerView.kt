@@ -1,12 +1,10 @@
 package com.example.gallery.player
 
 import android.content.Context
-import android.media.MediaPlayer
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
-import com.blankj.utilcode.util.ToastUtils
 import com.example.gallery.R
 import kotlinx.android.synthetic.main.view_player.view.*
 
@@ -19,40 +17,13 @@ class VideoPlayerView : VideoGestureView {
         defStyleAttrs
     )
 
-    private val tag = "VideoPlayerView"
-
-    private val player = Player()
-
     var videoInfo: IVideoInfo? = null
         set(value) {
-            if (value == null) return
             field = value
-            player.path = value.getPath()
-            player.initialize()
-            controller_overlay.setInfo(field!!)
-            controller_overlay.setPlayer(player)
+            controller_overlay.videoInfo = value
         }
 
-    private val playerListener = object : PlayerListener {
-        override fun onPrepared(mediaPlayer: MediaPlayer) {
-            player.start()
-        }
-
-        override fun onLoadingChanged(isLoaded: Boolean) {
-        }
-
-        override fun onBufferinghChengedListener(mediaPlayer: MediaPlayer, percent: Int) {
-        }
-
-        override fun onCompletionListener(mediaPlayer: MediaPlayer) {
-        }
-
-        override fun onError(mp: MediaPlayer, what: Int, extra: Int) {
-        }
-
-        override fun onVideoSizeChanged(mediaPlayer: MediaPlayer, width: Int, height: Int) {
-        }
-    }
+    private val tag = "VideoPlayerView"
 
     init {
         LayoutInflater.from(context).inflate(R.layout.view_player, this)
@@ -60,22 +31,14 @@ class VideoPlayerView : VideoGestureView {
             override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
             override fun surfaceDestroyed(holder: SurfaceHolder) {}
             override fun surfaceCreated(holder: SurfaceHolder) {
-                player.holder = holder
-                player.initialize()
+                controller_overlay.setPlayerHolder(holder)
             }
         })
-        player.playerListener = playerListener
         surface.setOnTouchListener(this)
     }
 
     override fun onDoubleTap() {
-        if (player.isPlaying()) {
-            player.pause()
-            controller_overlay.paused()
-        } else {
-            player.start()
-            controller_overlay.played()
-        }
+        if (controller_overlay.player.isPlaying()) controller_overlay.pause() else controller_overlay.play()
     }
 
     override fun onSingleTap() {
@@ -89,10 +52,13 @@ class VideoPlayerView : VideoGestureView {
     }
 
     override fun onProgressChanged(changes: Int, changed: Int) {
-        val current = player.getCurrentPosition() + changed
-        Log.i(tag, "current position: ${player.getCurrentPosition()}, changes: $changes changed: $current")
+        val current = controller_overlay.player.getCurrentPosition() + changed
+        Log.i(
+            tag,
+            "current position: ${controller_overlay.player.getCurrentPosition()}, changes: $changes changed: $current"
+        )
         progress_overlay.updateProgress(current, changes)
-        player.seekTo(current)
+        controller_overlay.player.seekTo(current)
     }
 
     override fun onVolumeChanged(changes: Int) {
@@ -102,10 +68,11 @@ class VideoPlayerView : VideoGestureView {
 
     override fun onActionUp(currentGesture: Int) {
         progress_overlay.visibility = GONE
+        system_overlay.hide()
     }
 
     fun onDestroy() {
-        player.stop()
+        controller_overlay.player.stop()
         controller_overlay.release()
     }
 }
