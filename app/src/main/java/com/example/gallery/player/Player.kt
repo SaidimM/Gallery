@@ -19,6 +19,10 @@ class Player {
     private var player: MediaPlayer? = null
     var playerListener: PlayerListener? = null
     var holder: SurfaceHolder? = null
+        set(value) {
+            field = value
+            player?.setDisplay(value)
+        }
     var path: String = ""
     var isScreenOnWhilePlaying = false
         set(value) {
