@@ -15,10 +15,6 @@ class PlayerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_player)
         val extra = intent.getSerializableExtra("video") ?: return
         player_view.videoInfo = extra as IVideoInfo
-    }
-
-    override fun onDestroy() {
-        player_view.onDestroy()
-        super.onDestroy()
+        lifecycle.addObserver(player_view)
     }
 }

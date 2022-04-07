@@ -10,7 +10,6 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import kotlinx.android.synthetic.main.video_overlay_system.view.*
 import kotlin.math.absoluteValue
 
 abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
@@ -38,9 +37,10 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
     private val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
     private val defaultInterval: Int = 30000
 
-    private var currentBrightness = Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS).toFloat()
+    private var currentBrightness =
+        Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS).toFloat()
         set(value) {
-            val progress = (value * maxBrightness / height) + field
+            val progress = (value * maxBrightness / height) * 2 + field
             field = when {
                 progress < 0 -> 0F
                 progress > maxBrightness -> maxBrightness
@@ -55,7 +55,7 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
     private var currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toFloat()
         set(value) {
 //            field = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC).toFloat()
-            val progress = maxVolume * value + field
+            val progress = maxVolume * value * 2 + field
             field = when {
                 progress < 0 -> 0f
                 progress > maxVolume -> maxVolume.toFloat()
@@ -117,7 +117,8 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
         gestureDetector.onTouchEvent(event)
         if (event?.action == MotionEvent.ACTION_UP ||
             event?.action == MotionEvent.ACTION_OUTSIDE ||
-            event?.action == MotionEvent.ACTION_CANCEL) {
+            event?.action == MotionEvent.ACTION_CANCEL
+        ) {
             onActionUp(currentBehavior)
             currentBehavior = -1
             progress = 0

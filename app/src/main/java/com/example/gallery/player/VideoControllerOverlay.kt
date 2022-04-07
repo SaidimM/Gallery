@@ -10,7 +10,6 @@ import android.widget.FrameLayout
 import android.widget.SeekBar
 import com.example.gallery.R
 import kotlinx.android.synthetic.main.video_controller_overlay.view.*
-import kotlinx.android.synthetic.main.view_player.view.*
 
 class VideoControllerOverlay : FrameLayout {
     constructor(context: Context) : super(context)
@@ -23,7 +22,7 @@ class VideoControllerOverlay : FrameLayout {
 
     private val tag = "VideoControllerOverlay"
 
-    private val interval = 5000L
+    private val interval = 4000L
 
     private var dragging = false
 
@@ -41,7 +40,9 @@ class VideoControllerOverlay : FrameLayout {
         }
 
     private val playerListener = object : PlayerListener {
-        override fun onPrepared(mediaPlayer: MediaPlayer) { play() }
+        override fun onPrepared(mediaPlayer: MediaPlayer) {
+            play()
+        }
 
         override fun onLoadingChanged(isLoaded: Boolean) {
         }
@@ -62,14 +63,7 @@ class VideoControllerOverlay : FrameLayout {
     init {
         LayoutInflater.from(context).inflate(R.layout.video_controller_overlay, this)
         play.setOnClickListener {
-            if (player.isPlaying()) {
-                player.pause()
-                play.setBackgroundResource(R.drawable.ic_play)
-            } else {
-                player.start()
-                play.setBackgroundResource(R.drawable.ic_pause)
-            }
-            show()
+            if (player.isPlaying()) pause() else play()
         }
         seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -91,19 +85,24 @@ class VideoControllerOverlay : FrameLayout {
     }
 
     fun setPlayerHolder(holder: SurfaceHolder) {
-        player.holder = holder
-        player.initialize()
+        if (player.holder == null) {
+            player.holder = holder
+            player.initialize()
+        } else {
+            player.holder = holder
+            player.start()
+        }
     }
 
     fun play() {
         player.start()
-        play.setBackgroundResource(R.drawable.ic_pause)
+        play_img.setBackgroundResource(R.drawable.ic_pause)
         show()
     }
 
     fun pause() {
         player.pause()
-        play.setBackgroundResource(R.drawable.ic_play)
+        play_img.setBackgroundResource(R.drawable.ic_play)
     }
 
     fun show() {
@@ -146,6 +145,7 @@ class VideoControllerOverlay : FrameLayout {
     }
 
     fun release() {
+        player.stop()
         removeCallbacks(mShowProgress)
     }
 }

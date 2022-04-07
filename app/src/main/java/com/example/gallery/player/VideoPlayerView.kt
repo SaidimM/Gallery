@@ -5,10 +5,13 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import com.example.gallery.R
 import kotlinx.android.synthetic.main.view_player.view.*
 
-class VideoPlayerView : VideoGestureView {
+class VideoPlayerView : VideoGestureView, LifecycleEventObserver {
     constructor(context: Context) : super(context)
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
     constructor(context: Context, attributeSet: AttributeSet, defStyleAttrs: Int) : super(
@@ -71,8 +74,23 @@ class VideoPlayerView : VideoGestureView {
         system_overlay.hide()
     }
 
-    fun onDestroy() {
-        controller_overlay.player.stop()
-        controller_overlay.release()
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        when (event) {
+            Lifecycle.Event.ON_CREATE -> {}
+            Lifecycle.Event.ON_START -> {}
+            Lifecycle.Event.ON_RESUME -> {
+                controller_overlay.play()
+            }
+            Lifecycle.Event.ON_PAUSE -> {
+                controller_overlay.pause()
+            }
+            Lifecycle.Event.ON_STOP -> {
+                controller_overlay.pause()
+            }
+            Lifecycle.Event.ON_DESTROY -> {
+                controller_overlay.release()
+            }
+            else -> {}
+        }
     }
 }

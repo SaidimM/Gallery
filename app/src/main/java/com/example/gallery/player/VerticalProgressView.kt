@@ -7,7 +7,6 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import com.example.gallery.player.GeneralTools.dp
-import org.jetbrains.anko.verticalPadding
 
 class VerticalProgressView : View {
     constructor(context: Context) : super(context)
@@ -22,15 +21,15 @@ class VerticalProgressView : View {
 
     private var progressColor: Int = Color.WHITE
 
-    var defaultWidth = 4.dp
+    var defaultWidth = 8.dp
 
-    var defaultHeight = 100.dp
+    var defaultHeight = 192.dp
 
     private val paint = Paint().apply {
         strokeWidth = width.toFloat()
         isAntiAlias = true
         strokeCap = Paint.Cap.ROUND
-        style=Paint.Style.STROKE
+        style = Paint.Style.STROKE
     }
 
     var progress = 0
@@ -44,9 +43,11 @@ class VerticalProgressView : View {
         val paintPadding = width.toFloat() / 2
         paint.color = backColor
         paint.strokeWidth = width.toFloat()
-        canvas?.drawLine(paintPadding, paintPadding, paintPadding, height.toFloat() - width, paint)
+        canvas?.drawLine(paintPadding, paintPadding, paintPadding, height.toFloat() - paintPadding, paint)
+        if (progress == 0) return
         paint.color = progressColor
-        canvas?.drawLine(paintPadding, height.toFloat() - width, paintPadding, (height - paintPadding) * (100 - progress) / 100, paint)
+        val paintHeight = (height - width) * (100 - progress) / 100
+        canvas?.drawLine(paintPadding, height.toFloat() - paintPadding, paintPadding, paintHeight + paintPadding, paint)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
