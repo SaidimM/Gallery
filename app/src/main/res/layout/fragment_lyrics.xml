@@ -6,10 +6,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <androidx.recyclerview.widget.RecyclerView
+        <com.example.gallery.main.LyricsView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:id="@+id/recyclerView"/>
+                android:id="@+id/lyrics_view"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
