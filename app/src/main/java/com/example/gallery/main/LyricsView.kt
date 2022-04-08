@@ -13,7 +13,7 @@ import com.example.gallery.media.remote.lyrics.Lyric
 import com.example.gallery.player.GeneralTools.dp
 import org.jetbrains.anko.collections.forEachWithIndex
 
-class LyricsView: View {
+class LyricsView : View {
     constructor(context: Context) : super(context)
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
     constructor(context: Context, attributeSet: AttributeSet, defStyleAttrs: Int) : super(
@@ -25,6 +25,9 @@ class LyricsView: View {
     var data: ArrayList<Lyric> = arrayListOf()
         set(value) {
             field = value
+            val array = arrayListOf<Lyric>()
+            value.forEach { if (it.text != "") array.add(it) }
+            field = array
             invalidate()
         }
 
@@ -47,7 +50,11 @@ class LyricsView: View {
             if (field == value) return
             val interval = data[value].position - data[field].position
             field = value
-            if (field == data.size) anim.pause()
+            if (field >= data.size - 3) {
+                anim.pause()
+                clearAnimation()
+                return
+            }
             anim.startDelay = interval.toLong()
             anim.start()
         }
