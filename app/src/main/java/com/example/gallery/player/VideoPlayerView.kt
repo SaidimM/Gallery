@@ -1,10 +1,12 @@
 package com.example.gallery.player
 
+import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
+import android.view.WindowManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -29,6 +31,7 @@ class VideoPlayerView : VideoGestureView, LifecycleEventObserver {
     private val tag = "VideoPlayerView"
 
     init {
+        (context as Activity).window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         LayoutInflater.from(context).inflate(R.layout.view_player, this)
         surface.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
