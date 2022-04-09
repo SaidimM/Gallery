@@ -2,6 +2,8 @@ package com.example.gallery.player
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -31,6 +33,7 @@ class VideoPlayerView : VideoGestureView, LifecycleEventObserver {
     private val tag = "VideoPlayerView"
 
     init {
+        (context as Activity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         (context as Activity).window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         LayoutInflater.from(context).inflate(R.layout.view_player, this)
         surface.holder.addCallback(object : SurfaceHolder.Callback {
