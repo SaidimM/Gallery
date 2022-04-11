@@ -25,9 +25,6 @@ class LyricsView : View {
     var data: ArrayList<Lyric> = arrayListOf()
         set(value) {
             field = value
-            val array = arrayListOf<Lyric>()
-            value.forEach { if (it.text != "") array.add(it) }
-            field = array
             invalidate()
         }
 

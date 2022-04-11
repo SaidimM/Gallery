@@ -1,6 +1,5 @@
 package com.example.gallery.main.state
 
-import android.hardware.biometrics.BiometricManager
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,8 +8,6 @@ import com.example.gallery.media.local.Music
 import com.example.gallery.media.remote.MusicRepository
 import com.example.gallery.media.remote.lyrics.Lyric
 import io.reactivex.schedulers.Schedulers
-import java.lang.Exception
-import java.util.concurrent.ExecutionException
 
 class LyricsFragmentViewModel : ViewModel() {
 
@@ -33,8 +30,9 @@ class LyricsFragmentViewModel : ViewModel() {
                 strings.forEach { string ->
                     try {
                         if (string == "") return@forEach
-                        val time = string.substring(string.indexOf('[') + 1, string.indexOf(']'))
                         val text = string.substring(string.indexOf(']') + 1)
+                        if (text == "") return@forEach
+                        val time = string.substring(string.indexOf('[') + 1, string.indexOf(']'))
                         val min = time.substring(0, time.indexOf(':')).toInt() * 60 * 1000
                         val sec = (time.substring(time.indexOf(':') + 1).toFloat() * 1000).toInt()
                         val lyric = Lyric(min + sec, text)
