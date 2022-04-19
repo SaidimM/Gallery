@@ -1,7 +1,14 @@
 package com.example.gallery.main
 
+import android.Manifest
+import android.app.WallpaperManager
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.gallery.BR
@@ -24,6 +31,18 @@ class MainActivity : BaseActivity() {
         window.decorView.fitsSystemWindows = true
         navController = (supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment).navController
         observe()
+
+        val wallpaperManager = WallpaperManager.getInstance(this)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        } else {
+            val wallpaper = wallpaperManager.drawable
+            this.window.decorView.background = wallpaper
+        }
     }
 
     fun toMusic(view: View) {

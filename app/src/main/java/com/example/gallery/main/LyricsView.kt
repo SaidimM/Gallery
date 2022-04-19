@@ -5,6 +5,9 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
+import android.text.StaticLayout
+import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -22,17 +25,44 @@ class LyricsView : View {
         defStyleAttrs
     )
 
-    var data: ArrayList<Lyric> = arrayListOf()
-        set(value) {
-            field = value
-            invalidate()
-        }
+    var lineMargin = 32.dp
 
-    val paint = Paint().apply {
+    var indexLineTop = 144.dp
+
+    var spaceBetweenLine = 48.dp
+
+    val paint = TextPaint().apply {
         color = Color.WHITE
         textSize = 24.dp.toFloat()
         textAlign = Paint.Align.LEFT
+        typeface = Typeface.DEFAULT_BOLD
     }
+
+    private var texts: ArrayList<StaticLayout> = arrayListOf()
+
+    private var lineStartIndexes: ArrayList<Int> = arrayListOf()
+
+    var data: ArrayList<Lyric> = arrayListOf()
+        set(value) {
+            field = value
+            texts.clear()
+            lineStartIndexes.clear()
+            lineStartIndexes.add(indexLineTop)
+            value.forEach {
+                val layout = StaticLayout.Builder.obtain(
+                    it.text,
+                    0,
+                    it.text.length,
+                    paint,
+                    width - 2 * lineMargin
+                ).setLineSpacing(10f, 1.2f).build()
+                texts.add(layout)
+                lineStartIndexes.add(layout.height + spaceBetweenLine)
+            }
+            invalidate()
+        }
+
+    var currentTime = 0
 
     var scroll: Float = 0f
         set(value) {
@@ -41,7 +71,6 @@ class LyricsView : View {
             invalidate()
         }
 
-    var currentTime = 0
     private var currentPosition = 0
         set(value) {
             if (field == value) return
@@ -65,14 +94,15 @@ class LyricsView : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        val lineInScreen = height / 50.dp
-        val startIndex = (scroll / 50.dp).toInt()
-        data.forEachWithIndex { i, lyric ->
-            if (i > startIndex + lineInScreen|| i < startIndex) return@forEachWithIndex
-            if (i - startIndex == 1) currentPosition = i
-            val textWidth = paint.measureText(lyric.text)
-            val y = (i + 0.5) * 50.dp - scroll
-            canvas?.drawText(lyric.text, 16.dp.toFloat(), y.toFloat(), paint)
+        if (lineStartIndexes.isEmpty() || texts.isEmpty()) return
+        val lineInScreen = 6
+        val startIndex = if (currentPosition - 1 < 0) 0 else currentPosition - 1
+        canvas?.translate(lineMargin.toFloat(), -(scroll - lineStartIndexes[startIndex]))
+        for (i in startIndex until (startIndex + lineInScreen)) {
+            val layout = texts[i]
+            canvas?.translate(0f, lineMargin.toFloat())
+            texts[i].draw(canvas)
+            canvas?.translate(0f,  layout.height.toFloat() + lineMargin)
         }
     }
 
