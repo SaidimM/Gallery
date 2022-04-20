@@ -31,18 +31,6 @@ class MainActivity : BaseActivity() {
         window.decorView.fitsSystemWindows = true
         navController = (supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment).navController
         observe()
-
-        val wallpaperManager = WallpaperManager.getInstance(this)
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        } else {
-            val wallpaper = wallpaperManager.drawable
-            this.window.decorView.background = wallpaper
-        }
     }
 
     fun toMusic(view: View) {

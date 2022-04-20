@@ -9,12 +9,12 @@ import android.graphics.Typeface
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.example.gallery.media.remote.lyrics.Lyric
 import com.example.gallery.player.GeneralTools.dp
-import org.jetbrains.anko.collections.forEachWithIndex
 
 class LyricsView : View {
     constructor(context: Context) : super(context)
@@ -40,14 +40,14 @@ class LyricsView : View {
 
     private var texts: ArrayList<StaticLayout> = arrayListOf()
 
-    private var lineStartIndexes: ArrayList<Int> = arrayListOf()
+    private var lineStartIndexes: ArrayList<Float> = arrayListOf()
 
     var data: ArrayList<Lyric> = arrayListOf()
         set(value) {
             field = value
             texts.clear()
             lineStartIndexes.clear()
-            lineStartIndexes.add(indexLineTop)
+            lineStartIndexes.add(0f)
             value.forEach {
                 val layout = StaticLayout.Builder.obtain(
                     it.text,
@@ -57,15 +57,18 @@ class LyricsView : View {
                     width - 2 * lineMargin
                 ).setLineSpacing(10f, 1.2f).build()
                 texts.add(layout)
-                lineStartIndexes.add(layout.height + spaceBetweenLine)
+                val last = lineStartIndexes.last()
+                lineStartIndexes.add(last + layout.height.toFloat() + spaceBetweenLine)
             }
             invalidate()
         }
 
     var currentTime = 0
 
-    var scroll: Float = 0f
+    private var scroll: Float = 0f
         set(value) {
+            if (texts.isEmpty() || lineStartIndexes.isEmpty()) return
+            if (value > lineStartIndexes.last() - indexLineTop) return
             field = value
             if (field < 0) field = 0f
             invalidate()
@@ -95,14 +98,28 @@ class LyricsView : View {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         if (lineStartIndexes.isEmpty() || texts.isEmpty()) return
-        val lineInScreen = 6
-        val startIndex = if (currentPosition - 1 < 0) 0 else currentPosition - 1
-        canvas?.translate(lineMargin.toFloat(), -(scroll - lineStartIndexes[startIndex]))
-        for (i in startIndex until (startIndex + lineInScreen)) {
+        var startIndex = 0
+        for (i in 0 until lineStartIndexes.size) {
+            if (i == lineStartIndexes.size - 1) {
+                startIndex = i
+                break
+            }
+            if (scroll >= lineStartIndexes[i] && scroll < lineStartIndexes[i + 1]) {
+                startIndex = i
+                break
+            }
+        }
+        val lineInScreen = height / 50.dp
+        val transHeight = lineStartIndexes[startIndex] - scroll
+        canvas?.translate(lineMargin.toFloat(), transHeight)
+        Log.i("LyricsView", "transHeight: $transHeight, ${lineStartIndexes[startIndex]} - $scroll")
+        val end = if (startIndex + lineInScreen >= lineStartIndexes.size - 1)
+            lineStartIndexes.size - 1 else startIndex + lineInScreen
+        for (i in startIndex until end) {
             val layout = texts[i]
-            canvas?.translate(0f, lineMargin.toFloat())
-            texts[i].draw(canvas)
-            canvas?.translate(0f,  layout.height.toFloat() + lineMargin)
+            canvas?.translate(0f, spaceBetweenLine.toFloat() / 2)
+            layout.draw(canvas)
+            canvas?.translate(0f,  spaceBetweenLine.div(2f) + layout.height)
         }
     }
 
