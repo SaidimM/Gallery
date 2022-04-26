@@ -25,11 +25,11 @@ class LyricsView : View {
         defStyleAttrs
     )
 
-    var lineMargin = 32.dp
+    private var lineMargin = 32.dp
 
-    var indexLineTop = 144.dp
+    private var indexLineTop = 144.dp
 
-    var spaceBetweenLine = 48.dp
+    private var spaceBetweenLine = 48.dp
 
     private val paint = TextPaint().apply {
         color = Color.WHITE
@@ -40,14 +40,11 @@ class LyricsView : View {
         isAntiAlias = true
     }
 
-    private var texts: ArrayList<StaticLayout> = arrayListOf()
-
     private var lineStartIndexes: ArrayList<Float> = arrayListOf()
 
     var data: ArrayList<Lyric> = arrayListOf()
         set(value) {
             field = value
-            texts.clear()
             lineStartIndexes.clear()
             lineStartIndexes.add(0f)
             value.forEach {
@@ -58,9 +55,9 @@ class LyricsView : View {
                     paint,
                     width - 2 * lineMargin
                 ).setLineSpacing(10f, 1.2f).build()
-                texts.add(layout)
                 val last = lineStartIndexes.last()
-                lineStartIndexes.add(last + layout.height.toFloat() + spaceBetweenLine)
+                if (it.text.isEmpty()) lineStartIndexes.add(last)
+                else lineStartIndexes.add(last + layout.height.toFloat() + spaceBetweenLine)
             }
             invalidate()
             start()
@@ -70,7 +67,7 @@ class LyricsView : View {
 
     private var scroll: Float = 0f
         set(value) {
-            if (texts.isEmpty() || lineStartIndexes.isEmpty()) return
+            if (data.isEmpty() || lineStartIndexes.isEmpty()) return
             if (value > lineStartIndexes.last() - indexLineTop) return
             field = value
             if (field < 0) field = 0f
@@ -81,7 +78,7 @@ class LyricsView : View {
         set(value) {
             if (field == value) return
             field = value
-            if (field >= data.size - 3) {
+            if (field >= data.size - 1) {
                 anim?.pause()
                 clearAnimation()
                 return
@@ -98,7 +95,7 @@ class LyricsView : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        if (lineStartIndexes.isEmpty() || texts.isEmpty()) return
+        if (lineStartIndexes.isEmpty() || data.isEmpty()) return
         var startIndex = 0
         for (i in 0 until lineStartIndexes.size) {
             if (i == lineStartIndexes.size - 1) {
@@ -116,14 +113,26 @@ class LyricsView : View {
         val end = if (startIndex + lineInScreen >= lineStartIndexes.size - 1)
             lineStartIndexes.size - 1 else startIndex + lineInScreen
         for (i in startIndex until end) {
-            val layout = texts[i]
+            if (data[i].text.isEmpty()) continue
+            val layout = StaticLayout.Builder.obtain(
+                data[i].text,
+                0,
+                data[i].text.length,
+                paint,
+                width - 2 * lineMargin
+            ).setLineSpacing(10f, 1.2f).build()
             canvas?.translate(0f, spaceBetweenLine.toFloat() / 2)
-            layout.draw(canvas)
+            if (i != currentPosition) layout.draw(canvas)
+            else {
+                paint.color = Color.WHITE
+                layout.draw(canvas)
+                paint.color = Color.parseColor("#c4c4c4")
+            }
             canvas?.translate(0f, spaceBetweenLine.div(2f) + layout.height)
         }
     }
 
-    var touchPoint = 0f
+    private var touchPoint = 0f
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (event == null) return false
@@ -147,35 +156,36 @@ class LyricsView : View {
 
     private fun startScroll() {
         if (lineStartIndexes.isEmpty()) return
+        val scrollPosition = if (currentPosition < 2) 0 else currentPosition - 2
         val delay = data[currentPosition + 1].position.toLong() - data[currentPosition].position.toLong()
-        val scrollingSpace = lineStartIndexes[currentPosition + 1] - lineStartIndexes[currentPosition]
+        val scrollingSpace = lineStartIndexes[scrollPosition + 1] - lineStartIndexes[scrollPosition]
         anim = ValueAnimator
             .ofFloat(0f, scrollingSpace).apply {
                 duration = 720
                 interpolator = AccelerateDecelerateInterpolator()
                 addUpdateListener {
                     val value = it.animatedValue as Float
-                    Log.i("ValueAnimator", "value: $value, scroll:$scroll, scroll + value: ${scroll + value}")
-                    scroll = lineStartIndexes[currentPosition] + value
+                    val position = if (currentPosition < 2) 0 else currentPosition - 2
+                    scroll = lineStartIndexes[position] + value
                 }
             }
-        Log.i(
-            "AnimationParams",
-            "delay:$delay, scrollingSpace: $scrollingSpace, scroll: $scroll, position: $currentPosition"
-        )
-        anim?.start()
+        if (currentPosition >= 2) anim?.start()
+        else invalidate()
         postDelayed({
             currentPosition++
         }, delay)
     }
 
     override fun performClick(): Boolean {
+        Log.i(this.javaClass.simpleName, "perform click")
         return super.performClick()
     }
 
-    fun start() {
-        if (currentPosition == 0) anim?.startDelay = data[currentPosition].position.toLong()
-        startScroll()
+    private fun start() {
+        val startPosition =
+            if (currentPosition == 0) data[currentPosition].position.toLong()
+            else data[currentPosition].position.toLong() - data[currentPosition - 1].position.toLong()
+        postDelayed({ startScroll() }, startPosition)
     }
 
     fun pause() {

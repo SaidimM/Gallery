@@ -31,7 +31,6 @@ class LyricsFragmentViewModel : ViewModel() {
                     try {
                         if (string == "") return@forEach
                         val text = string.substring(string.indexOf(']') + 1)
-                        if (text == "") return@forEach
                         val time = string.substring(string.indexOf('[') + 1, string.indexOf(']'))
                         val min = time.substring(0, time.indexOf(':')).toInt() * 60 * 1000
                         val sec = (time.substring(time.indexOf(':') + 1).toFloat() * 1000).toInt()
