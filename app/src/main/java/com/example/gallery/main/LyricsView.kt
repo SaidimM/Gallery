@@ -13,8 +13,10 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.animation.addListener
 import com.example.gallery.media.remote.lyrics.Lyric
 import com.example.gallery.player.GeneralTools.dp
+import kotlin.math.absoluteValue
 
 class LyricsView : View {
     constructor(context: Context) : super(context)
@@ -78,7 +80,7 @@ class LyricsView : View {
         set(value) {
             if (field == value) return
             field = value
-            if (field >= data.size - 1) {
+            if (field >= data.size) {
                 anim?.pause()
                 clearAnimation()
                 return
@@ -134,6 +136,8 @@ class LyricsView : View {
 
     private var touchPoint = 0f
 
+    private var dragging: Boolean = false
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (event == null) return false
         when (event.action) {
@@ -142,11 +146,21 @@ class LyricsView : View {
                 performClick()
             }
             MotionEvent.ACTION_MOVE -> {
-                scroll -= (event.y - touchPoint)
-                touchPoint = event.y
+                val moveDistance = event.y - touchPoint
+                if (moveDistance.absoluteValue > 5.dp) {
+                    scroll -= moveDistance
+                    touchPoint = event.y
+                    dragging = true
+                }
             }
             MotionEvent.ACTION_UP -> {
                 touchPoint = 0f
+                scrollAnimating = dragging
+                dragging = false
+                if (scrollAnimating) {
+                    val delayMills = if (scroll - lineStartIndexes[currentPosition] < height) 1000 else 4000
+                    postDelayed({ scrollAnimating = false }, delayMills.toLong())
+                }
             }
         }
         return true
@@ -155,26 +169,26 @@ class LyricsView : View {
     private var anim: ValueAnimator? = null
 
     private fun startScroll() {
-        if (lineStartIndexes.isEmpty()) return
+        if (lineStartIndexes.isEmpty() || currentPosition + 2 == data.size) return
         val scrollPosition = if (currentPosition < 2) 0 else currentPosition - 2
         val delay = data[currentPosition + 1].position.toLong() - data[currentPosition].position.toLong()
-        val scrollingSpace = lineStartIndexes[scrollPosition + 1] - lineStartIndexes[scrollPosition]
         anim = ValueAnimator
-            .ofFloat(0f, scrollingSpace).apply {
+            .ofFloat(scroll, lineStartIndexes[scrollPosition]).apply {
                 duration = 720
                 interpolator = AccelerateDecelerateInterpolator()
                 addUpdateListener {
                     val value = it.animatedValue as Float
-                    val position = if (currentPosition < 2) 0 else currentPosition - 2
-                    scroll = lineStartIndexes[position] + value
+                    scroll = value
                 }
             }
-        if (currentPosition >= 2) anim?.start()
+        if (currentPosition >= 2 && !scrollAnimating) anim?.start()
         else invalidate()
         postDelayed({
             currentPosition++
         }, delay)
     }
+
+    private var scrollAnimating = false
 
     override fun performClick(): Boolean {
         Log.i(this.javaClass.simpleName, "perform click")
