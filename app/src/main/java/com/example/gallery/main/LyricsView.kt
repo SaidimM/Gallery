@@ -10,13 +10,12 @@ import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
+import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import androidx.core.animation.addListener
 import com.example.gallery.media.remote.lyrics.Lyric
 import com.example.gallery.player.GeneralTools.dp
-import kotlin.math.absoluteValue
 
 class LyricsView : View {
     constructor(context: Context) : super(context)
@@ -65,8 +64,6 @@ class LyricsView : View {
             start()
         }
 
-    var currentTime = 0
-
     private var scroll: Float = 0f
         set(value) {
             if (data.isEmpty() || lineStartIndexes.isEmpty()) return
@@ -81,12 +78,14 @@ class LyricsView : View {
             if (field == value) return
             field = value
             if (field >= data.size) {
-                anim?.pause()
+                anim.pause()
                 clearAnimation()
                 return
             }
             startScroll()
         }
+
+    private val nextPositionAction = Runnable { currentPosition ++ }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -134,58 +133,24 @@ class LyricsView : View {
         }
     }
 
-    private var touchPoint = 0f
-
-    private var dragging: Boolean = false
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        if (event == null) return false
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                touchPoint = event.y
-                performClick()
-            }
-            MotionEvent.ACTION_MOVE -> {
-                val moveDistance = event.y - touchPoint
-                if (moveDistance.absoluteValue > 5.dp) {
-                    scroll -= moveDistance
-                    touchPoint = event.y
-                    dragging = true
-                }
-            }
-            MotionEvent.ACTION_UP -> {
-                touchPoint = 0f
-                scrollAnimating = dragging
-                dragging = false
-                if (scrollAnimating) {
-                    val delayMills = if (scroll - lineStartIndexes[currentPosition] < height) 1000 else 4000
-                    postDelayed({ scrollAnimating = false }, delayMills.toLong())
-                }
-            }
-        }
-        return true
-    }
-
-    private var anim: ValueAnimator? = null
+    private var anim: ValueAnimator = ValueAnimator()
 
     private fun startScroll() {
         if (lineStartIndexes.isEmpty() || currentPosition + 2 == data.size) return
         val scrollPosition = if (currentPosition < 2) 0 else currentPosition - 2
         val delay = data[currentPosition + 1].position.toLong() - data[currentPosition].position.toLong()
-        anim = ValueAnimator
-            .ofFloat(scroll, lineStartIndexes[scrollPosition]).apply {
-                duration = 720
-                interpolator = AccelerateDecelerateInterpolator()
-                addUpdateListener {
-                    val value = it.animatedValue as Float
-                    scroll = value
-                }
+        anim.apply {
+            setFloatValues(scroll, lineStartIndexes[scrollPosition])
+            duration = 720
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener {
+                val value = it.animatedValue as Float
+                scroll = value
             }
-        if (currentPosition >= 2 && !scrollAnimating) anim?.start()
+        }
+        if (currentPosition >= 2 && !scrollAnimating) anim.start()
         else invalidate()
-        postDelayed({
-            currentPosition++
-        }, delay)
+        postDelayed(nextPositionAction, delay)
     }
 
     private var scrollAnimating = false
@@ -202,7 +167,50 @@ class LyricsView : View {
         postDelayed({ startScroll() }, startPosition)
     }
 
-    fun pause() {
-        anim?.pause()
+    private var dragging: Boolean = false
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (event == null) return false
+        gestureDetector.onTouchEvent(event)
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                performClick()
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_OUTSIDE -> {
+                scrollAnimating = dragging
+                dragging = false
+                if (scrollAnimating) {
+                    val delayMills = if (scroll - lineStartIndexes[currentPosition] < height) 1000 else 4000
+                    postDelayed({ scrollAnimating = false }, delayMills.toLong())
+                }
+            }
+        }
+        return true
     }
+
+    private fun doubleTap(event: MotionEvent?): Boolean {
+        if (event == null) return false
+        removeCallbacks(nextPositionAction)
+        val tapPosition =  scroll + event.y
+        for (i in 0 until lineStartIndexes.size - 1) {
+            if (tapPosition < lineStartIndexes[i] || tapPosition > lineStartIndexes[i + 1]) continue
+            else {
+                anim.pause()
+                currentPosition = i
+                break
+            }
+        }
+        invalidate()
+        return true
+    }
+
+    private val gestureDetector = GestureDetector(context, object: GestureDetector.SimpleOnGestureListener() {
+        override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+            scroll += distanceY
+            dragging = true
+            return true
+        }
+
+        override fun onDoubleTap(e: MotionEvent?) = doubleTap(e)
+    })
 }
