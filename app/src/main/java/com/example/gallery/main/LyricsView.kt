@@ -33,12 +33,21 @@ class LyricsView : View {
     private var spaceBetweenLine = 48.dp
 
     private val paint = TextPaint().apply {
-        color = Color.WHITE
         textSize = 24.dp.toFloat()
         textAlign = Paint.Align.LEFT
         color = Color.parseColor("#c4c4c4")
         typeface = Typeface.DEFAULT_BOLD
         isAntiAlias = true
+        alpha = 127
+    }
+
+    private val focusedPaint = TextPaint().apply {
+        color = Color.WHITE
+        textSize = 24.dp.toFloat()
+        textAlign = Paint.Align.LEFT
+        typeface = Typeface.DEFAULT_BOLD
+        isAntiAlias = true
+        alpha = 127
     }
 
     private var lineStartIndexes: ArrayList<Float> = arrayListOf()
@@ -85,7 +94,10 @@ class LyricsView : View {
             startScroll()
         }
 
-    private val nextPositionAction = Runnable { currentPosition ++ }
+    private val nextPositionAction = Runnable {
+        currentPosition ++
+        animateAlpha()
+    }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -119,18 +131,20 @@ class LyricsView : View {
                 data[i].text,
                 0,
                 data[i].text.length,
-                paint,
+                if (i == currentPosition) focusedPaint else paint,
                 width - 2 * lineMargin
             ).setLineSpacing(10f, 1.2f).build()
             canvas?.translate(0f, spaceBetweenLine.toFloat() / 2)
-            if (i != currentPosition) layout.draw(canvas)
-            else {
-                paint.color = Color.WHITE
-                layout.draw(canvas)
-                paint.color = Color.parseColor("#c4c4c4")
-            }
+            layout.draw(canvas)
             canvas?.translate(0f, spaceBetweenLine.div(2f) + layout.height)
         }
+    }
+
+    private fun start() {
+        val startPosition =
+            if (currentPosition == 0) data[currentPosition].position.toLong()
+            else data[currentPosition].position.toLong() - data[currentPosition - 1].position.toLong()
+        postDelayed({ startScroll() }, startPosition)
     }
 
     private var anim: ValueAnimator = ValueAnimator()
@@ -153,18 +167,25 @@ class LyricsView : View {
         postDelayed(nextPositionAction, delay)
     }
 
+    private fun animateAlpha() {
+        val alphaAnimation = ValueAnimator()
+        alphaAnimation.apply {
+            setIntValues(127, 255)
+            duration = 720
+            addUpdateListener {
+                val value = it.animatedValue as Int
+                focusedPaint.alpha = value
+                invalidate()
+            }
+            start()
+        }
+    }
+
     private var scrollAnimating = false
 
     override fun performClick(): Boolean {
         Log.i(this.javaClass.simpleName, "perform click")
         return super.performClick()
-    }
-
-    private fun start() {
-        val startPosition =
-            if (currentPosition == 0) data[currentPosition].position.toLong()
-            else data[currentPosition].position.toLong() - data[currentPosition - 1].position.toLong()
-        postDelayed({ startScroll() }, startPosition)
     }
 
     private var dragging: Boolean = false
