@@ -145,13 +145,14 @@ class LyricsView : View {
             if (currentPosition == 0) data[currentPosition].position.toLong()
             else data[currentPosition].position.toLong() - data[currentPosition - 1].position.toLong()
         postDelayed({ startScroll() }, startPosition)
+        animateAlpha()
     }
 
     private var anim: ValueAnimator = ValueAnimator()
 
     private fun startScroll() {
-        if (lineStartIndexes.isEmpty() || currentPosition + 2 == data.size) return
-        val scrollPosition = if (currentPosition < 2) 0 else currentPosition - 2
+        if (lineStartIndexes.isEmpty() || currentPosition + 1 == data.size) return
+        val scrollPosition = if (currentPosition < 1) 0 else currentPosition - 1
         val delay = data[currentPosition + 1].position.toLong() - data[currentPosition].position.toLong()
         anim.apply {
             setFloatValues(scroll, lineStartIndexes[scrollPosition])
@@ -162,7 +163,7 @@ class LyricsView : View {
                 scroll = value
             }
         }
-        if (currentPosition >= 2 && !scrollAnimating) anim.start()
+        if (currentPosition >= 1 && !scrollAnimating) anim.start()
         else invalidate()
         postDelayed(nextPositionAction, delay)
     }
@@ -171,7 +172,7 @@ class LyricsView : View {
         val alphaAnimation = ValueAnimator()
         alphaAnimation.apply {
             setIntValues(127, 255)
-            duration = 720
+            duration = 480
             addUpdateListener {
                 val value = it.animatedValue as Int
                 focusedPaint.alpha = value
@@ -201,7 +202,7 @@ class LyricsView : View {
                 scrollAnimating = dragging
                 dragging = false
                 if (scrollAnimating) {
-                    val delayMills = if (scroll - lineStartIndexes[currentPosition] < height) 1000 else 4000
+                    val delayMills = if (scroll - lineStartIndexes[currentPosition] < height) 1000 else 3000
                     postDelayed({ scrollAnimating = false }, delayMills.toLong())
                 }
             }
