@@ -5,13 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gallery.media.local.Music
-import com.example.gallery.media.remote.MusicRepository
+import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.remote.lyrics.Lyric
 import io.reactivex.schedulers.Schedulers
 
 class LyricsFragmentViewModel : ViewModel() {
 
-    private val repository = MusicRepository.getInstane()
+    private val repository = MusicRepository.getInstance()
 
     private var _lyrics = MutableLiveData<ArrayList<Lyric>>()
     val lyrics: LiveData<ArrayList<Lyric>> = _lyrics

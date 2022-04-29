@@ -13,9 +13,15 @@ abstract class BaseRecyclerViewAdapter<T, B : ViewDataBinding>(private val conte
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var data: ArrayList<T> = arrayListOf()
         set(value) {
-            field.clear()
-            field.addAll(value)
-            notifyDataSetChanged()
+            if (field.isEmpty()) {
+                field.addAll(value)
+                notifyDataSetChanged()
+            } else if (field.size == value.size - 1) {
+                field.add(value.last())
+                notifyItemInserted(field.size - 1)
+            } else {
+                return
+            }
         }
 
     protected abstract fun getResourceId(viewType: Int): Int

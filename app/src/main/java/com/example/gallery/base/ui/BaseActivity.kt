@@ -123,10 +123,8 @@ abstract class BaseActivity : DataBindingActivity() {
     /**
      * android 6.0 以上需要动态申请权限
      */
-    private fun initPermission() {
+    protected fun initPermission() {
         val permissions = arrayOf(
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.INTERNET,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE

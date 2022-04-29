@@ -1,21 +1,17 @@
 package com.example.gallery.main
 
-import android.Manifest
-import android.app.WallpaperManager
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
-import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.blankj.utilcode.util.PermissionUtils
 import com.example.gallery.BR
 import com.example.gallery.R
 import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.BaseActivity
 import com.example.gallery.main.state.MainActivityViewModel
+import com.example.gallery.media.local.Music
+import java.util.jar.Manifest
 
 class MainActivity : BaseActivity() {
     private lateinit var viewModel: MainActivityViewModel
@@ -31,16 +27,46 @@ class MainActivity : BaseActivity() {
         window.decorView.fitsSystemWindows = true
         navController = (supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment).navController
         observe()
+        if (PermissionUtils.isGranted(android.Manifest.permission_group.STORAGE)) viewModel.loadMusic()
+        else super.initPermission()
     }
 
     fun toMusic(view: View) {
         view.setBackgroundColor(getColor(R.color.gray_e5))
         navController.navigate(R.id.action_mainFragment_to_musicFragment)
+        viewModel.index = R.id.musicFragment
+    }
+
+    fun toLyrics(music: Music) {
+        navController.navigate(R.id.action_musicFragment_to_lyricsFragment)
+        viewModel.toLyric(music)
+    }
+
+    private fun back() {
+        viewModel.index = when (viewModel.index) {
+            R.id.musicFragment -> {
+                navController.navigate(R.id.action_musicFragment_to_mainFragment)
+                R.id.mainFragment
+            }
+            R.id.lyricsFragment -> {
+                navController.navigate(R.id.action_lyricsFragment_to_musicFragment)
+                R.id.musicFragment
+            }
+            R.id.mainFragment -> {
+                super.onBackPressed()
+                0
+            } else -> 0
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        viewModel.loadMusic()
     }
 
     private fun observe() {
-        viewModel.index.observe(this) {
-            navController.navigate(it)
-        }
+
     }
+
+    override fun onBackPressed() = back()
 }

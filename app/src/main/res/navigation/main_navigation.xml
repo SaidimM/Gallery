@@ -7,16 +7,37 @@
               tools:layout="@layout/fragment_main"
               android:name="com.example.gallery.main.fragments.MainFragment"
               android:label="MainFragment">
-        <action android:id="@+id/action_mainFragment_to_musicFragment" app:destination="@id/musicFragment"/>
+        <action android:id="@+id/action_mainFragment_to_musicFragment"
+                app:enterAnim="@anim/fade_in"
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/fade_out"
+                app:destination="@id/musicFragment"/>
     </fragment>
     <fragment android:id="@+id/musicFragment"
               tools:layout="@layout/fragment_music"
               android:name="com.example.gallery.main.fragments.MusicFragment"
               android:label="MusicFragment">
-        <action android:id="@+id/action_musicFragment_to_mainFragment" app:destination="@id/mainFragment"/>
-        <action android:id="@+id/action_musicFragment_to_lyricsFragment" app:destination="@id/lyricsFragment"/>
+        <action android:id="@+id/action_musicFragment_to_mainFragment"
+                app:popEnterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/fade_out"
+                app:destination="@id/mainFragment"/>
+        <action android:id="@+id/action_musicFragment_to_lyricsFragment"
+                app:enterAnim="@anim/fade_in"
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/fade_out"
+                app:destination="@id/lyricsFragment"/>
     </fragment>
     <fragment android:id="@+id/lyricsFragment" tools:layout="@layout/fragment_lyrics"
               android:name="com.example.gallery.main.fragments.LyricsFragment"
-              android:label="LyricsFragment"/>
+              android:label="LyricsFragment">
+        <action
+                android:id="@+id/action_lyricsFragment_to_musicFragment"
+                app:enterAnim="@anim/fade_in"
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/fade_out"
+                app:destination="@id/musicFragment"/>
+    </fragment>
 </navigation>
