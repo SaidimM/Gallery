@@ -193,6 +193,7 @@ class LyricsView : View {
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (event == null) return false
+        if (data.isEmpty()) return false
         gestureDetector.onTouchEvent(event)
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
