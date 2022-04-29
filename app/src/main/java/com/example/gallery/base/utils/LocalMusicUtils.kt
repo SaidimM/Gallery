@@ -4,14 +4,18 @@ import android.content.ContentUris
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
+import android.widget.Toast
+import coil.request.ImageRequest
+import com.blankj.utilcode.util.Utils
 import com.example.gallery.R
 import com.example.gallery.media.local.Music
-import java.io.FileDescriptor
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.io.InputStream
+import org.jaudiotagger.audio.mp3.MP3File
+import org.jaudiotagger.tag.images.ArtworkFactory
+import java.io.*
 
 object LocalMusicUtils {
     //定义一个集合，存放从本地读取到的内容
@@ -24,6 +28,8 @@ object LocalMusicUtils {
     private var size: Long = 0
     private var albumId: Long = 0
     private var id: Long = 0
+
+    private val TAG = this.javaClass.simpleName
 
     //获取专辑封面的Uri
     private val albumArtUri = Uri.parse("content://media/external/audio/albumart")
@@ -272,5 +278,72 @@ object LocalMusicUtils {
             //bm = BitmapFactory.decodeResource(getResources(), R.drawable.default_cover);
         }
         return path
+    }
+
+    /**
+     * bitmap保存为file
+     */
+    @Throws(IOException::class)
+    fun bitmapToFile(
+        filePath: String,
+        bitmap: Bitmap?, quality: Int
+    ) : File? {
+        if (bitmap != null) {
+            val file = File(
+                filePath.substring(
+                    0,
+                    filePath.lastIndexOf(File.separator)
+                )
+            )
+            if (!file.exists()) {
+                file.mkdirs()
+            }
+            val bos = BufferedOutputStream(
+                FileOutputStream(filePath)
+            )
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, bos)
+            bos.flush()
+            bos.close()
+            return file
+        }
+        return null
+    }
+
+    fun saveAlbumImage(context: Context, url: String) {
+        val filesDir = context.externalCacheDir
+        val request = ImageRequest.Builder(context).data(url).target {
+            val bitmapDrawable = it as BitmapDrawable
+            val filePath = "${filesDir?.absoluteFile}/temp.jpg"
+            Log.i(TAG, "filePath: $filePath")
+            val file = bitmapToFile(
+                filePath,
+                bitmapDrawable.bitmap, 80
+            )
+            Log.i(TAG, "BitmapFilePath: ${file?.absoluteFile}")
+            writeTag(path, file)
+        }
+    }
+
+    fun writeTag(path: String?, picFile: File?) {
+        val mp3File = MP3File(path)
+        mp3File.run {
+            val artWork = ArtworkFactory.createArtworkFromFile(picFile)
+            when {
+                hasID3v2Tag() -> {
+                    iD3v2Tag.setField(artWork)
+                }
+                hasID3v1Tag() -> {
+//                        iD3v1Tag.setField(artWork) 这个方法行不通
+                    Toast.makeText(Utils.getApp(), "暂不支持ID3v1Tag歌曲", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                else -> {
+                    Toast.makeText(Utils.getApp(), "此歌曲没有ID3Tag", Toast.LENGTH_SHORT).show()
+                    return
+                }
+            }
+            save()
+            Toast.makeText(Utils.getApp(), "写入完成", Toast.LENGTH_SHORT).show()
+        }
     }
 }

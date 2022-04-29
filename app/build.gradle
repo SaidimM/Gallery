@@ -82,4 +82,8 @@ dependencies {
     implementation 'android.arch.work:work-runtime:1.0.1'
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'com.alibaba:fastjson:1.2.79'
+    //coil - image request
+    implementation("io.coil-kt:coil:1.1.1")
+    //jaudiotagger
+    implementation project(path: ':jaudiotagger')
 }
