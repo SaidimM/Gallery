@@ -85,5 +85,5 @@ dependencies {
     //coil - image request
     implementation("io.coil-kt:coil:1.1.1")
     //jaudiotagger
-    implementation project(path: ':jaudiotagger')
+    implementation 'com.github.AdrienPoupa:jaudiotagger:2.2.3'
 }
