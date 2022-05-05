@@ -43,4 +43,7 @@ interface NeteaseApi {
 
     @GET(value = "/api/artist/{artist_id}")
     fun getArtist(@Path("artist_id") artistId: String): Observable<Response<ArtistResult>>
+
+    @GET(value = "/api/song/detail/{music_id}")
+    fun getMusicDetail(@Path("music_id") musicId: String): Observable<Response<ArtistResult>>
 }

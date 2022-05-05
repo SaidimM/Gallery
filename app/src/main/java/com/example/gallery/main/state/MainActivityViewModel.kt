@@ -54,7 +54,7 @@ class MainActivityViewModel : ViewModel() {
         stored.forEach { hashTable[it.id] = it }
         local.forEach {
             if (hashTable[it.id] == null) newList.add(it)
-            else db.getDao().insert(it)
+            else db.getDao().update(it)
         }
         storeNewSongs(newList.iterator())
     }
@@ -64,11 +64,21 @@ class MainActivityViewModel : ViewModel() {
         val music = new.next()
         repository.getMusicInfo(music,
             success = {
-                _songs.value?.add(music)
+                songs.value?.let {
+                    it.add(music)
+                    _songs.postValue(it)
+                }
                 storeNewSongs(new)
             }, failed = {
                 Log.e(this.javaClass.simpleName, it)
                 storeNewSongs(new)
+            })
+    }
+
+    fun saveAlbumImage(music: Music) {
+        repository.getAlbum(music.albumId.toString(),
+            success = {
+                LocalMusicUtils.saveAlbumImage(Utils.getApp(), it.album.picUrl)
             })
     }
 }

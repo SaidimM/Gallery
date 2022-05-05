@@ -47,6 +47,7 @@ class MusicFragment : BaseFragment() {
                 val bitmap = viewModel.getArtistImage(item)
                 Glide.with(requireContext()).load(bitmap).into(binding.albumImage)
                 binding.root.setOnClickListener {
+                    if (bitmap == null) state.saveAlbumImage(item)
                     (context as MainActivity).toLyrics(item)
                 }
             }

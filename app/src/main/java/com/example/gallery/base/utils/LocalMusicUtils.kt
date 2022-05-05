@@ -9,6 +9,8 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import coil.ImageLoader
+import coil.imageLoader
 import coil.request.ImageRequest
 import com.blankj.utilcode.util.Utils
 import com.example.gallery.R
@@ -287,7 +289,7 @@ object LocalMusicUtils {
     fun bitmapToFile(
         filePath: String,
         bitmap: Bitmap?, quality: Int
-    ) : File? {
+    ): File? {
         if (bitmap != null) {
             val file = File(
                 filePath.substring(
@@ -321,10 +323,12 @@ object LocalMusicUtils {
             )
             Log.i(TAG, "BitmapFilePath: ${file?.absoluteFile}")
             writeTag(path, file)
-        }
+        }.build()
+        val imageLoader = ImageLoader.Builder(context).build()
+        imageLoader.enqueue(request)
     }
 
-    fun writeTag(path: String?, picFile: File?) {
+    private fun writeTag(path: String?, picFile: File?) {
         val mp3File = MP3File(path)
         mp3File.run {
             val artWork = ArtworkFactory.createArtworkFromFile(picFile)

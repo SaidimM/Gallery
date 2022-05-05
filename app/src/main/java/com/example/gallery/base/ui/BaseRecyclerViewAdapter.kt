@@ -18,7 +18,7 @@ abstract class BaseRecyclerViewAdapter<T, B : ViewDataBinding>(private val conte
                 notifyDataSetChanged()
             } else if (field.size == value.size - 1) {
                 field.add(value.last())
-                notifyItemInserted(field.size - 1)
+                notifyItemInserted(value.size - 1)
             } else {
                 return
             }

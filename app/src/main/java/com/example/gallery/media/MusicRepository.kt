@@ -4,7 +4,9 @@ import android.util.Log
 import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
 import com.example.gallery.media.remote.NeteaseApi
+import com.example.gallery.media.remote.album.AlbumResult
 import com.example.gallery.media.remote.mv.MusicVideoResult
+import com.example.gallery.media.remote.search.Song
 import com.example.unpixs.media.ui.page.FastJsonConverterFactory
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
@@ -45,33 +47,13 @@ class MusicRepository {
                 val item = it.body()!!.result.songs.find { song ->
                     song.mvid != 0 && song.duration <= music.duration + 100 && song.duration >= music.duration - 100
                 }
-                if (item != null) {
-                    music.mediaId = item.id.toString()
-                    music.artistId = item.artists[0].id.toString()
-                    music.mvId = item.mvid
-                    val temp = db.getDao().getMusicByMediaId(music.id.toString())
-                    if (temp == null) db.getDao().insert(music)
-                    else temp.apply {
-                        mediaId = item.id.toString()
-                        artistId = item.artists[0].id.toString()
-                        mvId = item.mvid
-                        db.getDao().update(this)
+                if (item != null) saveMusic(music, item)
+                else {
+                    val song = it.body()!!.result.songs.find { song ->
+                        song.duration <= music.duration + 100 && song.duration >= music.duration - 100
                     }
-                } else it.body()!!.result.songs.find { song->
-                    if (song.duration == music.duration) {
-                        music.mediaId = song.id.toString()
-                        music.artistId = song.artists[0].id.toString()
-                        music.mvId = song.mvid
-                        val temp = db.getDao().getMusicByMediaId(music.id.toString())
-                        if (temp == null) db.getDao().insert(music)
-                        else temp.apply {
-                            mediaId = song.id.toString()
-                            artistId = song.artists[0].id.toString()
-                            mvId = song.mvid
-                            db.getDao().update(this)
-                        }
-                    }
-                    true
+                    if (song != null) saveMusic(music, song)
+                    else failed?.let { it1 -> it1("") }
                 }
                 Log.d(this.javaClass.simpleName, it.toString())
                 if (success != null) success()
@@ -79,6 +61,21 @@ class MusicRepository {
                 Log.d(this.javaClass.simpleName, it.message.toString())
                 if (failed != null) failed(it.message.toString())
             })
+    }
+
+    private fun saveMusic(music: Music, song: Song) {
+        music.mediaId = song.id.toString()
+        music.artistId = song.artists[0].id.toString()
+        music.albumId = song.album.id.toLong()
+        music.mvId = song.mvid
+        val temp = db.getDao().getMusicByMediaId(music.id.toString())
+        if (temp == null) db.getDao().insert(music)
+        else temp.apply {
+            mediaId = song.id.toString()
+            artistId = song.artists[0].id.toString()
+            mvId = song.mvid
+            db.getDao().update(this)
+        }
     }
 
     fun getMv(music: Music, successful: (MusicVideoResult) -> Unit, failed: ((String) -> Unit)? = null) {
@@ -95,11 +92,26 @@ class MusicRepository {
             })
     }
 
+    fun getAlbum(albumId: String, success: ((AlbumResult) -> Unit)? = null, failed: ((String) -> Unit)? = null) {
+        if (albumId.isEmpty()) return
+        val disposable = endpoint.getAlbumInfo(albumId)
+            .observeOn(Schedulers.io())
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                if (!it.isSuccessful || it.body() == null) return@subscribe
+                Log.d("AlbumImage", it.toString())
+                if (success != null) {
+                    success(it.body()!!)
+                }
+            }, { throwable ->
+                throwable.printStackTrace()
+                failed?.let { failed(throwable.message.toString()) }
+            })
+    }
+
     private var endpoint: NeteaseApi = retrofit.create(NeteaseApi::class.java)
 
     fun getLyrics(id: String) = endpoint.getLyric(id = id)
-
-    fun getAlbum(albumId: String) = endpoint.getAlbumInfo(albumId)
 
     fun getArtist(artistId: String) = endpoint.getArtist(artistId)
 }
