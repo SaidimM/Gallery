@@ -54,7 +54,6 @@ class MainActivityViewModel : ViewModel() {
         stored.forEach { hashTable[it.id] = it }
         local.forEach {
             if (hashTable[it.id] == null) newList.add(it)
-            else db.getDao().update(it)
         }
         storeNewSongs(newList.iterator())
     }

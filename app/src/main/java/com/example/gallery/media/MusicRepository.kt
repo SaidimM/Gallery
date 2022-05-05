@@ -53,7 +53,7 @@ class MusicRepository {
                         song.duration <= music.duration + 100 && song.duration >= music.duration - 100
                     }
                     if (song != null) saveMusic(music, song)
-                    else failed?.let { it1 -> it1("") }
+                    else db.getDao().insert(music)
                 }
                 Log.d(this.javaClass.simpleName, it.toString())
                 if (success != null) success()
@@ -66,7 +66,6 @@ class MusicRepository {
     private fun saveMusic(music: Music, song: Song) {
         music.mediaId = song.id.toString()
         music.artistId = song.artists[0].id.toString()
-        music.albumId = song.album.id.toLong()
         music.mvId = song.mvid
         val temp = db.getDao().getMusicByMediaId(music.id.toString())
         if (temp == null) db.getDao().insert(music)

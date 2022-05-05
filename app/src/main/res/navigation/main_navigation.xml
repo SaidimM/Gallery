@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_navigation" app:startDestination="@id/mainFragment">
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/main_navigation"
+            app:startDestination="@id/mainFragment">
 
     <fragment android:id="@+id/mainFragment"
               tools:layout="@layout/fragment_main"
@@ -19,6 +21,8 @@
               android:name="com.example.gallery.main.fragments.MusicFragment"
               android:label="MusicFragment">
         <action android:id="@+id/action_musicFragment_to_mainFragment"
+                app:enterAnim="@anim/fade_in"
+                app:exitAnim="@anim/fade_out"
                 app:popEnterAnim="@anim/fade_in"
                 app:popExitAnim="@anim/fade_out"
                 app:destination="@id/mainFragment"/>
