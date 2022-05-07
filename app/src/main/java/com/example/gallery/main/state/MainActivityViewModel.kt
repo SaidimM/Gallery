@@ -3,7 +3,6 @@ package com.example.gallery.main.state
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import android.widget.ImageView
-import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

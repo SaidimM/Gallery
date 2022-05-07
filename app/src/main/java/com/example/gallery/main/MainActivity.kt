@@ -11,8 +11,6 @@ import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.BaseActivity
 import com.example.gallery.main.state.MainActivityViewModel
 import com.example.gallery.media.local.Music
-import org.jetbrains.anko.toast
-import java.util.jar.Manifest
 
 class MainActivity : BaseActivity() {
     private lateinit var viewModel: MainActivityViewModel
@@ -54,9 +52,10 @@ class MainActivity : BaseActivity() {
                 R.id.musicFragment
             }
             R.id.mainFragment -> {
-                onDestroy()
+                finish()
                 0
-            } else -> 0
+            }
+            else -> 0
         }
     }
 

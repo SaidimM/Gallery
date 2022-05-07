@@ -18,7 +18,6 @@ import com.example.gallery.main.state.MainActivityViewModel
 import com.example.gallery.main.state.MusicFragmentViewModel
 import com.example.gallery.media.local.Music
 import com.example.gallery.player.VideoInfo
-import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.fragment_music.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -51,15 +50,15 @@ class MusicFragment : BaseFragment() {
                 }
                 binding.albumImage.background = null
                 val albumCoverPath = ALBUM_COVER_DIR + "${item.mediaAlbumId}.jpg"
-                    doAsync {
-                        val bitmap = viewModel.getArtistImage(item)
-                        if (bitmap != null) uiThread {
-                            Glide.with(requireContext()).load(bitmap).into(binding.albumImage)
-                        }
-                        else if (File(albumCoverPath).exists()) uiThread {
-                            Glide.with(requireContext()).load(albumCoverPath).into(binding.albumImage)
-                        } else state.saveAlbumImage(item, binding.albumImage)
+                doAsync {
+                    val bitmap = viewModel.getArtistImage(item)
+                    if (bitmap != null) uiThread {
+                        Glide.with(requireContext()).load(bitmap).into(binding.albumImage)
                     }
+                    else if (File(albumCoverPath).exists()) uiThread {
+                        Glide.with(requireContext()).load(albumCoverPath).into(binding.albumImage)
+                    } else state.saveAlbumImage(item, binding.albumImage)
+                }
                 binding.root.setOnClickListener {
                     (context as MainActivity).toLyrics(item)
                 }
