@@ -38,7 +38,7 @@ class LyricsView : View {
         color = Color.parseColor("#c4c4c4")
         typeface = Typeface.DEFAULT_BOLD
         isAntiAlias = true
-        alpha = 127
+        alpha = 72
     }
 
     private val focusedPaint = TextPaint().apply {
@@ -47,7 +47,7 @@ class LyricsView : View {
         textAlign = Paint.Align.LEFT
         typeface = Typeface.DEFAULT_BOLD
         isAntiAlias = true
-        alpha = 127
+        alpha = 72
     }
 
     private var lineStartIndexes: ArrayList<Float> = arrayListOf()
@@ -95,7 +95,7 @@ class LyricsView : View {
         }
 
     private val nextPositionAction = Runnable {
-        currentPosition ++
+        currentPosition++
         animateAlpha()
     }
 
@@ -171,7 +171,7 @@ class LyricsView : View {
     private fun animateAlpha() {
         val alphaAnimation = ValueAnimator()
         alphaAnimation.apply {
-            setIntValues(127, 255)
+            setIntValues(72, 255)
             duration = 480
             addUpdateListener {
                 val value = it.animatedValue as Int
@@ -214,7 +214,7 @@ class LyricsView : View {
     private fun doubleTap(event: MotionEvent?): Boolean {
         if (event == null) return false
         removeCallbacks(nextPositionAction)
-        val tapPosition =  scroll + event.y
+        val tapPosition = scroll + event.y
         for (i in 0 until lineStartIndexes.size - 1) {
             if (tapPosition < lineStartIndexes[i] || tapPosition > lineStartIndexes[i + 1]) continue
             else {
@@ -227,7 +227,7 @@ class LyricsView : View {
         return true
     }
 
-    private val gestureDetector = GestureDetector(context, object: GestureDetector.SimpleOnGestureListener() {
+    private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
             scroll += distanceY
             dragging = true

@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
-import android.util.Log
 import com.example.gallery.R
 import com.example.gallery.Strings.LYRIC_DIR
 import com.example.gallery.media.local.Music
@@ -333,7 +332,6 @@ object LocalMusicUtils {
             val bytes = ByteArray(length)
             fs.read(bytes)
             content = String(bytes, Charsets.UTF_8)
-            Log.e("READFILE", content)
         } catch (e: IOException) {
             e.printStackTrace()
         } finally {

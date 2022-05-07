@@ -5,14 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gallery.Strings.LYRIC_DIR
 import com.example.gallery.base.utils.LocalMusicUtils.readFile
-import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.Music
 import com.example.gallery.media.remote.lyrics.Lyric
 import java.io.File
 
 class LyricsFragmentViewModel : ViewModel() {
-
-    private val repository = MusicRepository.getInstance()
 
     private var _lyrics = MutableLiveData<ArrayList<Lyric>>()
     val lyrics: LiveData<ArrayList<Lyric>> = _lyrics
@@ -38,6 +35,7 @@ class LyricsFragmentViewModel : ViewModel() {
                 return@forEach
             }
         }
-        _lyrics.postValue(lyrics)
+        val newList = lyrics.filter { it.text.isNotEmpty() } as ArrayList
+        _lyrics.postValue(newList)
     }
 }
