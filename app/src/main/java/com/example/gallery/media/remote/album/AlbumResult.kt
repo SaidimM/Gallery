@@ -1,6 +1,6 @@
 package com.example.gallery.media.remote.album
 
 data class AlbumResult(
-    val album: Album,
-    val code: Int
+    val code: Int? = null,
+    val album: Album? = null
 )

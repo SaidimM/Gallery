@@ -1,20 +1,30 @@
 package com.example.gallery.main.state
 
+import android.graphics.drawable.BitmapDrawable
 import android.util.Log
+import android.widget.ImageView
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil.ImageLoader
+import coil.request.ImageRequest
 import com.blankj.utilcode.util.Utils
+import com.bumptech.glide.Glide
 import com.example.gallery.R
+import com.example.gallery.Strings.ALBUM_COVER_DIR
 import com.example.gallery.base.utils.LocalMusicUtils
+import com.example.gallery.base.utils.LocalMusicUtils.bitmapToFile
+import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
-import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.remote.search.Song
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
+import java.io.File
 import java.util.*
 
 class MainActivityViewModel : ViewModel() {
@@ -74,10 +84,24 @@ class MainActivityViewModel : ViewModel() {
             })
     }
 
-    fun saveAlbumImage(music: Music) {
-        repository.getAlbum(music.albumId.toString(),
+    fun saveAlbumImage(music: Music, imageView: ImageView) {
+        repository.getMusicDetail(music.mediaId.toString(),
             success = {
-                LocalMusicUtils.saveAlbumImage(Utils.getApp(), it.album.picUrl)
+                val albumImagePath = ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg"
+                if (!File(albumImagePath).exists()) {
+                    val request = ImageRequest.Builder(Utils.getApp())
+                        .data(it.songs[0].album.picUrl).target { drawable ->
+                            val bitmap = drawable as BitmapDrawable
+                            bitmapToFile(albumImagePath, bitmap.bitmap, 100)
+                            doAsync {
+                                uiThread { Glide.with(imageView).load(drawable).into(imageView) }
+                            }
+                        }.build()
+                    val imageLoader = ImageLoader.Builder(Utils.getApp()).build()
+                    imageLoader.enqueue(request)
+                }
+            }, failed = {
+                Log.e(this.javaClass.simpleName, it)
             })
     }
 }

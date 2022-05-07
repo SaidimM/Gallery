@@ -11,10 +11,11 @@ class Music : Serializable {
     var size: Long = 0 //歌曲所占空间大小
     var duration = 0    //歌曲时间长度
     var path: String? = null   //歌曲地址
-    var albumId: Long = 0  //图片id
+    var albumId: Long = 0  //专辑id
     @PrimaryKey
     var id: Long = 0   //歌曲id
     var mediaId: String? = null   //音频id
+    var mediaAlbumId: String = ""    //专辑id
     var mvId: Int = 0  //视频id
     var artistId: String? = null  //歌手id
 }

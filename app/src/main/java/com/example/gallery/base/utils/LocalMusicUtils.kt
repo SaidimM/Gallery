@@ -15,8 +15,7 @@ import coil.request.ImageRequest
 import com.blankj.utilcode.util.Utils
 import com.example.gallery.R
 import com.example.gallery.media.local.Music
-import org.jaudiotagger.audio.mp3.MP3File
-import org.jaudiotagger.tag.images.ArtworkFactory
+import com.example.gallery.media.remote.album.Song
 import java.io.*
 
 object LocalMusicUtils {
@@ -309,45 +308,5 @@ object LocalMusicUtils {
             return file
         }
         return null
-    }
-
-    fun saveAlbumImage(context: Context, url: String) {
-        val filesDir = context.externalCacheDir
-        val request = ImageRequest.Builder(context).data(url).target {
-            val bitmapDrawable = it as BitmapDrawable
-            val filePath = "${filesDir?.absoluteFile}/temp.jpg"
-            Log.i(TAG, "filePath: $filePath")
-            val file = bitmapToFile(
-                filePath,
-                bitmapDrawable.bitmap, 80
-            )
-            Log.i(TAG, "BitmapFilePath: ${file?.absoluteFile}")
-            writeTag(path, file)
-        }.build()
-        val imageLoader = ImageLoader.Builder(context).build()
-        imageLoader.enqueue(request)
-    }
-
-    private fun writeTag(path: String?, picFile: File?) {
-        val mp3File = MP3File(path)
-        mp3File.run {
-            val artWork = ArtworkFactory.createArtworkFromFile(picFile)
-            when {
-                hasID3v2Tag() -> {
-                    iD3v2Tag.setField(artWork)
-                }
-                hasID3v1Tag() -> {
-//                        iD3v1Tag.setField(artWork) 这个方法行不通
-                    Toast.makeText(Utils.getApp(), "暂不支持ID3v1Tag歌曲", Toast.LENGTH_SHORT).show()
-                    return
-                }
-                else -> {
-                    Toast.makeText(Utils.getApp(), "此歌曲没有ID3Tag", Toast.LENGTH_SHORT).show()
-                    return
-                }
-            }
-            save()
-            Toast.makeText(Utils.getApp(), "写入完成", Toast.LENGTH_SHORT).show()
-        }
     }
 }

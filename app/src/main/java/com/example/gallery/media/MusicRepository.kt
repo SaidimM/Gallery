@@ -5,6 +5,7 @@ import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
 import com.example.gallery.media.remote.NeteaseApi
 import com.example.gallery.media.remote.album.AlbumResult
+import com.example.gallery.media.remote.music.MusicDetailResult
 import com.example.gallery.media.remote.mv.MusicVideoResult
 import com.example.gallery.media.remote.search.Song
 import com.example.unpixs.media.ui.page.FastJsonConverterFactory
@@ -39,7 +40,7 @@ class MusicRepository {
 
     fun getMusicInfo(music: Music, success: (() -> Unit)? = null, failed: ((String) -> Unit)? = null) {
         if (music.mediaId != null) return
-        val disposable = endpoint.searchMusic(criteria = "${music.name.toString()}%20${music.singer.toString()}")
+        val disposable = endpoint.searchMusic(criteria = "${music.name}%20${music.singer.toString()}")
             .observeOn(Schedulers.io())
             .subscribeOn(Schedulers.io())
             .subscribe({
@@ -67,12 +68,24 @@ class MusicRepository {
         music.mediaId = song.id.toString()
         music.artistId = song.artists[0].id.toString()
         music.mvId = song.mvid
+        music.name = song.name
+        music.singer = song.let {
+            val iterator = it.artists.iterator()
+            var singer = ""
+            while (iterator.hasNext()) {
+                singer += iterator.next().name + ","
+            }
+            singer = singer.substring(0, singer.length - 1)
+            singer
+        }
+        music.mediaAlbumId = song.album.id.toString()
         val temp = db.getDao().getMusicByMediaId(music.id.toString())
         if (temp == null) db.getDao().insert(music)
         else temp.apply {
             mediaId = song.id.toString()
             artistId = song.artists[0].id.toString()
             mvId = song.mvid
+            mediaAlbumId = song.album.id.toString()
             db.getDao().update(this)
         }
     }
@@ -99,6 +112,23 @@ class MusicRepository {
             .subscribe({
                 if (!it.isSuccessful || it.body() == null) return@subscribe
                 Log.d("AlbumImage", it.toString())
+                if (success != null) {
+                    success(it.body()!!)
+                }
+            }, { throwable ->
+                throwable.printStackTrace()
+                failed?.let { failed(throwable.message.toString()) }
+            })
+    }
+
+    fun getMusicDetail(musicId: String, success: ((MusicDetailResult) -> Unit)? = null, failed: ((String) -> Unit)? = null) {
+        if (musicId.isEmpty()) return
+        val disposable = endpoint.getMusicDetail(musicId, "[$musicId]")
+            .observeOn(Schedulers.io())
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                if (!it.isSuccessful || it.body() == null) return@subscribe
+                Log.d("MusicDetail", it.toString())
                 if (success != null) {
                     success(it.body()!!)
                 }

@@ -83,7 +83,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'com.alibaba:fastjson:1.2.79'
     //coil - image request
-    implementation("io.coil-kt:coil:1.1.1")
-    //jaudiotagger
-    implementation 'com.github.AdrienPoupa:jaudiotagger:2.2.3'
+    implementation('io.coil-kt:coil:1.4.0')
 }

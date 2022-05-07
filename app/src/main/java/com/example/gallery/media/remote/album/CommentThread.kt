@@ -1,15 +1,15 @@
 package com.example.gallery.media.remote.album
 
 data class CommentThread(
-    val commentCount: Int,
-    val hotCount: Int,
-    val id: String,
-    val latestLikedUsers: Any?,
-    val likedCount: Int,
-    val resourceId: Int,
-    val resourceInfo: ResourceInfo,
-    val resourceOwnerId: Int,
-    val resourceTitle: String,
-    val resourceType: Int,
-    val shareCount: Int
+    val id: String? = null,
+    val resourceInfo: Any? = null,
+    val resourceType: Int? = null,
+    val commentCount: Int? = null,
+    val likedCount: Int? = null,
+    val shareCount: Int? = null,
+    val hotCount: Int? = null,
+    val latestLikedUsers: Any? = null,
+    val resourceId: Int? = null,
+    val resourceOwnerId: Int? = null,
+    val resourceTitle: String? = null
 )

@@ -3,6 +3,7 @@ package com.example.gallery.media.remote
 import com.example.gallery.media.remote.album.AlbumResult
 import com.example.gallery.media.remote.artist.ArtistResult
 import com.example.gallery.media.remote.lyrics.LyricResult
+import com.example.gallery.media.remote.music.MusicDetailResult
 import com.example.gallery.media.remote.mv.MusicVideoResult
 import com.example.gallery.media.remote.search.SearchResult
 import io.reactivex.Observable
@@ -44,6 +45,7 @@ interface NeteaseApi {
     @GET(value = "/api/artist/{artist_id}")
     fun getArtist(@Path("artist_id") artistId: String): Observable<Response<ArtistResult>>
 
-    @GET(value = "/api/song/detail/{music_id}")
-    fun getMusicDetail(@Path("music_id") musicId: String): Observable<Response<ArtistResult>>
+    //http://music.163.com/api/song/detail/?id=31090820&ids=%5B31090820%5D
+    @GET(value = "/api/song/detail/")
+    fun getMusicDetail(@Query("id") id: String, @Query("ids") ids: String): Observable<Response<MusicDetailResult>>
 }

@@ -1,14 +1,14 @@
 package com.example.gallery.media.remote.album
 
 data class Info(
-    val commentCount: Int,
-    val commentThread: CommentThread,
-    val comments: Any?,
-    val latestLikedUsers: Any?,
-    val liked: Boolean,
-    val likedCount: Int,
-    val resourceId: Int,
-    val resourceType: Int,
-    val shareCount: Int,
-    val threadId: String
+    val commentThread: CommentThread? = null,
+    val latestLikedUsers: Any? = null,
+    val liked: Boolean? = null,
+    val comments: Any? = null,
+    val resourceType: Int? = null,
+    val resourceId: Int? = null,
+    val commentCount: Int? = null,
+    val likedCount: Int? = null,
+    val shareCount: Int? = null,
+    val threadId: String? = null
 )

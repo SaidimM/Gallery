@@ -1,13 +1,13 @@
 package com.example.gallery.media.remote.album
 
 data class BMusic(
-    val bitrate: Int,
-    val dfsId: Int,
-    val extension: String,
-    val id: Long,
-    val name: String,
-    val playTime: Int,
-    val size: Int,
-    val sr: Int,
-    val volumeDelta: Double
+    val volumeDelta: Double? = null,
+    val playTime: Int? = null,
+    val bitrate: Int? = null,
+    val dfsId: Int? = null,
+    val sr: Int? = null,
+    val name: String? = null,
+    val id: Long = 0,
+    val size: Int? = null,
+    val extension: String? = null
 )
