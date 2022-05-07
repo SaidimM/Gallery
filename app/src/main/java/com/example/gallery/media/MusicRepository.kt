@@ -5,6 +5,7 @@ import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
 import com.example.gallery.media.remote.NeteaseApi
 import com.example.gallery.media.remote.album.AlbumResult
+import com.example.gallery.media.remote.lyrics.LyricResult
 import com.example.gallery.media.remote.music.MusicDetailResult
 import com.example.gallery.media.remote.mv.MusicVideoResult
 import com.example.gallery.media.remote.search.Song
@@ -140,7 +141,18 @@ class MusicRepository {
 
     private var endpoint: NeteaseApi = retrofit.create(NeteaseApi::class.java)
 
-    fun getLyrics(id: String) = endpoint.getLyric(id = id)
+    fun getLyrics(id: String, success: ((LyricResult) -> Unit)? = null, failed: ((String) -> Unit)? = null) {
+        val disposable = endpoint.getLyric(id = id)
+            .observeOn(Schedulers.io())
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                if (!it.isSuccessful || it.body() == null) return@subscribe
+                success?.let { it1 -> it1(it.body()!!) }
+            }, { throwable ->
+                throwable.printStackTrace()
+                failed?.let { failed(throwable.message.toString()) }
+            })
+    }
 
     fun getArtist(artistId: String) = endpoint.getArtist(artistId)
 }

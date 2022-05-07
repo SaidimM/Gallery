@@ -1,13 +1,14 @@
 package com.example.gallery.main.state
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.gallery.media.local.Music
+import com.example.gallery.Strings.LYRIC_DIR
+import com.example.gallery.base.utils.LocalMusicUtils.readFile
 import com.example.gallery.media.MusicRepository
+import com.example.gallery.media.local.Music
 import com.example.gallery.media.remote.lyrics.Lyric
-import io.reactivex.schedulers.Schedulers
+import java.io.File
 
 class LyricsFragmentViewModel : ViewModel() {
 
@@ -17,33 +18,26 @@ class LyricsFragmentViewModel : ViewModel() {
     val lyrics: LiveData<ArrayList<Lyric>> = _lyrics
 
     fun getLyric(music: Music) {
-        if (music.mediaId == null) return
-        val disposable = repository.getLyrics(music.mediaId!!)
-            .observeOn(Schedulers.io())
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                if (!it.isSuccessful || it.body() == null) return@subscribe
-                val data = it.body()!!.lrc.lyric
-                Log.d(this.javaClass.simpleName, data)
-                val strings: ArrayList<String> = data.split(Regex("\n"), 0) as ArrayList<String>
-                val lyrics: ArrayList<Lyric> = arrayListOf()
-                strings.forEach { string ->
-                    try {
-                        if (string == "") return@forEach
-                        val text = string.substring(string.indexOf(']') + 1)
-                        val time = string.substring(string.indexOf('[') + 1, string.indexOf(']'))
-                        val min = time.substring(0, time.indexOf(':')).toInt() * 60 * 1000
-                        val sec = (time.substring(time.indexOf(':') + 1).toFloat() * 1000).toInt()
-                        val lyric = Lyric(min + sec, text)
-                        lyrics.add(lyric)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        return@forEach
-                    }
-                }
-                _lyrics.postValue(lyrics)
-            }, {
-                Log.d(this.javaClass.simpleName, it.message.toString())
-            })
+        val path = LYRIC_DIR + music.mediaId + ".txt"
+        if (!File(path).exists()) return
+        val data = readFile(path)
+        val strings: ArrayList<String> = data.split(Regex("\n"), 0) as ArrayList<String>
+        val lyrics: ArrayList<Lyric> = arrayListOf()
+        strings.forEach { string ->
+            try {
+                if (string == "") return@forEach
+                val text = string.substring(string.indexOf(']') + 1)
+                val time = string.substring(string.indexOf('[') + 1, string.indexOf(']'))
+                val min = time.substring(0, time.indexOf(':')).toInt() * 60 * 1000
+                val sec = (time.substring(time.indexOf(':') + 1).toFloat() * 1000).toInt()
+                val lyric = Lyric(min + sec, text)
+                lyrics.add(lyric)
+                if (lyrics.isNotEmpty()) lyrics.last().endPosition = min + sec
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return@forEach
+            }
+        }
+        _lyrics.postValue(lyrics)
     }
 }

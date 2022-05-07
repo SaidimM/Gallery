@@ -1,6 +1,7 @@
 package com.example.gallery.media.remote.lyrics
 
 data class Lyric(
-    val position: Int = 0,
-    val text: String = ""
+    var position: Int = 0,
+    var text: String = "",
+    var endPosition: Int = 0
 )

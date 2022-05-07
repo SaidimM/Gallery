@@ -12,6 +12,7 @@ import coil.request.ImageRequest
 import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
 import com.example.gallery.R
+import com.example.gallery.Strings
 import com.example.gallery.Strings.ALBUM_COVER_DIR
 import com.example.gallery.base.utils.LocalMusicUtils
 import com.example.gallery.base.utils.LocalMusicUtils.bitmapToFile
@@ -75,6 +76,8 @@ class MainActivityViewModel : ViewModel() {
                 songs.value?.let {
                     it.add(music)
                     _songs.postValue(it)
+                    saveLyric(music)
+                    saveAlbumImage(music)
                 }
                 storeNewSongs(new)
             }, failed = {
@@ -83,7 +86,7 @@ class MainActivityViewModel : ViewModel() {
             })
     }
 
-    fun saveAlbumImage(music: Music, imageView: ImageView) {
+    fun saveAlbumImage(music: Music, imageView: ImageView? = null) {
         repository.getMusicDetail(music.mediaId.toString(),
             success = {
                 val albumImagePath = ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg"
@@ -92,13 +95,27 @@ class MainActivityViewModel : ViewModel() {
                         .data(it.songs[0].album.picUrl).target { drawable ->
                             val bitmap = drawable as BitmapDrawable
                             bitmapToFile(albumImagePath, bitmap.bitmap, 100)
-                            doAsync {
-                                uiThread { Glide.with(imageView).load(drawable).into(imageView) }
+                            imageView?.let {
+                                doAsync {
+                                    uiThread { Glide.with(imageView).load(drawable).into(imageView) }
+                                }
                             }
                         }.build()
                     val imageLoader = ImageLoader.Builder(Utils.getApp()).build()
                     imageLoader.enqueue(request)
                 }
+            }, failed = {
+                Log.e(this.javaClass.simpleName, it)
+            })
+    }
+
+    private fun saveLyric(music: Music) {
+        if (music.mediaId == null) return
+        repository.getLyrics(music.mediaId.toString(),
+            success = {
+                val data = it.lrc.lyric
+                Log.d(this.javaClass.simpleName, data)
+                LocalMusicUtils.writeStringToFile(Strings.LYRIC_DIR + music.mediaId + ".txt", data)
             }, failed = {
                 Log.e(this.javaClass.simpleName, it)
             })

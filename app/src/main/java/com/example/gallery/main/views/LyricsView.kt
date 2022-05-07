@@ -1,4 +1,4 @@
-package com.example.gallery.main
+package com.example.gallery.main.views
 
 import android.animation.ValueAnimator
 import android.content.Context

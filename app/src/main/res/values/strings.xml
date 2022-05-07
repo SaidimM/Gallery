@@ -12,4 +12,5 @@
     <string name="menu">menu</string>
     <string name="play">play</string>
     <string name="back">back</string>
+    <string name="album_cover">album cover</string>
 </resources>

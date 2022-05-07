@@ -4,18 +4,12 @@ import android.content.ContentUris
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
-import coil.ImageLoader
-import coil.imageLoader
-import coil.request.ImageRequest
-import com.blankj.utilcode.util.Utils
 import com.example.gallery.R
+import com.example.gallery.Strings.LYRIC_DIR
 import com.example.gallery.media.local.Music
-import com.example.gallery.media.remote.album.Song
 import java.io.*
 
 object LocalMusicUtils {
@@ -308,5 +302,47 @@ object LocalMusicUtils {
             return file
         }
         return null
+    }
+
+    fun writeStringToFile(path: String, context: String) {
+        val saveFile = File(path)
+        if (!File(LYRIC_DIR).exists()) File(LYRIC_DIR).mkdir()
+        if (!saveFile.exists()) saveFile.createNewFile()
+        var fo: FileOutputStream? = null
+        try {
+            fo = FileOutputStream(saveFile)
+            fo.write(context.toByteArray())
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            try {
+                fo!!.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun readFile(path: String): String {
+        val getFile = File(path)
+        var fs: FileInputStream? = null
+        var content = ""
+        try {
+            fs = FileInputStream(getFile)
+            val length = fs.available()
+            val bytes = ByteArray(length)
+            fs.read(bytes)
+            content = String(bytes, Charsets.UTF_8)
+            Log.e("READFILE", content)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            try {
+                fs!!.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        return content
     }
 }
