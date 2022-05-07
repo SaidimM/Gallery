@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.View
 import com.example.gallery.BR
 import com.example.gallery.R
+import com.example.gallery.Strings.LYRIC_DIR
 import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.BaseFragment
 import com.example.gallery.main.state.LyricsFragmentViewModel
 import com.example.gallery.main.state.MainActivityViewModel
 import kotlinx.android.synthetic.main.fragment_lyrics.*
+import java.io.File
 
 class LyricsFragment: BaseFragment() {
     private lateinit var viewModel: LyricsFragmentViewModel
@@ -22,8 +24,9 @@ class LyricsFragment: BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (state.music.value == null) return
-        viewModel.getLyric(state.music.value!!)
+        val music = state.music.value ?: return
+        if (!File(LYRIC_DIR + music.mediaId + ".txt").exists()) state.saveLyric(music)
+        viewModel.getLyric(music)
         observe()
     }
 

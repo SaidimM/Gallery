@@ -109,7 +109,7 @@ class MainActivityViewModel : ViewModel() {
             })
     }
 
-    private fun saveLyric(music: Music) {
+    fun saveLyric(music: Music) {
         if (music.mediaId == null) return
         repository.getLyrics(music.mediaId.toString(),
             success = {
