@@ -1,5 +1,6 @@
 package com.example.gallery.main.state
 
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,11 +15,15 @@ class LyricsFragmentViewModel : ViewModel() {
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
 
+    private var _bitmap = MutableLiveData<Bitmap>()
+    val bitmap: LiveData<Bitmap> = _bitmap
+
     private var _lyrics = MutableLiveData<ArrayList<Lyric>>()
     val lyrics: LiveData<ArrayList<Lyric>> = _lyrics
 
-    fun getLyric(music: Music) {
-        val path = LYRIC_DIR + music.mediaId + ".txt"
+    fun getLyric() {
+        if (music.value == null) return
+        val path = LYRIC_DIR + music.value!!.mediaId + ".txt"
         if (!File(path).exists()) return
         val data = readFile(path)
         val strings: ArrayList<String> = data.split(Regex("\n"), 0) as ArrayList<String>

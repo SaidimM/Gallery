@@ -13,8 +13,11 @@
         <item name="android:statusBarColor" tools:targetApi="l">@android:color/transparent</item>
         <!-- Customize your theme here. -->
 
+        <!--注意：Android 21（android 5.0 Lollipop）这个系统开始这个属性设置为true，状态栏会呈现半透明加暗效果，并不能全透明-->
         <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <!--注意：导航栏设置透明是为了让activity内容延伸至状态栏，导航栏实际为半透明加暗效果-->
+        <item name="android:windowTranslucentNavigation">true</item>
+
         <item name="android:windowBackground">#121212</item>
     </style>
 

@@ -4,10 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.example.gallery.BR
 import com.example.gallery.R
-import com.example.gallery.Strings.ALBUM_COVER_DIR
 import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.BaseFragment
 import com.example.gallery.base.ui.BaseRecyclerViewAdapter
@@ -19,9 +17,6 @@ import com.example.gallery.main.state.MusicFragmentViewModel
 import com.example.gallery.media.local.Music
 import com.example.gallery.player.VideoInfo
 import kotlinx.android.synthetic.main.fragment_music.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
-import java.io.File
 
 class MusicFragment : BaseFragment() {
     private lateinit var viewModel: MusicFragmentViewModel
@@ -45,23 +40,14 @@ class MusicFragment : BaseFragment() {
             override fun getResourceId(viewType: Int) = R.layout.item_song
             override fun onBindItem(binding: ItemSongBinding, item: Music, position: Int) {
                 binding.song = item
+                binding.albumImage.background = null
                 binding.mv.setOnClickListener {
                     viewModel.getMv(item)
-                }
-                binding.albumImage.background = null
-                val albumCoverPath = ALBUM_COVER_DIR + "${item.mediaAlbumId}.jpg"
-                doAsync {
-                    val bitmap = viewModel.getArtistImage(item)
-                    if (bitmap != null) uiThread {
-                        Glide.with(requireContext()).load(bitmap).into(binding.albumImage)
-                    }
-                    else if (File(albumCoverPath).exists()) uiThread {
-                        Glide.with(requireContext()).load(albumCoverPath).into(binding.albumImage)
-                    } else state.saveAlbumImage(item, binding.albumImage)
                 }
                 binding.root.setOnClickListener {
                     (context as MainActivity).toLyrics(item)
                 }
+                state.loadAlbumCover(item, binding.albumImage)
             }
         }
         recyclerView.adapter = adapter

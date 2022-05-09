@@ -23,7 +23,6 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.decorView.fitsSystemWindows = true
         navController = (supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment).navController
         observe()
         if (PermissionUtils.isGranted(android.Manifest.permission_group.STORAGE)) viewModel.loadMusic()

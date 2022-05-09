@@ -40,8 +40,8 @@ class MusicRepository {
     }
 
     fun getMusicInfo(music: Music, success: (() -> Unit)? = null, failed: ((String) -> Unit)? = null) {
-        if (music.mediaId != null) return
-        val disposable = endpoint.searchMusic(criteria = "${music.name}%20${music.singer.toString()}")
+        if (music.name.isEmpty()) return
+        val disposable = endpoint.searchMusic(criteria = "${music.name}%20${music.singer}")
             .observeOn(Schedulers.io())
             .subscribeOn(Schedulers.io())
             .subscribe({

@@ -1,5 +1,6 @@
 package com.example.gallery.main.state
 
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import android.widget.ImageView
@@ -16,10 +17,10 @@ import com.example.gallery.Strings
 import com.example.gallery.Strings.ALBUM_COVER_DIR
 import com.example.gallery.base.utils.LocalMusicUtils
 import com.example.gallery.base.utils.LocalMusicUtils.bitmapToFile
+import com.example.gallery.blurHash.BlurHash
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
-import com.example.gallery.media.remote.search.Song
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.doAsync
@@ -34,9 +35,6 @@ class MainActivityViewModel : ViewModel() {
     private val db: MusicDatabase = MusicDatabase.getInstance()
 
     var index: Int = 0
-
-    private var _song = MutableLiveData<Song>()
-    val song: LiveData<Song> = _song
 
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
@@ -77,7 +75,7 @@ class MainActivityViewModel : ViewModel() {
                     it.add(music)
                     _songs.postValue(it)
                     saveLyric(music)
-                    saveAlbumImage(music)
+                    saveAlbumCover(music)
                 }
                 storeNewSongs(new)
             }, failed = {
@@ -86,8 +84,9 @@ class MainActivityViewModel : ViewModel() {
             })
     }
 
-    fun saveAlbumImage(music: Music, imageView: ImageView? = null) {
-        repository.getMusicDetail(music.mediaId.toString(),
+    private fun saveAlbumCover(music: Music) {
+        repository.getMusicDetail(
+            music.mediaId,
             success = {
                 val albumImagePath = ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg"
                 if (!File(albumImagePath).exists()) {
@@ -95,11 +94,6 @@ class MainActivityViewModel : ViewModel() {
                         .data(it.songs[0].album.picUrl).target { drawable ->
                             val bitmap = drawable as BitmapDrawable
                             bitmapToFile(albumImagePath, bitmap.bitmap, 100)
-                            imageView?.let {
-                                doAsync {
-                                    uiThread { Glide.with(imageView).load(drawable).into(imageView) }
-                                }
-                            }
                         }.build()
                     val imageLoader = ImageLoader.Builder(Utils.getApp()).build()
                     imageLoader.enqueue(request)
@@ -109,9 +103,31 @@ class MainActivityViewModel : ViewModel() {
             })
     }
 
+    fun loadAlbumCover(item: Music, imageView: ImageView) {
+        val albumCoverPath = ALBUM_COVER_DIR + "${item.mediaAlbumId}.jpg"
+        doAsync {
+            val bitmap = if (File(albumCoverPath).exists()) {
+                BitmapFactory.decodeFile(albumCoverPath)
+            } else LocalMusicUtils.getArtwork(
+                Utils.getApp(),
+                item.id,
+                item.albumId,
+                allowdefalut = true,
+                small = false
+            )
+            uiThread { Glide.with(imageView).load(bitmap).into(imageView) }
+            if (bitmap != null && item.albumCoverBlurHash.isEmpty()) {
+                val blurHash = BlurHash.encode(bitmap)
+                item.albumCoverBlurHash = blurHash
+                db.getDao().update(item)
+            }
+        }
+    }
+
     fun saveLyric(music: Music) {
-        if (music.mediaId == null) return
-        repository.getLyrics(music.mediaId.toString(),
+        if (music.mediaId.isEmpty()) return
+        repository.getLyrics(
+            music.mediaId,
             success = {
                 val data = it.lrc.lyric
                 Log.d(this.javaClass.simpleName, data)
