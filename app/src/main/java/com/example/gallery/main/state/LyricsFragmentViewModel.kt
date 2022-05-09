@@ -11,6 +11,9 @@ import java.io.File
 
 class LyricsFragmentViewModel : ViewModel() {
 
+    private var _music = MutableLiveData<Music>()
+    val music: LiveData<Music> = _music
+
     private var _lyrics = MutableLiveData<ArrayList<Lyric>>()
     val lyrics: LiveData<ArrayList<Lyric>> = _lyrics
 
@@ -37,5 +40,9 @@ class LyricsFragmentViewModel : ViewModel() {
         }
         val newList = lyrics.filter { it.text.isNotEmpty() } as ArrayList
         _lyrics.postValue(newList)
+    }
+
+    fun setMusic(music: Music) {
+        _music.value = music
     }
 }

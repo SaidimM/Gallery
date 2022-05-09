@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable name="viewModel" type="com.example.gallery.main.state.LyricsFragmentViewModel"/>
     </data>
@@ -10,5 +12,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/lyrics_view"/>
+        <com.google.android.material.card.MaterialCardView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/album_image"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="32dp"
+                android:layout_marginStart="32dp"
+                app:cardCornerRadius="8dp">
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/album_cover"
+                    android:contentDescription="@string/album_cover"/>
+        </com.google.android.material.card.MaterialCardView>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/album_image"
+                app:layout_constraintStart_toEndOf="@id/album_image"
+                android:layout_marginStart="16dp"
+                android:id="@+id/name"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="@{viewModel.music.name}"
+                tools:text="Stitches"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@id/album_image"
+                app:layout_constraintStart_toEndOf="@id/album_image"
+                android:layout_marginStart="16dp"
+                android:id="@+id/artist"
+                android:layout_marginBottom="8dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:text="@{viewModel.music.singer}"
+                tools:text="shawn mendes"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

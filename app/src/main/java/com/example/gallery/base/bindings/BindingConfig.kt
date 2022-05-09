@@ -11,7 +11,7 @@ class BindingConfig constructor(
     private val bindingParams: SparseArray<Any> = SparseArray()
 
     fun addBindingParams(id: Int, param: Any): BindingConfig {
-        if (bindingParams[id] == null) bindingParams[id] = param
+        if (bindingParams[id] == null) bindingParams.put(id, param)
         return this
     }
 
