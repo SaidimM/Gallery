@@ -2,6 +2,7 @@ package com.example.gallery.main.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.lifecycleScope
 import com.example.gallery.BR
 import com.example.gallery.R
 import com.example.gallery.Strings.LYRIC_DIR
@@ -10,6 +11,8 @@ import com.example.gallery.base.ui.BaseFragment
 import com.example.gallery.main.state.LyricsFragmentViewModel
 import com.example.gallery.main.state.MainActivityViewModel
 import kotlinx.android.synthetic.main.fragment_lyrics.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
 class LyricsFragment: BaseFragment() {
@@ -32,7 +35,7 @@ class LyricsFragment: BaseFragment() {
 
     private fun observe() {
         viewModel.lyrics.observe(viewLifecycleOwner) {
-            lyrics_view.data = it
+            lifecycleScope.launch(Dispatchers.Main) { lyrics_view.data = it }
         }
     }
 }
