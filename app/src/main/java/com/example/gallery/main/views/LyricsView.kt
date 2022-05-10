@@ -30,24 +30,30 @@ class LyricsView : View {
 
     private var indexLineTop = 118.dp
 
-    private var spaceBetweenLine = 48.dp
+    private var spaceBetweenLine = 32.dp
+
+    private var lineTextSize = 28.dp
+
+    private var lineAlpha = 72
+
+    private var indexAlpha = 255
 
     private val paint = TextPaint().apply {
-        textSize = 32.dp.toFloat()
+        textSize = lineTextSize.toFloat()
         textAlign = Paint.Align.LEFT
         color = Color.parseColor("#c4c4c4")
         typeface = Typeface.DEFAULT_BOLD
         isAntiAlias = true
-        alpha = 72
+        alpha = lineAlpha
     }
 
     private val focusedPaint = TextPaint().apply {
         color = Color.WHITE
-        textSize = 32.dp.toFloat()
+        textSize = lineTextSize.toFloat()
         textAlign = Paint.Align.LEFT
         typeface = Typeface.DEFAULT_BOLD
         isAntiAlias = true
-        alpha = 72
+        alpha = lineAlpha
     }
 
     private var lineStartIndexes: ArrayList<Float> = arrayListOf()
@@ -64,7 +70,7 @@ class LyricsView : View {
                     it.text.length,
                     paint,
                     width - 2 * lineMargin
-                ).setLineSpacing(10f, 1.2f).build()
+                ).setLineSpacing(2f, 1.2f).build()
                 val last = lineStartIndexes.last()
                 if (it.text.isEmpty()) lineStartIndexes.add(last)
                 else lineStartIndexes.add(last + layout.height.toFloat() + spaceBetweenLine)
@@ -129,13 +135,14 @@ class LyricsView : View {
         canvas?.translate(lineMargin.toFloat(), transHeight + lineStartIndexes[start] - indexLinePosition)
         for (i in start until end) {
             if (data[i].text.isEmpty()) continue
+            paint.alpha = lineAlpha
             val layout = StaticLayout.Builder.obtain(
                 data[i].text,
                 0,
                 data[i].text.length,
                 if (i == currentPosition) focusedPaint else paint,
                 width - 2 * lineMargin
-            ).setLineSpacing(10f, 1.2f).build()
+            ).setLineSpacing(2f, 1.2f).build()
             canvas?.translate(0f, spaceBetweenLine.toFloat() / 2)
             layout.draw(canvas)
             canvas?.translate(0f, spaceBetweenLine.div(2f) + layout.height)
@@ -172,8 +179,8 @@ class LyricsView : View {
     private fun animateAlpha() {
         val alphaAnimation = ValueAnimator()
         alphaAnimation.apply {
-            setIntValues(72, 255)
-            duration = 480
+            setIntValues(lineAlpha, indexAlpha)
+            duration = 320
             addUpdateListener {
                 val value = it.animatedValue as Int
                 focusedPaint.alpha = value
@@ -204,7 +211,7 @@ class LyricsView : View {
                 scrollAnimating = dragging
                 dragging = false
                 if (scrollAnimating) {
-                    val delayMills = if (scroll - lineStartIndexes[currentPosition] < height) 1000 else 3000
+                    val delayMills = if (scroll - lineStartIndexes[currentPosition] < height) 200 else 3000
                     postDelayed({ scrollAnimating = false }, delayMills.toLong())
                 }
             }
