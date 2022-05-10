@@ -34,7 +34,11 @@ class LyricsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initMusic()
+        initBackground()
         observeData()
+    }
+
+    private fun initBackground() {
         val density = ScreenUtils.getScreenDensity()
         val bitmap = BlurHashDecoder.decode(music.albumCoverBlurHash, 10, (density * 10).toInt())
         if (bitmap != null) Glide.with(requireContext()).load(bitmap).centerCrop().into(back)
@@ -42,7 +46,8 @@ class LyricsFragment : BaseFragment() {
     }
 
     private fun initMusic() {
-        viewModel.getLyric()
+        val isFileExists = viewModel.getLyric()
+        if (!isFileExists) state.saveLyric(music)
         state.loadAlbumCover(music, album_cover)
     }
 

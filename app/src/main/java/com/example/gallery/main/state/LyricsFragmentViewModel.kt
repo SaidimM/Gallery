@@ -21,10 +21,10 @@ class LyricsFragmentViewModel : ViewModel() {
     private var _lyrics = MutableLiveData<ArrayList<Lyric>>()
     val lyrics: LiveData<ArrayList<Lyric>> = _lyrics
 
-    fun getLyric() {
-        if (music.value == null) return
+    fun getLyric(): Boolean {
+        if (music.value == null) return false
         val path = LYRIC_DIR + music.value!!.mediaId + ".txt"
-        if (!File(path).exists()) return
+        if (!File(path).exists()) return false
         val data = readFile(path)
         val strings: ArrayList<String> = data.split(Regex("\n"), 0) as ArrayList<String>
         val lyrics: ArrayList<Lyric> = arrayListOf()
@@ -45,6 +45,7 @@ class LyricsFragmentViewModel : ViewModel() {
         }
         val newList = lyrics.filter { it.text.isNotEmpty() } as ArrayList
         _lyrics.postValue(newList)
+        return true
     }
 
     fun setMusic(music: Music) {

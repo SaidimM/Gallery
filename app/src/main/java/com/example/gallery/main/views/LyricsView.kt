@@ -28,12 +28,12 @@ class LyricsView : View {
 
     private var lineMargin = 32.dp
 
-    private var indexLineTop = 144.dp
+    private var indexLineTop = 118.dp
 
     private var spaceBetweenLine = 48.dp
 
     private val paint = TextPaint().apply {
-        textSize = 24.dp.toFloat()
+        textSize = 32.dp.toFloat()
         textAlign = Paint.Align.LEFT
         color = Color.parseColor("#c4c4c4")
         typeface = Typeface.DEFAULT_BOLD
@@ -43,7 +43,7 @@ class LyricsView : View {
 
     private val focusedPaint = TextPaint().apply {
         color = Color.WHITE
-        textSize = 24.dp.toFloat()
+        textSize = 32.dp.toFloat()
         textAlign = Paint.Align.LEFT
         typeface = Typeface.DEFAULT_BOLD
         isAntiAlias = true
@@ -121,11 +121,13 @@ class LyricsView : View {
             }
         }
         val lineInScreen = height / 50.dp
-        val transHeight = lineStartIndexes[startIndex] - scroll
-        canvas?.translate(lineMargin.toFloat(), transHeight)
+        val start = (startIndex - indexLineTop / 50.dp).let { if (it < 0 ) 0 else it }
         val end = if (startIndex + lineInScreen >= lineStartIndexes.size - 1)
             lineStartIndexes.size - 1 else startIndex + lineInScreen
-        for (i in startIndex until end) {
+        val indexLinePosition = lineStartIndexes[startIndex]
+        val transHeight = indexLinePosition - scroll + indexLineTop
+        canvas?.translate(lineMargin.toFloat(), transHeight + lineStartIndexes[start] - indexLinePosition)
+        for (i in start until end) {
             if (data[i].text.isEmpty()) continue
             val layout = StaticLayout.Builder.obtain(
                 data[i].text,
@@ -152,10 +154,9 @@ class LyricsView : View {
 
     private fun startScroll() {
         if (lineStartIndexes.isEmpty() || currentPosition + 1 == data.size) return
-        val scrollPosition = if (currentPosition < 1) 0 else currentPosition - 1
         val delay = data[currentPosition + 1].position.toLong() - data[currentPosition].position.toLong()
         anim.apply {
-            setFloatValues(scroll, lineStartIndexes[scrollPosition])
+            setFloatValues(scroll, lineStartIndexes[currentPosition])
             duration = 720
             interpolator = AccelerateDecelerateInterpolator()
             addUpdateListener {
@@ -163,7 +164,7 @@ class LyricsView : View {
                 scroll = value
             }
         }
-        if (currentPosition >= 1 && !scrollAnimating) anim.start()
+        if (!scrollAnimating) anim.start()
         else invalidate()
         postDelayed(nextPositionAction, delay)
     }
@@ -214,7 +215,7 @@ class LyricsView : View {
     private fun doubleTap(event: MotionEvent?): Boolean {
         if (event == null) return false
         removeCallbacks(nextPositionAction)
-        val tapPosition = scroll + event.y
+        val tapPosition = (scroll + event.y - indexLineTop).let { if (it < 0) 0f else it }
         for (i in 0 until lineStartIndexes.size - 1) {
             if (tapPosition < lineStartIndexes[i] || tapPosition > lineStartIndexes[i + 1]) continue
             else {
