@@ -1,4 +1,4 @@
-package com.example.gallery.base.ui
+package com.example.gallery.base.ui.pge
 
 import android.app.Activity
 import android.app.Application

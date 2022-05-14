@@ -3,7 +3,7 @@ package com.example.gallery.main.fragments
 import com.example.gallery.BR
 import com.example.gallery.R
 import com.example.gallery.base.bindings.BindingConfig
-import com.example.gallery.base.ui.BaseFragment
+import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.main.state.MainFragmentViewModel
 
 class MainFragment : BaseFragment() {

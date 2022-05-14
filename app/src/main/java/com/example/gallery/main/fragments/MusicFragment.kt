@@ -4,11 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blankj.utilcode.util.SPUtils
 import com.example.gallery.BR
 import com.example.gallery.R
+import com.example.gallery.Strings.MUSIC_INDEX
 import com.example.gallery.base.bindings.BindingConfig
-import com.example.gallery.base.ui.BaseFragment
-import com.example.gallery.base.ui.BaseRecyclerViewAdapter
+import com.example.gallery.base.ui.pge.BaseFragment
+import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
 import com.example.gallery.databinding.ItemSongBinding
 import com.example.gallery.main.MainActivity
 import com.example.gallery.main.PlayerActivity
@@ -17,6 +19,7 @@ import com.example.gallery.main.state.MusicFragmentViewModel
 import com.example.gallery.media.local.Music
 import com.example.gallery.player.VideoInfo
 import kotlinx.android.synthetic.main.fragment_music.*
+
 
 class MusicFragment : BaseFragment() {
     private lateinit var viewModel: MusicFragmentViewModel
@@ -33,6 +36,8 @@ class MusicFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         observeVideModel()
+        val index = SPUtils.getInstance().getInt(MUSIC_INDEX, 0)
+        recyclerView.smoothScrollToPosition(index)
     }
 
     private fun initRecyclerView() {
@@ -46,6 +51,7 @@ class MusicFragment : BaseFragment() {
                 }
                 binding.root.setOnClickListener {
                     (context as MainActivity).toLyrics(item)
+                    SPUtils.getInstance().put(MUSIC_INDEX, position)
                 }
                 state.loadAlbumCover(item, binding.albumImage)
             }

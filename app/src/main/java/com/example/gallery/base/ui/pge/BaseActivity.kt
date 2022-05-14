@@ -1,4 +1,4 @@
-package com.example.gallery.base.ui
+package com.example.gallery.base.ui.pge
 
 import android.Manifest
 import android.app.Activity
@@ -20,7 +20,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blankj.utilcode.util.AdaptScreenUtils
-import com.blankj.utilcode.util.PermissionUtils
 import com.blankj.utilcode.util.ScreenUtils
 import com.example.gallery.base.BaseApplication
 import com.example.gallery.base.bindings.DataBindingActivity
