@@ -1,42 +1,41 @@
-package com.example.gallery.blurHash;
+package com.example.gallery.blurHash
 
-final class Base83 {
+internal object Base83 {
+    val ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~"
+        .toCharArray()
 
-    static final char[] ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~"
-            .toCharArray();
-
-    private static int indexOf(char[] a, char key) {
-        for (int i = 0; i < a.length; i++) {
+    private fun indexOf(a: CharArray, key: Char): Int {
+        for (i in a.indices) {
             if (a[i] == key) {
-                return i;
+                return i
             }
         }
-        return -1;
+        return -1
     }
 
-    static String encode(long value, int length) {
-        char[] buffer = new char[length];
-        encode(value, length, buffer, 0);
-        return new String(buffer);
+    fun encode(value: Long, length: Int): String {
+        val buffer = CharArray(length)
+        encode(value, length, buffer, 0)
+        return String(buffer)
     }
 
-    static void encode(long value, int length, char[] buffer, int offset) {
-        int exp = 1;
-        for (int i = 1; i <= length; i++, exp *= 83) {
-            int digit = (int)(value / exp % 83);
-            buffer[offset + length - i] = ALPHABET[digit];
+    fun encode(value: Long, length: Int, buffer: CharArray, offset: Int) {
+        var exp = 1
+        var i = 1
+        while (i <= length) {
+            val digit = (value / exp % 83).toInt()
+            buffer[offset + length - i] = ALPHABET[digit]
+            i++
+            exp *= 83
         }
     }
 
-    static int decode(String value) {
-        int result = 0;
-        char[] chars = value.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            result = result * 83 + indexOf(ALPHABET, chars[i]);
+    fun decode(value: String): Int {
+        var result = 0
+        val chars = value.toCharArray()
+        for (i in chars.indices) {
+            result = result * 83 + indexOf(ALPHABET, chars[i])
         }
-        return result;
-    }
-
-    private Base83() {
+        return result
     }
 }

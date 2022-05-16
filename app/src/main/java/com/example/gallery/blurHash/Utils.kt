@@ -1,42 +1,42 @@
-package com.example.gallery.blurHash;
+package com.example.gallery.blurHash
 
-final class Utils {
-
-    static double sRGBToLinear(long value) {
-        double v = value / 255.0;
-        if (v <= 0.04045) {
-            return v / 12.92;
+internal object Utils {
+    @JvmStatic
+    fun sRGBToLinear(value: Long): Double {
+        val v = value / 255.0
+        return if (v <= 0.04045) {
+            v / 12.92
         } else {
-            return Math.pow((v + 0.055) / 1.055, 2.4);
+            Math.pow((v + 0.055) / 1.055, 2.4)
         }
     }
 
-    static long linearTosRGB(double value) {
-        double v = Math.max(0, Math.min(1, value));
-        if (v <= 0.0031308) {
-            return (long)(v * 12.92 * 255 + 0.5);
+    @JvmStatic
+    fun linearTosRGB(value: Double): Long {
+        val v = Math.max(0.0, Math.min(1.0, value))
+        return if (v <= 0.0031308) {
+            (v * 12.92 * 255 + 0.5).toLong()
         } else {
-            return (long)((1.055 * Math.pow(v, 1 / 2.4) - 0.055) * 255 + 0.5);
+            ((1.055 * Math.pow(v, 1 / 2.4) - 0.055) * 255 + 0.5).toLong()
         }
     }
 
-    static double signPow(double val, double exp) {
-        return Math.copySign(Math.pow(Math.abs(val), exp), val);
+    @JvmStatic
+    fun signPow(`val`: Double, exp: Double): Double {
+        return Math.copySign(Math.pow(Math.abs(`val`), exp), `val`)
     }
 
-    static double max(double[][] values, int from, int endExclusive) {
-        double result = Double.NEGATIVE_INFINITY;
-        for (int i = from; i < endExclusive; i++) {
-            for (int j = 0; j < values[i].length; j++) {
-                double value = values[i][j];
+    @JvmStatic
+    fun max(values: Array<DoubleArray>, from: Int, endExclusive: Int): Double {
+        var result = Double.NEGATIVE_INFINITY
+        for (i in from until endExclusive) {
+            for (j in 0 until values[i].size) {
+                val value = values[i][j]
                 if (value > result) {
-                    result = value;
+                    result = value
                 }
             }
         }
-        return result;
-    }
-
-    private Utils() {
+        return result
     }
 }
