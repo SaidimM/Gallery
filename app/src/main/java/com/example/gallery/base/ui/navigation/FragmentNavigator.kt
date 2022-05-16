@@ -1,299 +1,279 @@
-package com.example.gallery.base.ui.navigation;
+package com.example.gallery.base.ui.navigation
 
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.os.Bundle;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavDestination;
-import androidx.navigation.NavDestination.ClassType;
-import androidx.navigation.NavOptions;
-import androidx.navigation.Navigator;
-import androidx.navigation.Navigator.Name;
-import androidx.navigation.NavigatorProvider;
-import com.example.gallery.R;
+import android.content.Context
+import androidx.navigation.Navigator
+import android.os.Bundle
+import androidx.navigation.NavOptions
+import androidx.navigation.NavDestination
+import androidx.navigation.NavigatorProvider
+import androidx.annotation.CallSuper
+import android.content.res.TypedArray
+import android.util.AttributeSet
+import android.util.Log
+import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.example.gallery.R
+import java.lang.IllegalStateException
+import java.lang.NumberFormatException
+import java.lang.StringBuilder
+import java.util.*
 
-import java.util.*;
-import java.util.Map.Entry;
-
-@Name("fragment")
-public class FragmentNavigator extends Navigator<FragmentNavigator.Destination> {
-    private static final String TAG = "FragmentNavigator";
-    private static final String KEY_BACK_STACK_IDS = "androidx-nav-fragment:navigator:backStackIds";
-    private final Context mContext;
-    private final FragmentManager mFragmentManager;
-    private final int mContainerId;
-    private ArrayDeque<Integer> mBackStack = new ArrayDeque();
-
-    public FragmentNavigator(@NonNull Context context, @NonNull FragmentManager manager, int containerId) {
-        this.mContext = context;
-        this.mFragmentManager = manager;
-        this.mContainerId = containerId;
-    }
-
-    public boolean popBackStack() {
-        if (this.mBackStack.isEmpty()) {
-            return false;
-        } else if (this.mFragmentManager.isStateSaved()) {
-            Log.i("FragmentNavigator", "Ignoring popBackStack() call: FragmentManager has already saved its state");
-            return false;
+@Navigator.Name("fragment")
+class FragmentNavigator(
+    private val mContext: Context,
+    private val mFragmentManager: FragmentManager,
+    private val mContainerId: Int
+) : Navigator<FragmentNavigator.Destination>() {
+    private val mBackStack: ArrayDeque<Int> = ArrayDeque<Int>()
+    override fun popBackStack(): Boolean {
+        return if (mBackStack.isEmpty()) {
+            false
+        } else if (mFragmentManager.isStateSaved) {
+            Log.i(
+                "FragmentNavigator",
+                "Ignoring popBackStack() call: FragmentManager has already saved its state"
+            )
+            false
         } else {
-            this.mFragmentManager.popBackStack(this.generateBackStackName(this.mBackStack.size(), (Integer)this.mBackStack.peekLast()), 1);
-            int removeIndex = this.mBackStack.size() - 1;
-            if (removeIndex >= this.mFragmentManager.getFragments().size()) {
-                removeIndex = this.mFragmentManager.getFragments().size() - 1;
+            mFragmentManager.popBackStack(
+                generateBackStackName(
+                    mBackStack.size,
+                    mBackStack.peekLast()!!
+                ), 1
+            )
+            var removeIndex = mBackStack.size - 1
+            if (removeIndex >= mFragmentManager.fragments.size) {
+                removeIndex = mFragmentManager.fragments.size - 1
             }
-
-            this.mFragmentManager.getFragments().remove(removeIndex);
-            this.mBackStack.removeLast();
-            return true;
+            mFragmentManager.fragments.removeAt(removeIndex)
+            mBackStack.removeLast()
+            true
         }
     }
 
-    @NonNull
-    public Destination createDestination() {
-        return new Destination(this);
+    override fun createDestination(): Destination {
+        return Destination(this)
     }
 
-    /** @deprecated */
-    @Deprecated
-    @NonNull
-    public Fragment instantiateFragment(@NonNull Context context, @NonNull FragmentManager fragmentManager, @NonNull String className, @Nullable Bundle args) {
-        return fragmentManager.getFragmentFactory().instantiate(context.getClassLoader(), className);
+    @Deprecated("")
+    fun instantiateFragment(
+        context: Context,
+        fragmentManager: FragmentManager,
+        className: String,
+        args: Bundle?
+    ): Fragment {
+        return fragmentManager.fragmentFactory.instantiate(context.classLoader, className)
     }
 
-    @Nullable
-    public NavDestination navigate(@NonNull Destination destination, @Nullable Bundle args, @Nullable NavOptions navOptions, @Nullable Navigator.Extras navigatorExtras) {
-        if (this.mFragmentManager.isStateSaved()) {
-            Log.i("FragmentNavigator", "Ignoring navigate() call: FragmentManager has already saved its state");
-            return null;
+    override fun navigate(
+        destination: Destination,
+        args: Bundle?,
+        navOptions: NavOptions?,
+        navigatorExtras: Navigator.Extras?
+    ): NavDestination? {
+        return if (mFragmentManager.isStateSaved) {
+            Log.i("FragmentNavigator", "Ignoring navigate() call: FragmentManager has already saved its state")
+            null
         } else {
-            String className = destination.getClassName();
-            if (className.charAt(0) == '.') {
-                className = this.mContext.getPackageName() + className;
+            var className = destination.className
+            if (className[0] == '.') {
+                className = mContext.packageName + className
             }
-
-            Fragment frag = this.instantiateFragment(this.mContext, this.mFragmentManager, className, args);
-            frag.setArguments(args);
-            FragmentTransaction ft = this.mFragmentManager.beginTransaction();
-            int enterAnim = navOptions != null ? navOptions.getEnterAnim() : -1;
-            int exitAnim = navOptions != null ? navOptions.getExitAnim() : -1;
-            int popEnterAnim = navOptions != null ? navOptions.getPopEnterAnim() : -1;
-            int popExitAnim = navOptions != null ? navOptions.getPopExitAnim() : -1;
+            val frag = instantiateFragment(mContext, mFragmentManager, className, args)
+            frag.arguments = args
+            val ft = mFragmentManager.beginTransaction()
+            var enterAnim = navOptions?.enterAnim ?: -1
+            var exitAnim = navOptions?.exitAnim ?: -1
+            var popEnterAnim = navOptions?.popEnterAnim ?: -1
+            var popExitAnim = navOptions?.popExitAnim ?: -1
             if (enterAnim != -1 || exitAnim != -1 || popEnterAnim != -1 || popExitAnim != -1) {
-                enterAnim = enterAnim != -1 ? enterAnim : 0;
-                exitAnim = exitAnim != -1 ? exitAnim : 0;
-                popEnterAnim = popEnterAnim != -1 ? popEnterAnim : 0;
-                popExitAnim = popExitAnim != -1 ? popExitAnim : 0;
-                ft.setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim);
+                enterAnim = if (enterAnim != -1) enterAnim else 0
+                exitAnim = if (exitAnim != -1) exitAnim else 0
+                popEnterAnim = if (popEnterAnim != -1) popEnterAnim else 0
+                popExitAnim = if (popExitAnim != -1) popExitAnim else 0
+                ft.setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
             }
-
-            Log.d("Nav", " --mBackStack.size:" + this.mBackStack.size() + " getFragments().size():" + this.mFragmentManager.getFragments().size());
-            if (this.mBackStack.size() > 0 && this.mFragmentManager.getFragments().size() > 0) {
-                Log.d("Nav", " --Hide --Add");
-                ft.hide((Fragment)this.mFragmentManager.getFragments().get(this.mBackStack.size() - 1));
-                ft.add(this.mContainerId, frag);
+            Log.d(
+                "Nav",
+                " --mBackStack.size:" + mBackStack.size + " getFragments().size():" + mFragmentManager.fragments.size
+            )
+            if (mBackStack.size > 0 && mFragmentManager.fragments.size > 0) {
+                Log.d("Nav", " --Hide --Add")
+                ft.hide((mFragmentManager.fragments[mBackStack.size - 1] as Fragment))
+                ft.add(mContainerId, frag)
             } else {
-                Log.d("Nav", " --Replace");
-                ft.replace(this.mContainerId, frag);
+                Log.d("Nav", " --Replace")
+                ft.replace(mContainerId, frag)
             }
-
-            ft.setPrimaryNavigationFragment(frag);
-            int destId = destination.getId();
-            boolean initialNavigation = this.mBackStack.isEmpty();
-            boolean isSingleTopReplacement = navOptions != null && !initialNavigation && navOptions.shouldLaunchSingleTop() && (Integer)this.mBackStack.peekLast() == destId;
-            boolean isAdded;
-            if (initialNavigation) {
-                isAdded = true;
+            ft.setPrimaryNavigationFragment(frag)
+            val destId = destination.id
+            val initialNavigation = mBackStack.isEmpty()
+            val isSingleTopReplacement =
+                navOptions != null && !initialNavigation && navOptions.shouldLaunchSingleTop() && mBackStack.peekLast() == destId
+            val isAdded: Boolean
+            isAdded = if (initialNavigation) {
+                true
             } else if (isSingleTopReplacement) {
-                if (this.mBackStack.size() > 1) {
-                    this.mFragmentManager.popBackStack(this.generateBackStackName(this.mBackStack.size(), (Integer)this.mBackStack.peekLast()), 1);
-                    ft.addToBackStack(this.generateBackStackName(this.mBackStack.size(), destId));
+                if (mBackStack.size > 1) {
+                    mFragmentManager.popBackStack(
+                        generateBackStackName(
+                            mBackStack.size,
+                            mBackStack.peekLast()!!
+                        ), 1
+                    )
+                    ft.addToBackStack(generateBackStackName(mBackStack.size, destId))
                 }
-
-                isAdded = false;
+                false
             } else {
-                ft.addToBackStack(this.generateBackStackName(this.mBackStack.size() + 1, destId));
-                isAdded = true;
+                ft.addToBackStack(generateBackStackName(mBackStack.size + 1, destId))
+                true
             }
-
-            if (navigatorExtras instanceof Extras) {
-                Extras extras = (Extras)navigatorExtras;
-                Iterator var17 = extras.getSharedElements().entrySet().iterator();
-
-                while(var17.hasNext()) {
-                    Entry<View, String> sharedElement = (Entry)var17.next();
-                    ft.addSharedElement((View)sharedElement.getKey(), (String)sharedElement.getValue());
+            if (navigatorExtras is Extras) {
+                val var17: Iterator<*> = navigatorExtras.sharedElements.entries.iterator()
+                while (var17.hasNext()) {
+                    val (key, value) = var17.next() as Map.Entry<*, *>
+                    ft.addSharedElement((key as View), (value as String))
                 }
             }
-
-            ft.setReorderingAllowed(true);
-            ft.commit();
+            ft.setReorderingAllowed(true)
+            ft.commit()
             if (isAdded) {
-                this.mBackStack.add(destId);
-                return destination;
+                mBackStack.add(destId)
+                destination
             } else {
-                return null;
+                null
             }
         }
     }
 
-    @Nullable
-    public Bundle onSaveState() {
-        Bundle b = new Bundle();
-        int[] backStack = new int[this.mBackStack.size()];
-        int index = 0;
-
-        Integer id;
-        for(Iterator var4 = this.mBackStack.iterator(); var4.hasNext(); backStack[index++] = id) {
-            id = (Integer)var4.next();
+    override fun onSaveState(): Bundle {
+        val b = Bundle()
+        val backStack = IntArray(mBackStack.size)
+        var index = 0
+        var id: Int
+        val var4: Iterator<*> = mBackStack.iterator()
+        while (var4.hasNext()) {
+            id = var4.next() as Int
+            backStack[index++] = id
         }
-
-        b.putIntArray("androidx-nav-fragment:navigator:backStackIds", backStack);
-        return b;
+        b.putIntArray("androidx-nav-fragment:navigator:backStackIds", backStack)
+        return b
     }
 
-    public void onRestoreState(@Nullable Bundle savedState) {
-        if (savedState != null) {
-            int[] backStack = savedState.getIntArray("androidx-nav-fragment:navigator:backStackIds");
-            if (backStack != null) {
-                this.mBackStack.clear();
-                int[] var3 = backStack;
-                int var4 = backStack.length;
-
-                for(int var5 = 0; var5 < var4; ++var5) {
-                    int destId = var3[var5];
-                    this.mBackStack.add(destId);
-                }
+    override fun onRestoreState(savedState: Bundle) {
+        val backStack = savedState.getIntArray("androidx-nav-fragment:navigator:backStackIds")
+        if (backStack != null) {
+            mBackStack.clear()
+            val var3: IntArray = backStack
+            val var4 = backStack.size
+            for (var5 in 0 until var4) {
+                val destId = var3[var5]
+                mBackStack.add(destId)
             }
         }
-
     }
 
-    @NonNull
-    private String generateBackStackName(int backStackIndex, int destId) {
-        return backStackIndex + "-" + destId;
+    private fun generateBackStackName(backStackIndex: Int, destId: Int): String {
+        return "$backStackIndex-$destId"
     }
 
-    private int getDestId(@Nullable String backStackName) {
-        String[] split = backStackName != null ? backStackName.split("-") : new String[0];
-        if (split.length != 2) {
-            throw new IllegalStateException("Invalid back stack entry on the NavHostFragment's back stack - use getChildFragmentManager() if you need to do custom FragmentTransactions from within Fragments created via your navigation graph.");
+    private fun getDestId(backStackName: String): Int {
+        val split: Array<String> = backStackName.split("-").toTypedArray()
+        return if (split.size != 2) {
+            throw IllegalStateException("Invalid back stack entry on the NavHostFragment's back stack - use getChildFragmentManager() if you need to do custom FragmentTransactions from within Fragments created via your navigation graph.")
         } else {
             try {
-                Integer.parseInt(split[0]);
-                return Integer.parseInt(split[1]);
-            } catch (NumberFormatException var4) {
-                throw new IllegalStateException("Invalid back stack entry on the NavHostFragment's back stack - use getChildFragmentManager() if you need to do custom FragmentTransactions from within Fragments created via your navigation graph.");
+                split[0].toInt()
+                split[1].toInt()
+            } catch (var4: NumberFormatException) {
+                throw IllegalStateException("Invalid back stack entry on the NavHostFragment's back stack - use getChildFragmentManager() if you need to do custom FragmentTransactions from within Fragments created via your navigation graph.")
             }
         }
     }
 
-    public static final class Extras implements Navigator.Extras {
-        private final LinkedHashMap<View, String> mSharedElements = new LinkedHashMap();
+    class Extras internal constructor(sharedElements: Map<View?, String?>?) : Navigator.Extras {
+        private val mSharedElements: LinkedHashMap<View?, String?> = LinkedHashMap<View?, String?>()
+        val sharedElements: Map<View?, String?>
+            get() = Collections.unmodifiableMap(mSharedElements)
 
-        Extras(Map<View, String> sharedElements) {
-            this.mSharedElements.putAll(sharedElements);
-        }
-
-        @NonNull
-        public Map<View, String> getSharedElements() {
-            return Collections.unmodifiableMap(this.mSharedElements);
-        }
-
-        public static final class Builder {
-            private final LinkedHashMap<View, String> mSharedElements = new LinkedHashMap();
-
-            public Builder() {
-            }
-
-            @NonNull
-            public Builder addSharedElements(@NonNull Map<View, String> sharedElements) {
-                Iterator var2 = sharedElements.entrySet().iterator();
-
-                while(var2.hasNext()) {
-                    Entry<View, String> sharedElement = (Entry)var2.next();
-                    View view = (View)sharedElement.getKey();
-                    String name = (String)sharedElement.getValue();
-                    if (view != null && name != null) {
-                        this.addSharedElement(view, name);
-                    }
+        class Builder {
+            private val mSharedElements: LinkedHashMap<View?, String?> = LinkedHashMap<View?, String?>()
+            fun addSharedElements(sharedElements: Map<View?, String?>): Builder {
+                val var2: Iterator<*> = sharedElements.entries.iterator()
+                while (var2.hasNext()) {
+                    val (key, value) = var2.next() as Map.Entry<*, *>
+                    val view = key as View
+                    val name = value as String
+                    addSharedElement(view, name)
                 }
-
-                return this;
+                return this
             }
 
-            @NonNull
-            public Builder addSharedElement(@NonNull View sharedElement, @NonNull String name) {
-                this.mSharedElements.put(sharedElement, name);
-                return this;
+            fun addSharedElement(sharedElement: View, name: String): Builder {
+                mSharedElements[sharedElement] = name
+                return this
             }
 
-            @NonNull
-            public Extras build() {
-                return new Extras(this.mSharedElements);
+            fun build(): Extras {
+                return Extras(mSharedElements)
             }
+        }
+
+        init {
+            mSharedElements.putAll(sharedElements!!)
         }
     }
 
-    @ClassType(Fragment.class)
-    public static class Destination extends NavDestination {
-        private String mClassName;
+    @NavDestination.ClassType(Fragment::class)
+    class Destination(fragmentNavigator: Navigator<out Destination?>) : NavDestination(fragmentNavigator) {
+        private var mClassName: String? = null
 
-        public Destination(@NonNull NavigatorProvider navigatorProvider) {
-            this(navigatorProvider.getNavigator(FragmentNavigator.class));
-        }
-
-        public Destination(@NonNull Navigator<? extends Destination> fragmentNavigator) {
-            super(fragmentNavigator);
+        constructor(navigatorProvider: NavigatorProvider) : this(
+            navigatorProvider.getNavigator<FragmentNavigator>(
+                FragmentNavigator::class.java
+            )
+        ) {
         }
 
         @CallSuper
-        public void onInflate(@NonNull Context context, @NonNull AttributeSet attrs) {
-            super.onInflate(context, attrs);
-            TypedArray a = context.getResources().obtainAttributes(attrs, R.styleable.FragmentNavigator);
-            String className = a.getString(R.styleable.FragmentNavigator_android_name);
+        override fun onInflate(context: Context, attrs: AttributeSet) {
+            super.onInflate(context, attrs)
+            val a = context.resources.obtainAttributes(attrs, R.styleable.FragmentNavigator)
+            val className = a.getString(R.styleable.FragmentNavigator_android_name)
             if (className != null) {
-                this.setClassName(className);
+                setClassName(className)
             }
-
-            a.recycle();
+            a.recycle()
         }
 
-        @NonNull
-        public final Destination setClassName(@NonNull String className) {
-            this.mClassName = className;
-            return this;
+        fun setClassName(className: String): Destination {
+            mClassName = className
+            return this
         }
 
-        @NonNull
-        public final String getClassName() {
-            if (this.mClassName == null) {
-                throw new IllegalStateException("Fragment class was not set");
+        val className: String
+            get() = if (mClassName == null) {
+                throw IllegalStateException("Fragment class was not set")
             } else {
-                return this.mClassName;
+                mClassName!!
             }
-        }
 
-        @NonNull
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(super.toString());
-            sb.append(" class=");
-            if (this.mClassName == null) {
-                sb.append("null");
+        override fun toString(): String {
+            val sb = StringBuilder()
+            sb.append(super.toString())
+            sb.append(" class=")
+            if (mClassName == null) {
+                sb.append("null")
             } else {
-                sb.append(this.mClassName);
+                sb.append(mClassName)
             }
-
-            return sb.toString();
+            return sb.toString()
         }
+    }
+
+    companion object {
+        private const val TAG = "FragmentNavigator"
+        private const val KEY_BACK_STACK_IDS = "androidx-nav-fragment:navigator:backStackIds"
     }
 }
