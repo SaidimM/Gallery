@@ -56,7 +56,7 @@ class LyricsFragment : BaseFragment() {
         viewModel.lyrics.observe(viewLifecycleOwner) {
             lifecycleScope.launch(Dispatchers.Main) {
                 lyrics_view.data = it
-                lyrics_view.setOnDoubleTapListener { state.player.seekTo(it) }
+                lyrics_view.setOnDoubleTapListener { state.musicPlayer.seekTo(it) }
             }
         }
     }

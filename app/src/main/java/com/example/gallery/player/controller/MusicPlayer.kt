@@ -71,4 +71,6 @@ class MusicPlayer {
     fun pause() {
         player.pause()
     }
+
+    fun seekTo(position: Int) { player.seekTo(position) }
 }
