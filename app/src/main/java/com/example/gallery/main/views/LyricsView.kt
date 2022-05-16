@@ -231,6 +231,7 @@ class LyricsView : View {
                 break
             }
         }
+        lyricsListener?.let { it(data[currentPosition].position) }
         invalidate()
         return true
     }
@@ -244,4 +245,14 @@ class LyricsView : View {
 
         override fun onDoubleTap(e: MotionEvent?) = doubleTap(e)
     })
+
+    var lyricsListener: ((Int) -> Unit)? = null
+
+    fun setOnDoubleTapListener(lyricsListener: (Int) -> Unit) {
+        this.lyricsListener = lyricsListener
+    }
+
+    interface LyricsListener {
+        fun onDoubleTap(position: Int)
+    }
 }

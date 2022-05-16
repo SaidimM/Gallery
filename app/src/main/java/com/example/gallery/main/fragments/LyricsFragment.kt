@@ -12,6 +12,7 @@ import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.blurHash.BlurHashDecoder
 import com.example.gallery.main.state.LyricsFragmentViewModel
 import com.example.gallery.main.state.MainActivityViewModel
+import com.example.gallery.main.views.LyricsView
 import com.example.gallery.media.local.Music
 import kotlinx.android.synthetic.main.fragment_lyrics.*
 import kotlinx.coroutines.Dispatchers
@@ -53,7 +54,10 @@ class LyricsFragment : BaseFragment() {
 
     private fun observeData() {
         viewModel.lyrics.observe(viewLifecycleOwner) {
-            lifecycleScope.launch(Dispatchers.Main) { lyrics_view.data = it }
+            lifecycleScope.launch(Dispatchers.Main) {
+                lyrics_view.data = it
+                lyrics_view.setOnDoubleTapListener { state.player.seekTo(it) }
+            }
         }
     }
 }

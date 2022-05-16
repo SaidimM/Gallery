@@ -1,4 +1,6 @@
-package com.example.gallery.player
+package com.example.gallery.player.view
+
+import com.example.gallery.player.listener.IVideoInfo
 
 
 data class VideoInfo(
