@@ -224,7 +224,6 @@ class LyricsView : View {
             MotionEvent.ACTION_DOWN -> {
                 performClick()
                 velocityAnim.pause()
-                scrollAnim.pause()
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_OUTSIDE -> {
                 scrolling = dragging
@@ -265,7 +264,6 @@ class LyricsView : View {
         for (i in 0 until lineStartIndexes.size - 1) {
             if (tapPosition < lineStartIndexes[i] || tapPosition > lineStartIndexes[i + 1]) continue
             else {
-                scrollAnim.pause()
                 currentPosition = i
                 break
             }
