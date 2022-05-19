@@ -197,7 +197,7 @@ class LyricsView : View {
         val alphaAnimation = ValueAnimator()
         alphaAnimation.apply {
             setIntValues(lineAlpha, indexAlpha)
-            duration = 320
+            duration = 360
             addUpdateListener {
                 val value = it.animatedValue as Int
                 focusedPaint.alpha = value
