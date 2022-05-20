@@ -35,12 +35,16 @@
                     android:contentDescription="@string/album_cover"/>
         </com.google.android.material.card.MaterialCardView>
         <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="@+id/album_image"
                 app:layout_constraintStart_toEndOf="@id/album_image"
                 android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:ellipsize="marquee"
                 android:id="@+id/name"
+                android:lines="1"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold"

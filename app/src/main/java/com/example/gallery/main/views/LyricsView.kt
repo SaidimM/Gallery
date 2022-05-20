@@ -12,10 +12,13 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.view.VelocityTracker
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.animation.doOnEnd
 import com.example.gallery.media.remote.lyrics.Lyric
 import com.example.gallery.player.GeneralTools.dp
+import java.lang.StrictMath.abs
 
 class LyricsView : View {
     constructor(context: Context) : super(context)
@@ -37,6 +40,14 @@ class LyricsView : View {
     private var lineAlpha = 72
 
     private var indexAlpha = 255
+
+    private var mVelocityTracker: VelocityTracker = VelocityTracker.obtain()
+
+    private var velocity: Float = 0f
+        set(value) {
+            if (value == 0f) return
+            field = value
+        }
 
     private val paint = TextPaint().apply {
         textSize = lineTextSize.toFloat()
@@ -82,9 +93,15 @@ class LyricsView : View {
     private var scroll: Float = 0f
         set(value) {
             if (data.isEmpty() || lineStartIndexes.isEmpty()) return
-            if (value > lineStartIndexes.last() - indexLineTop) return
+            if (value > lineStartIndexes.last() - indexLineTop) {
+                velocityAnim.pause()
+                return
+            }
             field = value
-            if (field < 0) field = 0f
+            if (value < 0) {
+                velocityAnim.pause()
+                field = 0f
+            }
             invalidate()
         }
 
@@ -93,7 +110,7 @@ class LyricsView : View {
             if (field == value) return
             field = value
             if (field >= data.size) {
-                anim.pause()
+                scrollAnim.pause()
                 clearAnimation()
                 return
             }
@@ -127,7 +144,7 @@ class LyricsView : View {
             }
         }
         val lineInScreen = height / 50.dp
-        val start = (startIndex - indexLineTop / 50.dp).let { if (it < 0 ) 0 else it }
+        val start = (startIndex - indexLineTop / 50.dp).let { if (it < 0) 0 else it }
         val end = if (startIndex + lineInScreen >= lineStartIndexes.size - 1)
             lineStartIndexes.size - 1 else startIndex + lineInScreen
         val indexLinePosition = lineStartIndexes[startIndex]
@@ -157,12 +174,12 @@ class LyricsView : View {
         animateAlpha()
     }
 
-    private var anim: ValueAnimator = ValueAnimator()
+    private var scrollAnim: ValueAnimator = ValueAnimator()
 
     private fun startScroll() {
         if (lineStartIndexes.isEmpty() || currentPosition + 1 == data.size) return
         val delay = data[currentPosition + 1].position.toLong() - data[currentPosition].position.toLong()
-        anim.apply {
+        scrollAnim.apply {
             setFloatValues(scroll, lineStartIndexes[currentPosition])
             duration = 720
             interpolator = AccelerateDecelerateInterpolator()
@@ -171,7 +188,7 @@ class LyricsView : View {
                 scroll = value
             }
         }
-        if (!scrollAnimating) anim.start()
+        if (!scrolling) scrollAnim.start()
         else invalidate()
         postDelayed(nextPositionAction, delay)
     }
@@ -180,7 +197,7 @@ class LyricsView : View {
         val alphaAnimation = ValueAnimator()
         alphaAnimation.apply {
             setIntValues(lineAlpha, indexAlpha)
-            duration = 320
+            duration = 360
             addUpdateListener {
                 val value = it.animatedValue as Int
                 focusedPaint.alpha = value
@@ -190,7 +207,7 @@ class LyricsView : View {
         }
     }
 
-    private var scrollAnimating = false
+    private var scrolling = false
 
     override fun performClick(): Boolean {
         Log.i(this.javaClass.simpleName, "perform click")
@@ -206,27 +223,47 @@ class LyricsView : View {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 performClick()
+                velocityAnim.pause()
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_OUTSIDE -> {
-                scrollAnimating = dragging
-                dragging = false
-                if (scrollAnimating) {
-                    val delayMills = if (scroll - lineStartIndexes[currentPosition] < height) 200 else 3000
-                    postDelayed({ scrollAnimating = false }, delayMills.toLong())
+                scrolling = dragging
+                if (scrolling) {
+                    val delayMills = if (scroll - lineStartIndexes[currentPosition] < height) 1000 else 3000
+                    postDelayed({ scrolling = false }, delayMills.toLong())
+                    afterScroll()
                 }
+                dragging = false
             }
         }
         return true
     }
 
+    private var velocityAnim = ValueAnimator()
+
+    private fun afterScroll() {
+        velocityAnim = ValueAnimator()
+        velocityAnim.apply {
+            setFloatValues(velocity / 10, 0f)
+            duration = abs(velocity.toLong() / 3)
+            addUpdateListener {
+                val value = it.animatedValue as Float
+                scroll -= value / 10
+            }
+            doOnEnd {
+                scrolling = false
+            }
+        }
+        velocityAnim.start()
+    }
+
     private fun doubleTap(event: MotionEvent?): Boolean {
         if (event == null) return false
+        scrolling = false
         removeCallbacks(nextPositionAction)
         val tapPosition = (scroll + event.y - indexLineTop).let { if (it < 0) 0f else it }
         for (i in 0 until lineStartIndexes.size - 1) {
             if (tapPosition < lineStartIndexes[i] || tapPosition > lineStartIndexes[i + 1]) continue
             else {
-                anim.pause()
                 currentPosition = i
                 break
             }
@@ -237,9 +274,15 @@ class LyricsView : View {
     }
 
     private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
             scroll += distanceY
             dragging = true
+
+            mVelocityTracker = VelocityTracker.obtain()
+            mVelocityTracker.addMovement(e2)
+            mVelocityTracker.computeCurrentVelocity(1000)
+            velocity = mVelocityTracker.yVelocity
             return true
         }
 
