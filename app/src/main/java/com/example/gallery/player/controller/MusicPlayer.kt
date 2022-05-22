@@ -56,7 +56,12 @@ class MusicPlayer {
         list.add(music)
     }
 
-    fun play(music: Music? = null) {
+    fun play(music: Music? = null, musics: ArrayList<Music>? = null) {
+        if (musics != null && music != null && musics != list) {
+            list.clear()
+            list.addAll(musics)
+            position = list.indexOf(music)
+        }
         player.stop()
         if (list.isEmpty()) return
         if (music == null) {

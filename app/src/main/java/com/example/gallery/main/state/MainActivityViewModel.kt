@@ -44,7 +44,7 @@ class MainActivityViewModel : ViewModel() {
     val music: LiveData<Music> = _music
 
     fun toLyric(music: Music) {
-        musicPlayer.play(music)
+        musicPlayer.play(music, songs.value)
         _music.value = music
         index = R.id.lyricsFragment
     }
