@@ -22,9 +22,7 @@ import com.example.gallery.blurHash.BlurHash
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
-import com.example.gallery.player.controller.MusicPlayer
-import com.example.gallery.player.controller.Player
-import com.example.gallery.player.listener.PlayerListener
+import com.example.gallery.service.MediaPlayService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.doAsync
@@ -37,20 +35,20 @@ class MainActivityViewModel : ViewModel() {
     private val repository = MusicRepository.getInstance()
     private val db: MusicDatabase = MusicDatabase.getInstance()
 
-    val musicPlayer = MusicPlayer()
+    var mediaPlayerBinder: MediaPlayService.MediaBinder? = null
     var index: Int = 0
 
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
 
+    private var _songs: MutableLiveData<ArrayList<Music>> = MutableLiveData()
+    val songs: LiveData<ArrayList<Music>> = _songs
+
     fun toLyric(music: Music) {
-        musicPlayer.play(music, songs.value)
+        mediaPlayerBinder?.play(music, songs.value)
         _music.value = music
         index = R.id.lyricsFragment
     }
-
-    private var _songs: MutableLiveData<ArrayList<Music>> = MutableLiveData()
-    val songs: LiveData<ArrayList<Music>> = _songs
 
     fun loadMusic() {
         viewModelScope.launch(Dispatchers.IO) {

@@ -23,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".main.PlayerActivity" android:screenOrientation="landscape"/>
+        <service android:name=".service.MediaPlayService"/>
     </application>
 
 </manifest>

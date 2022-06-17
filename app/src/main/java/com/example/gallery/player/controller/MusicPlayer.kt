@@ -21,7 +21,7 @@ class MusicPlayer {
             player.start()
         }
         override fun onLoadingChanged(isLoaded: Boolean) {}
-        override fun onBufferinghChengedListener(mediaPlayer: MediaPlayer, percent: Int) {}
+        override fun onBufferingChangedListener(mediaPlayer: MediaPlayer, percent: Int) {}
         override fun onCompletionListener(mediaPlayer: MediaPlayer) { playNext() }
         override fun onError(mp: MediaPlayer, what: Int, extra: Int) {}
         override fun onVideoSizeChanged(mediaPlayer: MediaPlayer, width: Int, height: Int) {}
@@ -78,4 +78,16 @@ class MusicPlayer {
     }
 
     fun seekTo(position: Int) { player.seekTo(position) }
+
+    fun onDestroy() {
+        player.stop()
+    }
+
+    companion object {
+        private var musicPlayer: MusicPlayer? = null
+        fun getInstance(): MusicPlayer {
+            if (musicPlayer == null) musicPlayer = MusicPlayer()
+            return musicPlayer!!
+        }
+    }
 }

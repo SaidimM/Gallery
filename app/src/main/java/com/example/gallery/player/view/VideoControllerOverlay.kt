@@ -51,7 +51,7 @@ class VideoControllerOverlay : FrameLayout {
         override fun onLoadingChanged(isLoaded: Boolean) {
         }
 
-        override fun onBufferinghChengedListener(mediaPlayer: MediaPlayer, percent: Int) {
+        override fun onBufferingChangedListener(mediaPlayer: MediaPlayer, percent: Int) {
         }
 
         override fun onCompletionListener(mediaPlayer: MediaPlayer) {

@@ -1,6 +1,11 @@
 package com.example.gallery.main
 
+import android.app.Service
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.view.View
 import androidx.navigation.NavController
 import com.blankj.utilcode.util.PermissionUtils
@@ -11,6 +16,7 @@ import com.example.gallery.base.ui.navigation.NavHostFragment
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.main.state.MainActivityViewModel
 import com.example.gallery.media.local.Music
+import com.example.gallery.service.MediaPlayService
 
 class MainActivity : BaseActivity() {
     private lateinit var viewModel: MainActivityViewModel
@@ -25,6 +31,8 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         navController = (supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment).navController
         observe()
+        val intent = Intent(this, MediaPlayService::class.java)
+        bindService(intent, mediaPlayServiceConnection, Service.BIND_AUTO_CREATE)
         if (PermissionUtils.isGranted(android.Manifest.permission_group.STORAGE)) viewModel.loadMusic()
         else super.initPermission()
     }
@@ -47,5 +55,18 @@ class MainActivity : BaseActivity() {
 
     private fun observe() {
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unbindService(mediaPlayServiceConnection)
+    }
+
+    private val mediaPlayServiceConnection = object: ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder) {
+            viewModel.mediaPlayerBinder = service as MediaPlayService.MediaBinder
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {}
     }
 }

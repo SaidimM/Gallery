@@ -45,7 +45,7 @@ class Player {
                 }
                 setOnBufferingUpdateListener { mp, percent ->
                     bufferingPercentage = percent
-                    playerListener?.onBufferinghChengedListener(mp, percent)
+                    playerListener?.onBufferingChangedListener(mp, percent)
                 }
                 setOnCompletionListener {
                     state = STATE_COMPLETED
