@@ -1,4 +1,4 @@
-package com.example.gallery.player
+package com.example.gallery.player.view
 
 import android.app.Activity
 import android.content.Context

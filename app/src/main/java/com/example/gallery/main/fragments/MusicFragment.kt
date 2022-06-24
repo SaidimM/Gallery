@@ -17,7 +17,7 @@ import com.example.gallery.main.PlayerActivity
 import com.example.gallery.main.state.MainActivityViewModel
 import com.example.gallery.main.state.MusicFragmentViewModel
 import com.example.gallery.media.local.Music
-import com.example.gallery.player.VideoInfo
+import com.example.gallery.player.view.VideoInfo
 import kotlinx.android.synthetic.main.fragment_music.*
 
 

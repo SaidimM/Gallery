@@ -1,4 +1,4 @@
-package com.example.gallery.player
+package com.example.gallery.player.listener
 
 import android.os.Parcelable
 import java.io.Serializable

@@ -1,25 +1,20 @@
-package com.example.gallery.player
+package com.example.gallery.player.controller
 
 import android.media.MediaPlayer
 import android.view.SurfaceHolder
 import com.blankj.utilcode.util.LogUtils
+import com.example.gallery.player.controller.PlayState.*
+import com.example.gallery.player.listener.PlayerListener
 
 class Player {
-    companion object {
-        val STATE_ERROR = -1
-        val STATE_IDLE = 0
-        val STATE_PREPARING = 1
-        val STATE_PREPARED = 2
-        val STATE_PLAYING = 3
-        val STATE_PAUSED = 4
-        val STATE_COMPLETED = 5
-    }
 
     private var bufferingPercentage: Int = 0
     private var player: MediaPlayer? = null
+    private var isVideo: Boolean = false
     var playerListener: PlayerListener? = null
     var holder: SurfaceHolder? = null
         set(value) {
+            isVideo = true
             field = value
             player?.setDisplay(value)
         }
@@ -29,7 +24,7 @@ class Player {
             field = value
             player?.setScreenOnWhilePlaying(value)
         }
-    private var state: Int = STATE_IDLE
+    private var state: PlayState = STATE_IDLE
         set(value) {
             field = value
             if (value == STATE_PREPARING) playerListener?.onLoadingChanged(false)
@@ -38,7 +33,7 @@ class Player {
         }
 
     fun initialize() {
-        if (holder == null || path.isEmpty()) return
+        if (path.isEmpty()) return
         reset()
         player = MediaPlayer()
         try {
@@ -53,7 +48,7 @@ class Player {
                     playerListener?.onBufferinghChengedListener(mp, percent)
                 }
                 setOnCompletionListener {
-                    state = STATE_COMPLETED
+                    state = STATE_STOPPED
                     playerListener?.onCompletionListener(it)
                 }
                 setOnErrorListener { mp, what, extra ->
@@ -96,10 +91,7 @@ class Player {
     fun stop() {
         if (player == null) return
         player?.stop()
-        player?.release()
-        player = null
-        holder = null
-        state = STATE_IDLE
+        state = STATE_STOPPED
     }
 
     fun reStart() { initialize() }
@@ -120,5 +112,5 @@ class Player {
 
     fun isPlaying() = if (player != null) player!!.isPlaying else false
 
-    fun isInPlaybackState() = player != null && state != STATE_PREPARING && state != STATE_ERROR && state != STATE_IDLE
+    private fun isInPlaybackState() = player != null && state != STATE_PREPARING && state != STATE_ERROR && state != STATE_IDLE
 }

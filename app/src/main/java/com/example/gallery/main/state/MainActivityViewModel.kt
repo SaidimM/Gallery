@@ -2,6 +2,7 @@ package com.example.gallery.main.state
 
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.media.MediaPlayer
 import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.LiveData
@@ -21,6 +22,9 @@ import com.example.gallery.blurHash.BlurHash
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
+import com.example.gallery.player.controller.MusicPlayer
+import com.example.gallery.player.controller.Player
+import com.example.gallery.player.listener.PlayerListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.doAsync
@@ -31,16 +35,17 @@ import java.util.*
 class MainActivityViewModel : ViewModel() {
 
     private val repository = MusicRepository.getInstance()
-
     private val db: MusicDatabase = MusicDatabase.getInstance()
 
+    val musicPlayer = MusicPlayer()
     var index: Int = 0
 
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
 
-    fun toLyric(music: Music? = null) {
-        music?.let { _music.value = music }
+    fun toLyric(music: Music) {
+        musicPlayer.play(music, songs.value)
+        _music.value = music
         index = R.id.lyricsFragment
     }
 
