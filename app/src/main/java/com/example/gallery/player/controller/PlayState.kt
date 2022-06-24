@@ -7,5 +7,5 @@ enum class PlayState {
     STATE_PREPARED,
     STATE_PLAYING,
     STATE_PAUSED,
-    STATE_COMPLETED
+    STATE_STOPPED
 }

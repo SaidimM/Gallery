@@ -3,8 +3,8 @@ package com.example.gallery.player.controller
 import android.media.MediaPlayer
 import android.view.SurfaceHolder
 import com.blankj.utilcode.util.LogUtils
-import com.example.gallery.player.listener.PlayerListener
 import com.example.gallery.player.controller.PlayState.*
+import com.example.gallery.player.listener.PlayerListener
 
 class Player {
 
@@ -48,7 +48,7 @@ class Player {
                     playerListener?.onBufferinghChengedListener(mp, percent)
                 }
                 setOnCompletionListener {
-                    state = STATE_COMPLETED
+                    state = STATE_STOPPED
                     playerListener?.onCompletionListener(it)
                 }
                 setOnErrorListener { mp, what, extra ->
@@ -91,10 +91,7 @@ class Player {
     fun stop() {
         if (player == null) return
         player?.stop()
-        player?.release()
-        player = null
-        holder = null
-        state = STATE_IDLE
+        state = STATE_STOPPED
     }
 
     fun reStart() { initialize() }
