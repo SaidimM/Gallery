@@ -1,4 +1,4 @@
-package com.example.unpixs.media.ui.page
+package com.example.gallery.base.response.fastJson
 
 import com.alibaba.fastjson.JSON
 import okhttp3.MediaType.Companion.toMediaType

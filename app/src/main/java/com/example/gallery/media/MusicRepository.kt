@@ -1,6 +1,7 @@
 package com.example.gallery.media
 
 import android.util.Log
+import com.example.gallery.base.response.fastJson.FastJsonConverterFactory
 import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
 import com.example.gallery.media.remote.NeteaseApi
@@ -9,7 +10,6 @@ import com.example.gallery.media.remote.lyrics.LyricResult
 import com.example.gallery.media.remote.music.MusicDetailResult
 import com.example.gallery.media.remote.mv.MusicVideoResult
 import com.example.gallery.media.remote.search.Song
-import com.example.unpixs.media.ui.page.FastJsonConverterFactory
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

@@ -1,4 +1,4 @@
-package com.example.gallery.base.utils
+package com.example.gallery.base.response.fastJson
 
 import com.alibaba.fastjson.JSON
 import okhttp3.ResponseBody
