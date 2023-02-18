@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import com.blankj.utilcode.util.Utils
 
 
-@Database(entities = [Music::class], version = 1)
+@Database(entities = [Music::class], version = 1, exportSchema = false)
 abstract class MusicDatabase : RoomDatabase() {
     abstract fun getDao(): MusicDao
 

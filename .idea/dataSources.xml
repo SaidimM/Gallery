@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="Android SQLite" uuid="b6b6715e-65db-4909-bf45-5890a4346eea">
-      <driver-ref>sqlite.xerial</driver-ref>
+    <data-source source="LOCAL" name="Android SQLite driver - identifier.sqlite" uuid="c8623b69-d998-4e7a-90a0-237e1eae157f">
+      <driver-ref>1d8aeff5-45f2-4e8d-9b13-ce3110700979</driver-ref>
+      <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\saidi\AppData\Local\JetBrains\IntelliJIdea2022.1\android\databases\SERIAL_NUMBER_R28M9008HGJ\com.example.gallery\internal\music</jdbc-url>
+      <jdbc-url>jdbc:sqlite:identifier.sqlite</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="Android SQLite" uuid="bcdf8c2a-c5fb-422f-995a-a515a5400529">
-      <driver-ref>sqlite.xerial</driver-ref>
+    <data-source source="LOCAL" name="Music" uuid="65135372-a04e-4d27-9d5c-fc8086fe9c74">
+      <driver-ref>1d8aeff5-45f2-4e8d-9b13-ce3110700979</driver-ref>
+      <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\saidi\AppData\Local\JetBrains\IntelliJIdea2022.1\android\databases\SERIAL_NUMBER_R28M9008HGJ\com.example.gallery\internal\music</jdbc-url>
+      <jdbc-url>jdbc:sqlite:identifier.sqlite</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
-      <libraries>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.36.0.3/sqlite-jdbc-3.36.0.3.jar</url>
-        </library>
-      </libraries>
     </data-source>
   </component>
 </project>
