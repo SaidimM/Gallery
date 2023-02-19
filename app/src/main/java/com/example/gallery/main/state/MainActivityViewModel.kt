@@ -2,7 +2,6 @@ package com.example.gallery.main.state
 
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
-import android.media.MediaPlayer
 import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.LiveData
@@ -23,8 +22,6 @@ import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
 import com.example.gallery.player.controller.MusicPlayer
-import com.example.gallery.player.controller.Player
-import com.example.gallery.player.listener.PlayerListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.doAsync
@@ -55,7 +52,7 @@ class MainActivityViewModel : ViewModel() {
     fun loadMusic() {
         viewModelScope.launch(Dispatchers.IO) {
             val stored = db.getDao().getAll() as ArrayList<Music>
-            val local = LocalMusicUtils.getmusic(Utils.getApp())
+            val local = LocalMusicUtils.getMusic(Utils.getApp())
             restore(stored, local)
             _songs.postValue(stored)
         }
