@@ -8,7 +8,7 @@ import com.example.gallery.media.local.Music
 import java.io.File
 
 object BindingAdapters {
-    @BindingAdapter(value = ["app:setMusicCover"], requireAll = false)
+    @BindingAdapter(value = ["setMusicCover"], requireAll = false)
     fun setMusicCover(imageView: ImageView, music: Music?) {
         if (music == null) return
         val path = ALBUM_COVER_DIR + music.mediaAlbumId + ".jpg"
