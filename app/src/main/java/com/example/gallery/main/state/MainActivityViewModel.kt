@@ -40,9 +40,12 @@ class MainActivityViewModel : ViewModel() {
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
 
-    fun toLyric(music: Music) {
-        musicPlayer.play(music, songs.value)
-        _music.value = music
+    fun toLyric(position: Int) {
+        songs.value?.let {
+            val music: Music = it[position]
+            musicPlayer.play(music, songs.value)
+            _music.value = music
+        }
         index = R.id.lyricsFragment
     }
 
@@ -51,10 +54,8 @@ class MainActivityViewModel : ViewModel() {
 
     fun loadMusic() {
         viewModelScope.launch(Dispatchers.IO) {
-            val stored = db.getDao().getAll() as ArrayList<Music>
             val local = LocalMusicUtils.getMusic(Utils.getApp())
-            restore(stored, local)
-            _songs.postValue(stored)
+            _songs.postValue(local)
         }
     }
 

@@ -3,15 +3,16 @@ buildscript {
     ext {
         kotlin_version = '1.6.10'
         lifecycleVersion = "2.4.1"
-        navigationVersion = "2.3.5"
+        navigationVersion = "2.4.1"
+        roomVersion = '2.4.1'
         espressoVersion = '3.4.0'
-        roomVersion = '2.3.0'
         anko_version = '0.10.5'
     }
     repositories {
         maven { url "https://maven.aliyun.com/repository/public" }
         maven { url "https://maven.aliyun.com/repository/google" }
         maven { url "https://maven.aliyun.com/repository/central" }
+        maven { url 'https://maven.aliyun.com/nexus/content/repositories/gradle-plugin'}
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.0'
@@ -31,6 +32,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }

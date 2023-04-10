@@ -3,14 +3,13 @@ package com.example.gallery.main
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.blankj.utilcode.util.PermissionUtils
 import com.example.gallery.BR
 import com.example.gallery.R
 import com.example.gallery.base.bindings.BindingConfig
-import com.example.gallery.base.ui.navigation.NavHostFragment
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.main.state.MainActivityViewModel
-import com.example.gallery.media.local.Music
 
 class MainActivity : BaseActivity() {
     private lateinit var viewModel: MainActivityViewModel
@@ -35,9 +34,9 @@ class MainActivity : BaseActivity() {
         viewModel.index = R.id.musicFragment
     }
 
-    fun toLyrics(music: Music) {
+    fun toLyrics(index: Int) {
         navController.navigate(R.id.action_musicFragment_to_lyricsFragment)
-        viewModel.toLyric(music)
+        viewModel.toLyric(index)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

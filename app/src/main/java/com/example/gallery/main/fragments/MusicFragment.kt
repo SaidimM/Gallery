@@ -50,7 +50,7 @@ class MusicFragment : BaseFragment() {
                     viewModel.getMv(item)
                 }
                 binding.root.setOnClickListener {
-                    (context as MainActivity).toLyrics(item)
+                    (context as MainActivity).toLyrics(position)
                     SPUtils.getInstance().put(MUSIC_INDEX, position)
                 }
                 state.loadAlbumCover(item, binding.albumImage)
