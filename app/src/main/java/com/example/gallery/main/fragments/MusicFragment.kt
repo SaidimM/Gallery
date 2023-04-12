@@ -12,7 +12,6 @@ import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
 import com.example.gallery.databinding.ItemSongBinding
-import com.example.gallery.main.MainActivity
 import com.example.gallery.main.PlayerActivity
 import com.example.gallery.main.state.MainActivityViewModel
 import com.example.gallery.main.state.MusicFragmentViewModel
@@ -35,7 +34,7 @@ class MusicFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
-        observeVideModel()
+        observeViewModel()
         val index = SPUtils.getInstance().getInt(MUSIC_INDEX, 0)
         recyclerView.smoothScrollToPosition(index)
     }
@@ -50,21 +49,19 @@ class MusicFragment : BaseFragment() {
                     viewModel.getMv(item)
                 }
                 binding.root.setOnClickListener {
-                    (context as MainActivity).toLyrics(position)
                     SPUtils.getInstance().put(MUSIC_INDEX, position)
+                    state.playMusic(position)
                 }
+                binding.mv.visibility = if (item.mvId == 0) View.GONE else View.VISIBLE
                 state.loadAlbumCover(item, binding.albumImage)
             }
         }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        adapter.data = state.musics
     }
 
-    private fun observeVideModel() {
-        state.songs.observe(viewLifecycleOwner) {
-            if (it.isEmpty()) return@observe
-            adapter.data = it
-        }
+    private fun observeViewModel() {
         viewModel.musicVideo.observe(viewLifecycleOwner) {
             val intent = Intent(requireContext(), PlayerActivity::class.java)
             val link = it.data.brs.let { br ->

@@ -13,4 +13,5 @@
     <string name="play">play</string>
     <string name="back">back</string>
     <string name="album_cover">album cover</string>
+    <string name="music_library">Music library</string>
 </resources>

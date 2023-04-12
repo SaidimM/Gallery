@@ -12,7 +12,6 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
-import com.example.gallery.R
 import com.example.gallery.Strings
 import com.example.gallery.Strings.ALBUM_COVER_DIR
 import com.example.gallery.base.utils.LocalMusicUtils
@@ -22,12 +21,12 @@ import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
 import com.example.gallery.player.controller.MusicPlayer
+import com.example.gallery.player.state.PlayState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.io.File
-import java.util.*
 
 class MainActivityViewModel : ViewModel() {
 
@@ -40,51 +39,17 @@ class MainActivityViewModel : ViewModel() {
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
 
-    fun toLyric(position: Int) {
-        songs.value?.let {
-            val music: Music = it[position]
-            musicPlayer.play(music, songs.value)
-            _music.value = music
-        }
-        index = R.id.lyricsFragment
-    }
+    private var _state = MutableLiveData<PlayState>()
+    val state: LiveData<PlayState> = _state
 
-    private var _songs: MutableLiveData<ArrayList<Music>> = MutableLiveData()
-    val songs: LiveData<ArrayList<Music>> = _songs
+    val musics: ArrayList<Music> = arrayListOf()
 
     fun loadMusic() {
         viewModelScope.launch(Dispatchers.IO) {
             val local = LocalMusicUtils.getMusic(Utils.getApp())
-            _songs.postValue(local)
+            musics.clear()
+            musics.addAll(local)
         }
-    }
-
-    private fun restore(stored: ArrayList<Music>, local: ArrayList<Music>) {
-        val hashTable = Hashtable<Long, Music>()
-        val newList = arrayListOf<Music>()
-        stored.forEach { hashTable[it.id] = it }
-        local.forEach {
-            if (hashTable[it.id] == null) newList.add(it)
-        }
-        storeNewSongs(newList.iterator())
-    }
-
-    private fun storeNewSongs(new: Iterator<Music>) {
-        if (!new.hasNext()) return
-        val music = new.next()
-        repository.getMusicInfo(music,
-            success = {
-                songs.value?.let {
-                    it.add(music)
-                    _songs.postValue(it)
-                    saveLyric(music)
-                    saveAlbumCover(music)
-                }
-                storeNewSongs(new)
-            }, failed = {
-                Log.e(this.javaClass.simpleName, it)
-                storeNewSongs(new)
-            })
     }
 
     private fun saveAlbumCover(music: Music) {
@@ -138,5 +103,17 @@ class MainActivityViewModel : ViewModel() {
             }, failed = {
                 Log.e(this.javaClass.simpleName, it)
             })
+    }
+
+    fun playMusic(position: Int) {
+        val item = musics[position]
+        if (item.id != music.value?.id) {
+            _state.postValue(PlayState.PLAY)
+            _music.postValue(item)
+            musicPlayer.play(music.value)
+        } else if (item.id == music.value?.id) {
+            _state.postValue(PlayState.PAUSE)
+            musicPlayer.pause()
+        }
     }
 }

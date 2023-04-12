@@ -8,15 +8,16 @@
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/back"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:layout_width="match_parent"
-            android:layout_height="88dp">
+            android:layout_height="wrap_content">
         <com.google.android.material.card.MaterialCardView
-                android:layout_width="72dp"
-                android:layout_height="72dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginStart="16dp"
                 android:id="@+id/album">
             <ImageView
                     android:layout_width="match_parent"
@@ -29,14 +30,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 android:ellipsize="end"
                 android:lines="1"
                 android:text="@{song.name}"
                 tools:text="Lights on"
                 android:textColor="@color/white"
                 android:layout_marginEnd="16dp"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@id/album"
                 app:layout_constraintBottom_toTopOf="@id/artist"
                 app:layout_constraintStart_toEndOf="@id/album"
                 app:layout_constraintEnd_toStartOf="@id/mv"
@@ -58,15 +59,14 @@
                 app:layout_constraintTop_toBottomOf="@id/name"
                 app:layout_constraintStart_toEndOf="@id/album"/>
         <ImageView
-                android:layout_width="40dp"
-                android:layout_height="24dp"
+                android:layout_width="32dp"
+                android:layout_height="20dp"
                 android:id="@+id/mv"
-                android:visibility="@{song.mvId == 0 ? View.GONE : View.VISIBLE}"
+                android:visibility="gone"
                 android:background="@drawable/ic_mv"
                 app:layout_constraintTop_toTopOf="@id/name"
                 app:layout_constraintBottom_toBottomOf="@id/name"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="16dp"
                 android:contentDescription="@string/watch_mv"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
