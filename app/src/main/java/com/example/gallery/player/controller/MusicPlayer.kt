@@ -61,6 +61,9 @@ class MusicPlayer {
             list.clear()
             list.addAll(musics)
             position = list.indexOf(music)
+        } else if (music == null && musics == null) {
+            player.start()
+            return
         }
         player.stop()
         if (list.isEmpty()) return
@@ -78,4 +81,6 @@ class MusicPlayer {
     }
 
     fun seekTo(position: Int) { player.seekTo(position) }
+
+    fun getCurrentMusic() = list[position]
 }

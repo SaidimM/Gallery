@@ -1,24 +1,20 @@
 package com.example.gallery.main
 
 import android.animation.ValueAnimator
-import android.graphics.Interpolator
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.marginBottom
-import androidx.core.view.marginTop
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.blankj.utilcode.util.PermissionUtils
-import com.bumptech.glide.Glide
 import com.example.gallery.BR
 import com.example.gallery.R
 import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.main.state.MainActivityViewModel
+import com.example.gallery.player.state.PlayState
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
@@ -37,6 +33,12 @@ class MainActivity : BaseActivity() {
         else super.initPermission()
         toolbar.navigationIcon?.setVisible(false, false)
         observeViewModel()
+        initView()
+    }
+
+    private fun initView() {
+        play.setOnClickListener { viewModel.onPlayPressed() }
+        next.setOnClickListener { viewModel.onNextPressed() }
     }
 
     fun toMusic(view: View) {
@@ -57,19 +59,27 @@ class MainActivity : BaseActivity() {
 
     private fun observeViewModel() {
         viewModel.music.observe(this) {
-            if (player_layout.marginBottom != 0) {
-                val animator: ValueAnimator = ValueAnimator().apply {
-                    floatArrayOf(player_layout.marginBottom.toFloat(), 0F)
-                    duration = 1000
-                    interpolator = DecelerateInterpolator()
-                    addUpdateListener {
-                        val layoutParams: ConstraintLayout.LayoutParams = player_layout.layoutParams as ConstraintLayout.LayoutParams
-                        layoutParams.setMargins(0, 0, 0, (it.animatedValue as Float).toInt())
-                        player_layout.layoutParams = layoutParams
-                    }
-                }
-                animator.start()
+            if (player_layout.marginBottom != 0) animatePlayerView()
+            viewModel.loadAlbumCover(it, album_cover)
+            music_name.text = it.name
+        }
+        viewModel.state.observe(this) {
+            if (it == PlayState.PLAY) play.background = getDrawable(R.drawable.ic_pause)
+            else play.background = getDrawable(R.drawable.ic_play)
+        }
+    }
+
+    private fun animatePlayerView() {
+        val animator: ValueAnimator = ValueAnimator().apply {
+            setFloatValues(player_layout.marginBottom.toFloat(), 0F)
+            duration = 200
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener {
+                val layoutParams: ConstraintLayout.LayoutParams = player_layout.layoutParams as ConstraintLayout.LayoutParams
+                layoutParams.setMargins(0, 0, 0, (it.animatedValue as Float).toInt())
+                player_layout.layoutParams = layoutParams
             }
         }
+        animator.start()
     }
 }

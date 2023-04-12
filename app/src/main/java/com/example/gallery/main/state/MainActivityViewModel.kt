@@ -110,10 +110,26 @@ class MainActivityViewModel : ViewModel() {
         if (item.id != music.value?.id) {
             _state.postValue(PlayState.PLAY)
             _music.postValue(item)
-            musicPlayer.play(music.value)
+            musicPlayer.play(item, musics)
         } else if (item.id == music.value?.id) {
             _state.postValue(PlayState.PAUSE)
             musicPlayer.pause()
         }
+    }
+
+    fun onPlayPressed() {
+        if (state.value == PlayState.PLAY) {
+            musicPlayer.pause()
+            _state.postValue(PlayState.PAUSE)
+        }
+        else {
+            musicPlayer.play()
+            _state.postValue(PlayState.PLAY)
+        }
+    }
+
+    fun onNextPressed() {
+        musicPlayer.playNext()
+        _music.postValue(musicPlayer.getCurrentMusic())
     }
 }
