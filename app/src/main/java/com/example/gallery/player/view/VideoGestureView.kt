@@ -80,7 +80,7 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
     private val gestureDetector: GestureDetector by lazy { GestureDetector(context, simpleOnGestureListener) }
 
     private val simpleOnGestureListener = object : GestureDetector.SimpleOnGestureListener() {
-        override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+        override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
             Log.e(tag, "onScroll: e1" + e1!!.x + " " + e1.y)
             Log.e(tag, "onScroll: e2" + e2!!.x + " " + e2.y)
             Log.e(tag, "onScroll: $distanceX")
@@ -102,22 +102,22 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
             return true
         }
 
-        override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
             onSingleTap()
             return true
         }
 
-        override fun onDoubleTap(e: MotionEvent?): Boolean {
+        override fun onDoubleTap(e: MotionEvent): Boolean {
             onDoubleTap()
             return true
         }
     }
 
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+    override fun onTouch(v: View?, event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
-        if (event?.action == MotionEvent.ACTION_UP ||
-            event?.action == MotionEvent.ACTION_OUTSIDE ||
-            event?.action == MotionEvent.ACTION_CANCEL
+        if (event.action == MotionEvent.ACTION_UP ||
+            event.action == MotionEvent.ACTION_OUTSIDE ||
+            event.action == MotionEvent.ACTION_CANCEL
         ) {
             onActionUp(currentBehavior)
             currentBehavior = -1

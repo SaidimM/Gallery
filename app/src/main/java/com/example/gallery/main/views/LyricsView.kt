@@ -275,7 +275,7 @@ class LyricsView : View {
 
     private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
 
-        override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+        override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
             scroll += distanceY
             dragging = true
 
@@ -286,7 +286,7 @@ class LyricsView : View {
             return true
         }
 
-        override fun onDoubleTap(e: MotionEvent?) = doubleTap(e)
+        override fun onDoubleTap(e: MotionEvent) = doubleTap(e)
     })
 
     var lyricsListener: ((Int) -> Unit)? = null
