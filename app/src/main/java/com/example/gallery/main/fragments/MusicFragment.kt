@@ -12,7 +12,7 @@ import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
 import com.example.gallery.databinding.ItemSongBinding
-import com.example.gallery.main.PlayerActivity
+import com.example.gallery.main.activities.PlayerActivity
 import com.example.gallery.main.state.MainActivityViewModel
 import com.example.gallery.main.state.MusicFragmentViewModel
 import com.example.gallery.media.local.Music

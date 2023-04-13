@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="com.example.gallery.main.state.PlayerViewModel"/>
+        <variable
+                name="viewModel"
+                type="PlayerViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:paddingHorizontal="16dp"
+                android:gravity="center_vertical"
+                android:id="@+id/player_layout"
+                android:background="@color/black_500"
+                app:layout_constraintTop_toTopOf="parent"
+                android:orientation="horizontal">
+
+            <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:id="@+id/player_view"/>
+
+            <com.google.android.material.card.MaterialCardView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:id="@+id/album">
+
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:id="@+id/album_cover"
+                        android:contentDescription="@string/album_cover"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    tools:text="Lights on"
+                    android:textColor="@color/white"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/album"
+                    app:layout_constraintEnd_toStartOf="@id/play"
+                    android:layout_marginStart="16dp"
+                    android:id="@+id/music_name"/>
+
+            <Button
+                    android:id="@+id/play"
+                    android:layout_width="24dp"
+                    android:layout_height="20dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/next"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/ic_play"/>
+
+            <Button
+                    android:id="@+id/next"
+                    android:layout_width="40dp"
+                    android:layout_height="28dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/ic_next"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

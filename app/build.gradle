@@ -57,9 +57,9 @@ dependencies {
     implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
     implementation 'androidx.paging:paging-rxjava2-ktx:3.1.1'
     // Architecture Components
-    implementation "androidx.room:room-runtime:$lifecycleVersion"
-    kapt "androidx.room:room-compiler:$lifecycleVersion"
-    implementation "androidx.room:room-ktx:$lifecycleVersion"
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"
@@ -82,5 +82,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'com.alibaba:fastjson:1.2.79'
     //coil - image request
-    implementation('io.coil-kt:coil:1.4.0')
+    implementation('io.coil-kt:coil:2.2.2')
+    // palette
+    implementation 'androidx.palette:palette-ktx:1.0.0'
 }
