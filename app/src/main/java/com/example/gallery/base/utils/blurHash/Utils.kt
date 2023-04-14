@@ -1,4 +1,4 @@
-package com.example.gallery.blurHash
+package com.example.gallery.base.utils.blurHash
 
 internal object Utils {
     @JvmStatic

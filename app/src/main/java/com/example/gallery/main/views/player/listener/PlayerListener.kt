@@ -1,4 +1,4 @@
-package com.example.gallery.player.listener
+package com.example.gallery.main.views.player.listener
 
 import android.media.MediaPlayer
 

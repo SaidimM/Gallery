@@ -16,12 +16,12 @@ import com.example.gallery.Strings
 import com.example.gallery.Strings.ALBUM_COVER_DIR
 import com.example.gallery.base.utils.LocalMusicUtils
 import com.example.gallery.base.utils.LocalMusicUtils.bitmapToFile
-import com.example.gallery.blurHash.BlurHash
+import com.example.gallery.base.utils.blurHash.BlurHash
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.Music
 import com.example.gallery.media.local.MusicDatabase
-import com.example.gallery.player.controller.MusicPlayer
-import com.example.gallery.player.state.PlayState
+import com.example.gallery.main.views.player.controller.MusicPlayer
+import com.example.gallery.main.views.player.state.PlayState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.doAsync

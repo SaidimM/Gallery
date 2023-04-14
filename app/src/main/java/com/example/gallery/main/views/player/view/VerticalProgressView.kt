@@ -1,4 +1,4 @@
-package com.example.gallery.player.view
+package com.example.gallery.main.views.player.view
 
 import android.content.Context
 import android.graphics.Canvas
@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.example.gallery.player.GeneralTools.dp
+import com.example.gallery.main.views.player.GeneralTools.dp
 
 class VerticalProgressView : View {
     constructor(context: Context) : super(context)

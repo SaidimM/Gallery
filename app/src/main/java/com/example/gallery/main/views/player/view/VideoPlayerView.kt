@@ -1,4 +1,4 @@
-package com.example.gallery.player.view
+package com.example.gallery.main.views.player.view
 
 import android.app.Activity
 import android.content.Context
@@ -12,7 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.example.gallery.R
-import com.example.gallery.player.listener.IVideoInfo
+import com.example.gallery.main.views.player.listener.IVideoInfo
 import kotlinx.android.synthetic.main.view_player.view.*
 
 class VideoPlayerView : VideoGestureView, LifecycleEventObserver {

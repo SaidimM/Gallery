@@ -12,7 +12,7 @@ import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.main.state.MainActivityViewModel
 import com.example.gallery.main.state.PlayerViewModel
-import com.example.gallery.player.state.PlayState
+import com.example.gallery.main.views.player.state.PlayState
 import kotlinx.android.synthetic.main.fragment_player.*
 
 class PlayerFragment : BaseFragment() {

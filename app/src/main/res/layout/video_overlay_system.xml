@@ -8,14 +8,14 @@
         android:orientation="vertical"
         android:paddingBottom="12dip"
         android:paddingTop="10dip">
-    <com.example.gallery.player.view.VerticalProgressView
+    <com.example.gallery.main.views.player.view.VerticalProgressView
             android:layout_width="8dp" android:layout_height="192dp"
             android:id="@+id/volume_bar"
             android:layout_marginHorizontal="16dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
-    <com.example.gallery.player.view.VerticalProgressView
+    <com.example.gallery.main.views.player.view.VerticalProgressView
             android:layout_width="8dp" android:layout_height="192dp"
             android:id="@+id/light_bar"
             android:layout_marginHorizontal="16dp"

@@ -9,7 +9,7 @@ import com.example.gallery.BR
 import com.example.gallery.R
 import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseFragment
-import com.example.gallery.blurHash.BlurHashDecoder
+import com.example.gallery.base.utils.blurHash.BlurHashDecoder
 import com.example.gallery.main.state.LyricsFragmentViewModel
 import com.example.gallery.main.state.MainActivityViewModel
 import com.example.gallery.media.local.Music

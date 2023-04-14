@@ -1,4 +1,4 @@
-package com.example.gallery.player
+package com.example.gallery.main.views.player
 
 import com.blankj.utilcode.util.Utils
 import kotlin.math.absoluteValue

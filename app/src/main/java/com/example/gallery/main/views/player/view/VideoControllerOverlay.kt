@@ -1,4 +1,4 @@
-package com.example.gallery.player.view
+package com.example.gallery.main.views.player.view
 
 import android.app.Activity
 import android.content.Context
@@ -9,10 +9,10 @@ import android.view.SurfaceHolder
 import android.widget.FrameLayout
 import android.widget.SeekBar
 import com.example.gallery.R
-import com.example.gallery.player.GeneralTools
-import com.example.gallery.player.controller.Player
-import com.example.gallery.player.listener.IVideoInfo
-import com.example.gallery.player.listener.PlayerListener
+import com.example.gallery.main.views.player.GeneralTools
+import com.example.gallery.main.views.player.controller.Player
+import com.example.gallery.main.views.player.listener.IVideoInfo
+import com.example.gallery.main.views.player.listener.PlayerListener
 import kotlinx.android.synthetic.main.video_controller_overlay.view.*
 
 class VideoControllerOverlay : FrameLayout {

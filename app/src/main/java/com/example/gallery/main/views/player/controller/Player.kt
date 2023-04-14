@@ -1,10 +1,10 @@
-package com.example.gallery.player.controller
+package com.example.gallery.main.views.player.controller
 
 import android.media.MediaPlayer
 import android.view.SurfaceHolder
 import com.blankj.utilcode.util.LogUtils
-import com.example.gallery.player.controller.PlayState.*
-import com.example.gallery.player.listener.PlayerListener
+import com.example.gallery.main.views.player.controller.PlayState.*
+import com.example.gallery.main.views.player.listener.PlayerListener
 
 class Player {
 

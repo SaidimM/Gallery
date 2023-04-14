@@ -1,4 +1,4 @@
-package com.example.gallery.player.controller
+package com.example.gallery.main.views.player.controller
 
 enum class PlayMode {
     LIST,

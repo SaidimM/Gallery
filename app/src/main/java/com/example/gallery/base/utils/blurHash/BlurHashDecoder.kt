@@ -1,4 +1,4 @@
-package com.example.gallery.blurHash
+package com.example.gallery.base.utils.blurHash
 
 import android.graphics.Bitmap
 import android.graphics.Color

@@ -1,4 +1,4 @@
-package com.example.gallery.blurHash
+package com.example.gallery.base.utils.blurHash
 
 internal object Base83 {
     val ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~"

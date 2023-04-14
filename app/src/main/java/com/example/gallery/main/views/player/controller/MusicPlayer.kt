@@ -1,9 +1,9 @@
-package com.example.gallery.player.controller
+package com.example.gallery.main.views.player.controller
 
 import android.media.MediaPlayer
 import com.example.gallery.media.local.Music
-import com.example.gallery.player.listener.PlayerListener
-import com.example.gallery.player.controller.PlayMode.*
+import com.example.gallery.main.views.player.listener.PlayerListener
+import com.example.gallery.main.views.player.controller.PlayMode.*
 import kotlin.random.Random
 
 class MusicPlayer {
@@ -13,7 +13,7 @@ class MusicPlayer {
     private var position: Int = 0
     private val player: Player = Player()
 
-    private val listener: PlayerListener = object: PlayerListener{
+    private val listener: PlayerListener = object: PlayerListener {
         override fun onPrepared(mediaPlayer: MediaPlayer) {
             val music = list[position]
             list.remove(music)

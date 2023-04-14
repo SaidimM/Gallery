@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gallery.R
-import com.example.gallery.player.listener.IVideoInfo
+import com.example.gallery.main.views.player.listener.IVideoInfo
 import kotlinx.android.synthetic.main.activity_player.*
 
 
