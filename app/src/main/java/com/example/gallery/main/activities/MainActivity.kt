@@ -1,12 +1,8 @@
 package com.example.gallery.main.activities
 
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
-import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.marginBottom
@@ -19,13 +15,12 @@ import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.main.state.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_player.*
 
 class MainActivity : BaseActivity() {
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var navController: NavController
     override fun initViewModel() {
-        viewModel = getActiityScopeViewModel(MainActivityViewModel::class.java)
+        viewModel = getActivityScopeViewModel(MainActivityViewModel::class.java)
     }
 
     override fun getBindingConfig() = BindingConfig(R.layout.activity_main, BR.viewModel, viewModel)

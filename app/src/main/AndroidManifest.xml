@@ -23,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".main.activities.PlayerActivity" android:screenOrientation="landscape"/>
+        <activity android:name=".main.activities.AlbumActivity"/>
     </application>
 
 </manifest>
