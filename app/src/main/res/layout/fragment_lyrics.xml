@@ -14,7 +14,7 @@
                 android:layout_height="match_parent"
                 android:id="@+id/back"/>
 
-        <com.example.gallery.main.views.LyricsView
+        <com.example.gallery.main.views.lyric.LyricsView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="16dp"

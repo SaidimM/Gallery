@@ -7,6 +7,8 @@ buildscript {
         roomVersion = '2.4.1'
         espressoVersion = '3.4.0'
         anko_version = '0.10.5'
+        compose_compiler = "1.4.0"
+        compose_bom = "2023.01.00"
     }
     repositories {
         maven { url "https://maven.aliyun.com/repository/public" }
