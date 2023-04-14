@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
-        <variable name="viewModel" type="com.example.gallery.main.state.MusicFragmentViewModel"/>
+        <variable name="viewModel" type="com.example.gallery.main.state.MusicViewModel"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:fitsSystemWindows="true"
@@ -12,5 +12,17 @@
                 android:layout_height="match_parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:id="@+id/recyclerView"/>
+
+        <androidx.fragment.app.FragmentContainerView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:paddingHorizontal="16dp"
+                android:gravity="center_vertical"
+                android:id="@+id/fragment_player"
+                android:name="com.example.gallery.main.fragments.PlayerFragment"
+                android:layout_marginBottom="-80dp"
+                android:background="@color/black_500"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:orientation="horizontal"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

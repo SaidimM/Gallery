@@ -13,7 +13,7 @@
                 app:destination="@id/musicFragment"/>
     </fragment>
     <fragment android:id="@+id/musicFragment"
-              tools:layout="@layout/fragment_music"
+              tools:layout="@layout/activity_music"
               android:name="com.example.gallery.main.fragments.MusicFragment"
               android:label="MusicFragment">
         <action android:id="@+id/action_musicFragment_to_mainFragment"
