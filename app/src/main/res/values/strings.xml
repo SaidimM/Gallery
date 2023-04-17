@@ -14,4 +14,6 @@
     <string name="back">back</string>
     <string name="album_cover">album cover</string>
     <string name="music_library">Music library</string>
+    <string name="album">album</string>
+    <string name="video">video</string>
 </resources>
