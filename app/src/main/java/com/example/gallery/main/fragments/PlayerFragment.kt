@@ -11,17 +11,18 @@ import com.example.gallery.R
 import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.main.state.MainActivityViewModel
+import com.example.gallery.main.state.MusicViewModel
 import com.example.gallery.main.state.PlayerViewModel
 import com.example.gallery.main.views.player.state.PlayState
 import kotlinx.android.synthetic.main.fragment_player.*
 
 class PlayerFragment : BaseFragment() {
     private lateinit var viewModel: PlayerViewModel
-    private lateinit var state: MainActivityViewModel
+    private lateinit var state: MusicViewModel
 
     override fun initViewModel() {
         viewModel = getFragmentScopeViewModel(PlayerViewModel::class.java)
-        state = getActivityScopeViewModel(MainActivityViewModel::class.java)
+        state = getActivityScopeViewModel(MusicViewModel::class.java)
     }
 
     override fun getBindingConfig() = BindingConfig(R.layout.fragment_player, BR.viewModel, viewModel)

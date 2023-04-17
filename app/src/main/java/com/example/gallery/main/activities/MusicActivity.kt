@@ -21,7 +21,7 @@ class MusicActivity : BaseActivity() {
     private lateinit var viewModel: MusicViewModel
     private lateinit var adapter: BaseRecyclerViewAdapter<Music, ItemSongBinding>
     override fun initViewModel() {
-        viewModel = getActivityScopeViewModel(MusicViewModel::class.java)
+        viewModel = getActiityScopeViewModel(MusicViewModel::class.java)
     }
 
     override fun getBindingConfig() = BindingConfig(R.layout.activity_music, BR.viewModel, viewModel)

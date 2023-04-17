@@ -32,8 +32,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        navController = (supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment).navController
-        if (PermissionUtils.isGranted(android.Manifest.permission_group.STORAGE)) viewModel.loadMusic()
+        if (PermissionUtils.isGranted(android.Manifest.permission_group.STORAGE)) viewModel.toMusic()
         else super.initPermission()
         toolbar.navigationIcon?.setVisible(false, false)
         observeViewModel()
@@ -47,32 +46,14 @@ class MainActivity : BaseActivity() {
         }
         view.setBackgroundColor(getColor(R.color.gray_e5))
         navController.navigate(R.id.action_mainFragment_to_musicFragment)
-        viewModel.index = R.id.musicFragment
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        viewModel.loadMusic()
     }
 
     private fun observeViewModel() {
-        viewModel.music.observe(this) {
-            if (fragment_player.marginBottom != 0) animatePlayerView()
-        }
-    }
 
-    private fun animatePlayerView() {
-        ValueAnimator().apply {
-            setFloatValues(fragment_player.marginBottom.toFloat(), 0F)
-            duration = 200
-            interpolator = AccelerateDecelerateInterpolator()
-            addUpdateListener {
-                val layoutParams: ConstraintLayout.LayoutParams =
-                    fragment_player.layoutParams as ConstraintLayout.LayoutParams
-                layoutParams.setMargins(0, 0, 0, (it.animatedValue as Float).toInt())
-                fragment_player.layoutParams = layoutParams
-            }
-            start()
-        }
     }
 }

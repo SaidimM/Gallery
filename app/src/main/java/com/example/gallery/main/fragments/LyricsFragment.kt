@@ -12,6 +12,7 @@ import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.utils.blurHash.BlurHashDecoder
 import com.example.gallery.main.state.LyricsFragmentViewModel
 import com.example.gallery.main.state.MainActivityViewModel
+import com.example.gallery.main.state.MusicViewModel
 import com.example.gallery.media.local.Music
 import kotlinx.android.synthetic.main.fragment_lyrics.*
 import kotlinx.coroutines.Dispatchers
@@ -19,14 +20,14 @@ import kotlinx.coroutines.launch
 
 class LyricsFragment : BaseFragment() {
     private lateinit var viewModel: LyricsFragmentViewModel
-    private lateinit var state: MainActivityViewModel
+    private lateinit var state: MusicViewModel
 
     private lateinit var music: Music
 
     override fun getBindingConfig() = BindingConfig(R.layout.fragment_lyrics, BR.viewModel, viewModel)
     override fun initViewModel() {
         viewModel = getFragmentScopeViewModel(LyricsFragmentViewModel::class.java)
-        state = getActivityScopeViewModel(MainActivityViewModel::class.java)
+        state = getActivityScopeViewModel(MusicViewModel::class.java)
         music = state.music.value ?: return
         viewModel.setMusic(music)
     }
