@@ -85,18 +85,4 @@ dependencies {
     implementation('io.coil-kt:coil:2.2.2')
     // palette
     implementation 'androidx.palette:palette-ktx:1.0.0'
-    // fresco
-    implementation 'com.facebook.fresco:fresco:3.0.0'
-    // compose
-    implementation platform("androidx.compose:compose-bom:$compose_bom")
-    implementation 'androidx.compose.ui:ui'
-    implementation 'androidx.compose.ui:ui-util'
-    implementation 'androidx.compose.ui:ui-graphics'
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.compose.material3:material3'
-    androidTestImplementation platform("androidx.compose:compose-bom:$compose_bom")
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
-    debugImplementation 'androidx.compose.ui:ui-tooling'
-    debugImplementation 'androidx.compose.ui:ui-test-manifest'
-    implementation 'androidx.activity:activity-compose:1.6.1'
 }

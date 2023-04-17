@@ -60,7 +60,7 @@ abstract class BaseActivity : DataBindingActivity() {
                 + "Application. You can't request ViewModel before onCreate call."
     )
 
-    protected fun <T : ViewModel> getActivityScopeViewModel(modelClass: Class<T>) = activityProvider!!.get(modelClass)
+    protected fun <T : ViewModel> getActiityScopeViewModel(modelClass: Class<T>) = activityProvider!!.get(modelClass)
 
     protected fun <T : ViewModel> getApplicationScopeViewModel(modelClass: Class<T>) = applicationProvider!![modelClass]
 
