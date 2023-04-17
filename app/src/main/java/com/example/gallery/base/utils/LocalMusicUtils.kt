@@ -9,7 +9,9 @@ import android.provider.MediaStore
 import com.example.gallery.R
 import com.example.gallery.Strings.LYRIC_DIR
 import com.example.gallery.media.local.Music
+import kotlinx.coroutines.CoroutineScope
 import java.io.*
+import kotlin.coroutines.CoroutineContext
 
 object LocalMusicUtils {
     //定义一个集合，存放从本地读取到的内容
@@ -28,7 +30,7 @@ object LocalMusicUtils {
     //获取专辑封面的Uri
     private val albumArtUri = Uri.parse("content://media/external/audio/albumart")
     fun getMusic(context: Context): ArrayList<Music> {
-        list = arrayListOf()
+        val list = arrayListOf<Music>()
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER
         )
@@ -67,7 +69,7 @@ object LocalMusicUtils {
             }
         }
         cursor!!.close()
-        return list as ArrayList<Music>
+        return list
     }
 
     //    转换歌曲时间的格式

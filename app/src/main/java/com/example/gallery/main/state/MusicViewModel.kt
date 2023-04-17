@@ -41,16 +41,17 @@ class MusicViewModel : ViewModel() {
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
 
+    private var _musics = MutableLiveData<ArrayList<Music>>()
+    val musics: LiveData<ArrayList<Music>> = _musics
+
     private var _state = MutableLiveData<PlayState>()
     val state: LiveData<PlayState> = _state
 
-    val musics: ArrayList<Music> = arrayListOf()
-
     fun loadMusic() {
         viewModelScope.launch(Dispatchers.IO) {
-            val local = LocalMusicUtils.getMusic(Utils.getApp())
-            musics.clear()
-            musics.addAll(local)
+            _musics.value?.clear()
+            val list = LocalMusicUtils.getMusic(Utils.getApp())
+            _musics.postValue(list)
         }
     }
 
@@ -113,11 +114,12 @@ class MusicViewModel : ViewModel() {
     }
 
     fun playMusic(position: Int) {
-        val item = musics[position]
+        if (musics.value == null) return
+        val item = musics.value!![position]
         if (item.id != music.value?.id) {
             _state.postValue(PlayState.PLAY)
             _music.postValue(item)
-            musicPlayer.play(item, musics)
+            musicPlayer.play(item, musics.value)
         } else if (item.id == music.value?.id) {
             _state.postValue(PlayState.PAUSE)
             musicPlayer.pause()
