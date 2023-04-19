@@ -3,7 +3,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
     <data>
-        <variable name="song" type="com.example.gallery.media.local.Music"/>
+        <variable name="song" type="com.example.gallery.media.local.bean.Music"/>
         <import type="android.view.View"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout

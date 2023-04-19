@@ -14,8 +14,7 @@ import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
 import com.example.gallery.databinding.ItemSongBinding
 import com.example.gallery.main.state.MusicViewModel
 import com.example.gallery.main.views.player.view.VideoInfo
-import com.example.gallery.media.local.Music
-import kotlinx.android.synthetic.main.activity_main.*
+import com.example.gallery.media.local.bean.Music
 import kotlinx.android.synthetic.main.activity_music.*
 import kotlinx.android.synthetic.main.activity_music.toolbar
 

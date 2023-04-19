@@ -13,12 +13,12 @@ import coil.request.ImageRequest
 import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
 import com.example.gallery.Strings
-import com.example.gallery.base.utils.LocalMusicUtils
+import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.base.utils.blurHash.BlurHash
 import com.example.gallery.main.views.player.controller.MusicPlayer
 import com.example.gallery.main.views.player.state.PlayState
 import com.example.gallery.media.MusicRepository
-import com.example.gallery.media.local.Music
+import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.local.MusicDatabase
 import com.example.gallery.media.remote.mv.MusicVideoResult
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +50,7 @@ class MusicViewModel : ViewModel() {
     fun loadMusic() {
         viewModelScope.launch(Dispatchers.IO) {
             _musics.value?.clear()
-            val list = LocalMusicUtils.getMusic(Utils.getApp())
+            val list = LocalMediaUtils.getMusic(Utils.getApp())
             _musics.postValue(list)
         }
     }
@@ -64,7 +64,7 @@ class MusicViewModel : ViewModel() {
                     val request = ImageRequest.Builder(Utils.getApp())
                         .data(it.songs[0].album.picUrl).target { drawable ->
                             val bitmap = drawable as BitmapDrawable
-                            LocalMusicUtils.bitmapToFile(albumImagePath, bitmap.bitmap, 100)
+                            LocalMediaUtils.bitmapToFile(albumImagePath, bitmap.bitmap, 100)
                         }.build()
                     val imageLoader = ImageLoader.Builder(Utils.getApp()).build()
                     imageLoader.enqueue(request)
@@ -84,7 +84,7 @@ class MusicViewModel : ViewModel() {
         doAsync {
             val bitmap = if (File(albumCoverPath).exists()) {
                 BitmapFactory.decodeFile(albumCoverPath)
-            } else LocalMusicUtils.getArtwork(
+            } else LocalMediaUtils.getArtwork(
                 Utils.getApp(),
                 item.id,
                 item.albumId,
@@ -107,7 +107,7 @@ class MusicViewModel : ViewModel() {
             success = {
                 val data = it.lrc.lyric
                 Log.d(this.javaClass.simpleName, data)
-                LocalMusicUtils.writeStringToFile(Strings.LYRIC_DIR + music.mediaId + ".txt", data)
+                LocalMediaUtils.writeStringToFile(Strings.LYRIC_DIR + music.mediaId + ".txt", data)
             }, failed = {
                 Log.e(this.javaClass.simpleName, it)
             })

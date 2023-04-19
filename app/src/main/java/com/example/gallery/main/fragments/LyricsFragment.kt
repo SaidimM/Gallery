@@ -11,9 +11,8 @@ import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.utils.blurHash.BlurHashDecoder
 import com.example.gallery.main.state.LyricsFragmentViewModel
-import com.example.gallery.main.state.MainActivityViewModel
 import com.example.gallery.main.state.MusicViewModel
-import com.example.gallery.media.local.Music
+import com.example.gallery.media.local.bean.Music
 import kotlinx.android.synthetic.main.fragment_lyrics.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

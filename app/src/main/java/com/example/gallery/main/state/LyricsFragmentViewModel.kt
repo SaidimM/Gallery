@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gallery.Strings.LYRIC_DIR
-import com.example.gallery.base.utils.LocalMusicUtils.readFile
-import com.example.gallery.media.local.Music
+import com.example.gallery.base.utils.LocalMediaUtils.readFile
+import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.remote.lyrics.Lyric
 import java.io.File
 

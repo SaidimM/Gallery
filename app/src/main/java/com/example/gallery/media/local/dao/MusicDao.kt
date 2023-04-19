@@ -1,6 +1,7 @@
-package com.example.gallery.media.local
+package com.example.gallery.media.local.dao
 
 import androidx.room.*
+import com.example.gallery.media.local.bean.Music
 
 @Dao
 interface MusicDao {

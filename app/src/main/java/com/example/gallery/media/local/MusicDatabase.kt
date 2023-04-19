@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.blankj.utilcode.util.Utils
+import com.example.gallery.media.local.bean.Music
+import com.example.gallery.media.local.dao.MusicDao
 
 
 @Database(entities = [Music::class], version = 1, exportSchema = false)

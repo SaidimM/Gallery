@@ -2,18 +2,24 @@ package com.example.gallery.base.utils
 
 import android.content.ContentUris
 import android.content.Context
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
+import com.blankj.utilcode.util.ArrayUtils
+import com.blankj.utilcode.util.FileUtils
+import com.blankj.utilcode.util.Utils
 import com.example.gallery.R
 import com.example.gallery.Strings.LYRIC_DIR
-import com.example.gallery.media.local.Music
-import kotlinx.coroutines.CoroutineScope
+import com.example.gallery.media.local.bean.ImgFolderBean
+import com.example.gallery.media.local.bean.Music
+import com.example.gallery.media.local.bean.Video
 import java.io.*
-import kotlin.coroutines.CoroutineContext
+import java.util.*
 
-object LocalMusicUtils {
+
+object LocalMediaUtils {
     //定义一个集合，存放从本地读取到的内容
     var list: MutableList<Music> = arrayListOf()
     var music: Music? = null
@@ -276,6 +282,8 @@ object LocalMusicUtils {
         return path
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * bitmap保存为file
      */
@@ -344,5 +352,130 @@ object LocalMusicUtils {
             }
         }
         return content
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    fun getVideos(): List<Video> {
+        val videos: MutableList<Video> = ArrayList()
+        var c: Cursor? = null
+        try {
+            // String[] mediaColumns = { "_id", "_data", "_display_name",
+            // "_size", "date_modified", "duration", "resolution" };
+            c = Utils.getApp().contentResolver.query(
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                null,
+                null,
+                null,
+                MediaStore.Video.Media.DEFAULT_SORT_ORDER
+            )
+            if (c == null) return emptyList()
+            while (c.moveToNext()) {
+                val path = c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)) // 路径
+                if (!File(path).exists()) {
+                    continue
+                }
+                val id = c.getInt(c.getColumnIndexOrThrow(MediaStore.Video.Media._ID)) // 视频的id
+                val name = c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)) // 视频名称
+                val resolution = c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.RESOLUTION)) //分辨率
+                val size = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)) // 大小
+                val duration = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)) // 时长
+                val date = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_MODIFIED)) //修改时间
+                val video = Video(id, path, name, resolution, size, date, duration)
+                videos.add(video)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            c?.close()
+        }
+        return videos
+    }
+
+    // 获取视频缩略图
+    fun getVideoThumbnail(id: Int): Bitmap? {
+        var bitmap: Bitmap? = null
+        val options = BitmapFactory.Options()
+        options.inDither = false
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888
+        bitmap = MediaStore.Video.Thumbnails.getThumbnail(
+            Utils.getApp().contentResolver,
+            id.toLong(),
+            MediaStore.Images.Thumbnails.MICRO_KIND,
+            options
+        )
+        return bitmap
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    /**
+     * 得到图片文件夹集合
+     */
+    fun getImageFolders(): ArrayList<ImgFolderBean> {
+        val folders: ArrayList<ImgFolderBean> = arrayListOf()
+        // 扫描图片
+        var c: Cursor? = null
+        try {
+            c = Utils.getApp().contentResolver.query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                null,
+                MediaStore.Images.Media.MIME_TYPE + "= ? or " + MediaStore.Images.Media.MIME_TYPE + "= ?",
+                arrayOf("image/jpeg", "image/png"),
+                MediaStore.Images.Media.DATE_MODIFIED
+            )
+            if (c == null) return folders
+            val mDirs: MutableList<String> = ArrayList() //用于保存已经添加过的文件夹目录
+            while (c.moveToNext()) {
+                val index = c.getColumnIndex(MediaStore.Images.Media.DATA)
+                val path = c.getString(index) // 路径
+                val parentFile = File(path).parentFile ?: continue
+                val dir = parentFile.absolutePath
+                if (mDirs.contains(dir)) //如果已经添加过
+                    continue
+                mDirs.add(dir) //添加到保存目录的集合中
+                val folderBean = ImgFolderBean()
+                folderBean.dir = dir
+                folderBean.fistImgPath = path
+                if (parentFile.list() == null) continue
+                val count: Int = parentFile.list { _, filename ->
+                    filename.endsWith(".jpeg") || filename.endsWith(".jpg") || filename.endsWith(".png")
+                }!!.size
+                folderBean.count = count
+                folders.add(folderBean)
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        } finally {
+            c?.close()
+        }
+        return folders
+    }
+
+    /**
+     * 通过图片文件夹的路径获取该目录下的图片
+     */
+    fun getImgListByDir(dir: String): List<String> {
+        val imgPaths = ArrayList<String>()
+        val directory = File(dir)
+        if (!directory.exists()) {
+            return imgPaths
+        }
+        val files = directory.listFiles() ?: return emptyList()
+        for (file in files) {
+            val path = file.absolutePath
+            if (isPicFile(path)) {
+                imgPaths.add(path)
+            }
+        }
+        return imgPaths
+    }
+
+    fun isPicFile(file: String): Boolean {
+        //文件名后缀，即文件类型
+        val suffixName = file.substring(file.lastIndexOf("."))
+        val s = arrayOf(".jpg", ".png", ".jpeg", ".gif")
+        return ArrayUtils.contains(s, suffixName.lowercase(Locale.getDefault()))
     }
 }

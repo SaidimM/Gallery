@@ -1,7 +1,7 @@
 package com.example.gallery.main.views.player.controller
 
 import android.media.MediaPlayer
-import com.example.gallery.media.local.Music
+import com.example.gallery.media.local.bean.Music
 import com.example.gallery.main.views.player.listener.PlayerListener
 import com.example.gallery.main.views.player.controller.PlayMode.*
 import kotlin.random.Random

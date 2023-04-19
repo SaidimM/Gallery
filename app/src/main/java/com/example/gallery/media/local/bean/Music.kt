@@ -1,4 +1,4 @@
-package com.example.gallery.media.local
+package com.example.gallery.media.local.bean
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

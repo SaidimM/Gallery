@@ -4,7 +4,7 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.example.gallery.Strings.ALBUM_COVER_DIR
-import com.example.gallery.media.local.Music
+import com.example.gallery.media.local.bean.Music
 import java.io.File
 
 object BindingAdapters {

@@ -2,7 +2,7 @@ package com.example.gallery.media
 
 import android.util.Log
 import com.example.gallery.base.response.fastJson.FastJsonConverterFactory
-import com.example.gallery.media.local.Music
+import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.local.MusicDatabase
 import com.example.gallery.media.remote.NeteaseApi
 import com.example.gallery.media.remote.album.AlbumResult
