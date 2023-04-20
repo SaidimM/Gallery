@@ -10,16 +10,17 @@ import com.example.gallery.R
 import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.utils.blurHash.BlurHashDecoder
+import com.example.gallery.databinding.FragmentLyricsBinding
 import com.example.gallery.main.state.LyricsFragmentViewModel
 import com.example.gallery.main.state.MusicViewModel
 import com.example.gallery.media.local.bean.Music
-import kotlinx.android.synthetic.main.fragment_lyrics.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LyricsFragment : BaseFragment() {
     private lateinit var viewModel: LyricsFragmentViewModel
     private lateinit var state: MusicViewModel
+    private lateinit var binding: FragmentLyricsBinding
 
     private lateinit var music: Music
 
@@ -33,6 +34,7 @@ class LyricsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding = getBinding() as FragmentLyricsBinding
         initMusic()
         initBackground()
         observeData()
@@ -41,21 +43,21 @@ class LyricsFragment : BaseFragment() {
     private fun initBackground() {
         val density = ScreenUtils.getScreenDensity()
         val bitmap = BlurHashDecoder.decode(music.albumCoverBlurHash, 10, (density * 10).toInt())
-        if (bitmap != null) Glide.with(requireContext()).load(bitmap).centerCrop().into(back)
-        back.alpha = 0.5f
+        if (bitmap != null) Glide.with(requireContext()).load(bitmap).centerCrop().into(binding.back)
+        binding.back.alpha = 0.5f
     }
 
     private fun initMusic() {
         val isFileExists = viewModel.getLyric()
         if (!isFileExists) state.saveLyric(music)
-        state.loadAlbumCover(music, album_cover)
+        state.loadAlbumCover(music, binding.albumCover)
     }
 
     private fun observeData() {
         viewModel.lyrics.observe(viewLifecycleOwner) {
             lifecycleScope.launch(Dispatchers.Main) {
-                lyrics_view.data = it
-                lyrics_view.setOnDoubleTapListener { state.musicPlayer.seekTo(it) }
+                binding.lyricsView.data = it
+                binding.lyricsView.setOnDoubleTapListener { state.musicPlayer.seekTo(it) }
             }
         }
     }

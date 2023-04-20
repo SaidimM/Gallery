@@ -8,11 +8,12 @@ import com.example.gallery.BR
 import com.example.gallery.R
 import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseActivity
+import com.example.gallery.databinding.ActivityMainBinding
 import com.example.gallery.main.state.MainActivityViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
     private lateinit var viewModel: MainActivityViewModel
+    private lateinit var binding: ActivityMainBinding
     override fun initViewModel() {
         viewModel = getActiityScopeViewModel(MainActivityViewModel::class.java)
     }
@@ -21,17 +22,18 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = getBinding() as ActivityMainBinding
         if (PermissionUtils.isGranted(android.Manifest.permission_group.STORAGE)) {
-            music.visibility = View.VISIBLE
-            album.visibility = View.VISIBLE
-            video.visibility = View.VISIBLE
+            binding.music.visibility = View.VISIBLE
+            binding.album.visibility = View.VISIBLE
+            binding.video.visibility = View.VISIBLE
         } else {
-            music.visibility = View.GONE
-            album.visibility = View.GONE
-            video.visibility = View.GONE
+            binding.music.visibility = View.GONE
+            binding.album.visibility = View.GONE
+            binding.video.visibility = View.GONE
             super.initPermission()
         }
-        toolbar.navigationIcon?.setVisible(false, false)
+        binding.toolbar.navigationIcon?.setVisible(false, false)
     }
 
     fun onClick(view: View) {
@@ -47,8 +49,8 @@ class MainActivity : BaseActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        music.visibility = View.VISIBLE
-        album.visibility = View.VISIBLE
-        video.visibility = View.VISIBLE
+        binding.music.visibility = View.VISIBLE
+        binding.album.visibility = View.VISIBLE
+        binding.video.visibility = View.VISIBLE
     }
 }

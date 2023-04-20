@@ -23,6 +23,7 @@ import com.example.gallery.media.local.MusicDatabase
 import com.example.gallery.media.remote.mv.MusicVideoResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.io.File
@@ -81,21 +82,20 @@ class MusicViewModel : ViewModel() {
 
     fun loadAlbumCover(item: Music, imageView: ImageView) {
         val albumCoverPath = Strings.ALBUM_COVER_DIR + "${item.mediaAlbumId}.jpg"
-        doAsync {
-            val bitmap = if (File(albumCoverPath).exists()) {
-                BitmapFactory.decodeFile(albumCoverPath)
-            } else LocalMediaUtils.getArtwork(
-                Utils.getApp(),
-                item.id,
-                item.albumId,
-                allowdefalut = true,
-                small = false
-            )
-            uiThread { Glide.with(imageView).load(bitmap).into(imageView) }
-            if (bitmap != null && item.albumCoverBlurHash.isEmpty()) {
-                val blurHash = BlurHash.encode(bitmap)
-                item.albumCoverBlurHash = blurHash
-                db.getDao().update(item)
+        viewModelScope.launch {
+            val bitmap = withContext(Dispatchers.IO) {
+                if (File(albumCoverPath).exists()) {
+                    BitmapFactory.decodeFile(albumCoverPath)
+                } else LocalMediaUtils.getArtwork(
+                    Utils.getApp(),
+                    item.id,
+                    item.albumId,
+                    allowdefalut = true,
+                    small = false
+                )
+            }
+            this.launch(Dispatchers.Main) {
+                Glide.with(imageView).load(bitmap).into(imageView)
             }
         }
     }

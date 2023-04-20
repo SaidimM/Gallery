@@ -4,10 +4,10 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import android.widget.TextView
 import com.example.gallery.R
-import kotlinx.android.synthetic.main.video_overlay_system.view.*
 
-class VideoSystemOverlay: FrameLayout {
+class VideoSystemOverlay : FrameLayout {
     constructor(context: Context) : super(context)
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
     constructor(context: Context, attributeSet: AttributeSet, defStyleAttrs: Int) : super(
@@ -15,6 +15,10 @@ class VideoSystemOverlay: FrameLayout {
         attributeSet,
         defStyleAttrs
     )
+
+    private lateinit var volume_bar: VerticalProgressView
+    private lateinit var light_bar: VerticalProgressView
+    private lateinit var text: TextView
 
     init {
         LayoutInflater.from(context).inflate(R.layout.video_overlay_system, this)

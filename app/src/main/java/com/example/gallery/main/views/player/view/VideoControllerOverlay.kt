@@ -6,14 +6,12 @@ import android.media.MediaPlayer
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
-import android.widget.FrameLayout
-import android.widget.SeekBar
+import android.widget.*
 import com.example.gallery.R
 import com.example.gallery.main.views.player.GeneralTools
 import com.example.gallery.main.views.player.controller.Player
 import com.example.gallery.main.views.player.listener.IVideoInfo
 import com.example.gallery.main.views.player.listener.PlayerListener
-import kotlinx.android.synthetic.main.video_controller_overlay.view.*
 
 class VideoControllerOverlay : FrameLayout {
     constructor(context: Context) : super(context)
@@ -33,6 +31,13 @@ class VideoControllerOverlay : FrameLayout {
     private var showing = false
 
     val player = Player()
+
+    private var title: TextView
+    private var play: FrameLayout
+    private var seekbar: SeekBar
+    private var back: ImageView
+    private var play_img: ImageView
+    private var duration: TextView
 
     var videoInfo: IVideoInfo? = null
         set(value) {
@@ -66,6 +71,12 @@ class VideoControllerOverlay : FrameLayout {
 
     init {
         LayoutInflater.from(context).inflate(R.layout.video_controller_overlay, this)
+        title = findViewById(R.id.title)
+        play = findViewById(R.id.play)
+        seekbar = findViewById(R.id.seekbar)
+        back = findViewById(R.id.back)
+        play_img = findViewById(R.id.play_img)
+        duration = findViewById(R.id.duration)
         play.setOnClickListener {
             if (player.isPlaying()) pause() else play()
         }

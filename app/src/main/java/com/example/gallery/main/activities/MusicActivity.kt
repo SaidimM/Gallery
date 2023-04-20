@@ -11,16 +11,16 @@ import com.example.gallery.Strings
 import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
+import com.example.gallery.databinding.ActivityMusicBinding
 import com.example.gallery.databinding.ItemSongBinding
 import com.example.gallery.main.state.MusicViewModel
 import com.example.gallery.main.views.player.view.VideoInfo
 import com.example.gallery.media.local.bean.Music
-import kotlinx.android.synthetic.main.activity_music.*
-import kotlinx.android.synthetic.main.activity_music.toolbar
 
 class MusicActivity : BaseActivity() {
     private lateinit var viewModel: MusicViewModel
     private lateinit var adapter: BaseRecyclerViewAdapter<Music, ItemSongBinding>
+    private lateinit var binding: ActivityMusicBinding
     override fun initViewModel() {
         viewModel = getActiityScopeViewModel(MusicViewModel::class.java)
     }
@@ -29,12 +29,13 @@ class MusicActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toolbar.title = getString(R.string.music_library)
+        binding = getBinding() as ActivityMusicBinding
+        binding.toolbar.title = getString(R.string.music_library)
         initRecyclerView()
         observeViewModel()
         viewModel.loadMusic()
         val index = SPUtils.getInstance().getInt(Strings.MUSIC_INDEX, 0)
-        recyclerView.smoothScrollToPosition(index)
+        binding.recyclerView.smoothScrollToPosition(index)
     }
 
     private fun initRecyclerView() {
@@ -54,8 +55,8 @@ class MusicActivity : BaseActivity() {
                 viewModel.loadAlbumCover(item, binding.albumImage)
             }
         }
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
     private fun observeViewModel() {

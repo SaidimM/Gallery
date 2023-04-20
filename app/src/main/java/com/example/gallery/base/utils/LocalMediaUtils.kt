@@ -5,17 +5,24 @@ import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.ExifInterface
 import android.net.Uri
 import android.provider.MediaStore
+import android.text.TextUtils
+import android.util.Log
 import com.blankj.utilcode.util.ArrayUtils
-import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.Utils
 import com.example.gallery.R
 import com.example.gallery.Strings.LYRIC_DIR
 import com.example.gallery.media.local.bean.ImgFolderBean
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.local.bean.Video
+import com.example.gallery.media.local.enums.SortType
 import java.io.*
+import java.lang.reflect.Field
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.*
 
 
@@ -35,7 +42,7 @@ object LocalMediaUtils {
 
     //获取专辑封面的Uri
     private val albumArtUri = Uri.parse("content://media/external/audio/albumart")
-    fun getMusic(context: Context): ArrayList<Music> {
+    suspend fun getMusic(context: Context): ArrayList<Music> {
         val list = arrayListOf<Music>()
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER
@@ -79,7 +86,7 @@ object LocalMediaUtils {
     }
 
     //    转换歌曲时间的格式
-    fun formatTime(time: Int): String {
+    suspend fun formatTime(time: Int): String {
         return if (time / 1000 % 60 < 10) {
             (time / 1000 / 60).toString() + ":0" + time / 1000 % 60
         } else {
@@ -95,7 +102,13 @@ object LocalMediaUtils {
      * @param allowdefalut
      * @return
      */
-    fun getArtwork(context: Context, song_id: Long, album_id: Long, allowdefalut: Boolean, small: Boolean): Bitmap? {
+    suspend fun getArtwork(
+        context: Context,
+        song_id: Long,
+        album_id: Long,
+        allowdefalut: Boolean,
+        small: Boolean
+    ): Bitmap? {
         if (album_id < 0) {
             if (song_id < 0) {
                 val bm = getArtworkFromFile(context, song_id, -1)
@@ -356,7 +369,7 @@ object LocalMediaUtils {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    fun getVideos(): List<Video> {
+    suspend fun getVideos(): List<Video> {
         val videos: MutableList<Video> = ArrayList()
         var c: Cursor? = null
         try {
@@ -413,7 +426,7 @@ object LocalMediaUtils {
     /**
      * 得到图片文件夹集合
      */
-    fun getImageFolders(): ArrayList<ImgFolderBean> {
+    suspend fun getImageFolders(): ArrayList<ImgFolderBean> {
         val folders: ArrayList<ImgFolderBean> = arrayListOf()
         // 扫描图片
         var c: Cursor? = null
@@ -456,13 +469,13 @@ object LocalMediaUtils {
     /**
      * 通过图片文件夹的路径获取该目录下的图片
      */
-    fun getImgListByDir(dir: String): List<String> {
+    suspend fun getImgListByDir(dir: String): ArrayList<String> {
         val imgPaths = ArrayList<String>()
         val directory = File(dir)
         if (!directory.exists()) {
             return imgPaths
         }
-        val files = directory.listFiles() ?: return emptyList()
+        val files = directory.listFiles() ?: return imgPaths
         for (file in files) {
             val path = file.absolutePath
             if (isPicFile(path)) {
@@ -474,8 +487,43 @@ object LocalMediaUtils {
 
     fun isPicFile(file: String): Boolean {
         //文件名后缀，即文件类型
-        val suffixName = file.substring(file.lastIndexOf("."))
+        val index = file.lastIndexOf(".")
+        if (index == -1) return false
+        val suffixName = file.substring(index)
         val s = arrayOf(".jpg", ".png", ".jpeg", ".gif")
         return ArrayUtils.contains(s, suffixName.lowercase(Locale.getDefault()))
+    }
+
+    suspend fun getFileListByFolder(folder: ImgFolderBean): ArrayList<File> {
+        val files = arrayListOf<File>()
+        val pathList: ArrayList<String> = getImgListByDir(folder.dir)
+        pathList.forEach { path -> files.add(File(path)) }
+        return files
+    }
+
+    suspend fun getAllImageFiles(sortType: SortType): ArrayList<File> {
+        val files = arrayListOf<File>()
+        val folders = getImageFolders()
+        folders.forEach { files.addAll(getFileListByFolder(it)) }
+        files.sortBy {
+            val path: Path = it.toPath().toAbsolutePath()
+            val attr: BasicFileAttributes = Files.readAttributes(path, BasicFileAttributes::class.java)
+            if (sortType == SortType.CREATED) attr.creationTime() else attr.lastModifiedTime()
+        }
+        return files
+    }
+
+    fun getImageInfo(path: String) {
+        val oldExif = ExifInterface(path)
+        val exifInterfaceClass: Class<ExifInterface> = ExifInterface::class.java
+        val fields: Array<Field> = exifInterfaceClass.fields
+        for (i in fields.indices) {
+            val fieldName: String = fields[i].name
+            if (!TextUtils.isEmpty(fieldName) && fieldName.startsWith("TAG")) {
+                val fieldValue: String = fields[i].get(exifInterfaceClass)?.toString() ?: continue
+                val attribute: String = oldExif.getAttribute(fieldValue) ?: continue
+                Log.e("exif", "$fieldName-$fieldValue-$attribute")
+            }
+        }
     }
 }

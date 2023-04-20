@@ -7,13 +7,13 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
+import android.view.SurfaceView
 import android.view.WindowManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.example.gallery.R
 import com.example.gallery.main.views.player.listener.IVideoInfo
-import kotlinx.android.synthetic.main.view_player.view.*
 
 class VideoPlayerView : VideoGestureView, LifecycleEventObserver {
     constructor(context: Context) : super(context)
@@ -23,6 +23,11 @@ class VideoPlayerView : VideoGestureView, LifecycleEventObserver {
         attributeSet,
         defStyleAttrs
     )
+
+    private lateinit var surface: SurfaceView
+    private lateinit var controller_overlay: VideoControllerOverlay
+    private lateinit var system_overlay: VideoSystemOverlay
+    private lateinit var progress_overlay: VideoProgressOverlay
 
     var videoInfo: IVideoInfo? = null
         set(value) {
@@ -36,6 +41,10 @@ class VideoPlayerView : VideoGestureView, LifecycleEventObserver {
         (context as Activity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         (context as Activity).window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         LayoutInflater.from(context).inflate(R.layout.view_player, this)
+        surface = findViewById(R.id.surface)
+        controller_overlay = findViewById(R.id.controller_overlay)
+        system_overlay = findViewById(R.id.system_overlay)
+        progress_overlay = findViewById(R.id.progress_overlay)
         surface.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
             override fun surfaceDestroyed(holder: SurfaceHolder) {}
@@ -87,15 +96,19 @@ class VideoPlayerView : VideoGestureView, LifecycleEventObserver {
             Lifecycle.Event.ON_RESUME -> {
                 controller_overlay.play()
             }
+
             Lifecycle.Event.ON_PAUSE -> {
                 controller_overlay.pause()
             }
+
             Lifecycle.Event.ON_STOP -> {
                 controller_overlay.pause()
             }
+
             Lifecycle.Event.ON_DESTROY -> {
                 controller_overlay.release()
             }
+
             else -> {}
         }
     }

@@ -48,6 +48,7 @@ abstract class BaseActivity : DataBindingActivity() {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(NetworkStateManager.instance)
         initPermission()
+
     }
 
     private fun getAppFactory(activity: Activity): ViewModelProvider.Factory {

@@ -4,9 +4,10 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
 import com.example.gallery.R
 import com.example.gallery.main.views.player.GeneralTools
-import kotlinx.android.synthetic.main.video_overlay_progress.view.*
 
 class VideoProgressOverlay : FrameLayout {
 
@@ -18,8 +19,13 @@ class VideoProgressOverlay : FrameLayout {
         defStyleAttrs
     )
 
+    private var position: TextView
+    private var differ: TextView
+
     init {
         LayoutInflater.from(context).inflate(R.layout.video_overlay_progress, this)
+        position = findViewById(R.id.position)
+        differ = findViewById(R.id.differ)
     }
 
     fun updateProgress(currentPosition: Int, difference: Int) {
