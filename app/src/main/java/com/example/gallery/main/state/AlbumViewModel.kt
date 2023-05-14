@@ -5,20 +5,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gallery.base.utils.LocalMediaUtils
+import com.example.gallery.main.model.AlbumItemModel
+import com.example.gallery.media.local.enums.MediaType
 import com.example.gallery.media.local.enums.SortType
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 class AlbumViewModel : ViewModel() {
 
-    private val _album = MutableLiveData<ArrayList<File>>()
-    val album: LiveData<ArrayList<File>> = _album
+    private val _album = MutableLiveData<ArrayList<AlbumItemModel>>()
+    val album: LiveData<ArrayList<AlbumItemModel>> = _album
 
     fun getImages() {
         viewModelScope.launch {
-            val folders = withContext(this.coroutineContext) { LocalMediaUtils.getAllImageFiles(SortType.CREATED)}
-            _album.postValue(folders)
+            val files = withContext(this.coroutineContext) { LocalMediaUtils.getAllImageFiles(SortType.CREATED) }
+            val images = arrayListOf<AlbumItemModel>()
+            files.forEach { images.add(AlbumItemModel(MediaType.IMAGE, it.path)) }
+            _album.postValue(images)
         }
     }
 }

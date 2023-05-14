@@ -7,10 +7,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <com.facebook.drawee.view.SimpleDraweeView
+            android:layout_height="120dp">
+        <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/image"/>
+                android:id="@+id/image"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/image"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

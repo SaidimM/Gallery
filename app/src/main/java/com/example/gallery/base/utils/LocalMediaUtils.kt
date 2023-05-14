@@ -490,7 +490,7 @@ object LocalMediaUtils {
         val index = file.lastIndexOf(".")
         if (index == -1) return false
         val suffixName = file.substring(index)
-        val s = arrayOf(".jpg", ".png", ".jpeg", ".gif")
+        val s = arrayOf(".jpg", ".png", ".jpeg")
         return ArrayUtils.contains(s, suffixName.lowercase(Locale.getDefault()))
     }
 
@@ -505,11 +505,6 @@ object LocalMediaUtils {
         val files = arrayListOf<File>()
         val folders = getImageFolders()
         folders.forEach { files.addAll(getFileListByFolder(it)) }
-        files.sortBy {
-            val path: Path = it.toPath().toAbsolutePath()
-            val attr: BasicFileAttributes = Files.readAttributes(path, BasicFileAttributes::class.java)
-            if (sortType == SortType.CREATED) attr.creationTime() else attr.lastModifiedTime()
-        }
         return files
     }
 
