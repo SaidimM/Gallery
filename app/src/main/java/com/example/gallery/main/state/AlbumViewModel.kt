@@ -16,6 +16,9 @@ class AlbumViewModel : ViewModel() {
     private val _album = MutableLiveData<ArrayList<AlbumItemModel>>()
     val album: LiveData<ArrayList<AlbumItemModel>> = _album
 
+    private val _spamCount = MutableLiveData(4)
+    val spamCount: LiveData<Int> = _spamCount
+
     fun getImages() {
         viewModelScope.launch {
             val files = withContext(this.coroutineContext) { LocalMediaUtils.getAllImageFiles(SortType.CREATED) }

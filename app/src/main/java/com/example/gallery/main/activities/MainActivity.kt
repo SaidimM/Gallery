@@ -3,26 +3,19 @@ package com.example.gallery.main.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import com.blankj.utilcode.util.PermissionUtils
-import com.example.gallery.BR
 import com.example.gallery.R
-import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.databinding.ActivityMainBinding
 import com.example.gallery.main.state.MainActivityViewModel
 
 class MainActivity : BaseActivity() {
-    private lateinit var viewModel: MainActivityViewModel
-    private lateinit var binding: ActivityMainBinding
-    override fun initViewModel() {
-        viewModel = getActiityScopeViewModel(MainActivityViewModel::class.java)
-    }
-
-    override fun getBindingConfig() = BindingConfig(R.layout.activity_main, BR.viewModel, viewModel)
+    private val viewModel: MainActivityViewModel by viewModels()
+    override val binding: ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = getBinding() as ActivityMainBinding
         if (PermissionUtils.isGranted(android.Manifest.permission_group.STORAGE)) {
             binding.music.visibility = View.VISIBLE
             binding.album.visibility = View.VISIBLE

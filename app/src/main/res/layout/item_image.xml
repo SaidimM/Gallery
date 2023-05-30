@@ -6,9 +6,10 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+            android:padding="0.5dp"
             android:layout_width="match_parent"
-            android:layout_height="120dp">
-        <ImageView
+            android:layout_height="match_parent">
+        <com.facebook.drawee.view.SimpleDraweeView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/image"

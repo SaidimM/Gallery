@@ -1,55 +1,46 @@
 package com.example.gallery.main.activities
 
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import com.bumptech.glide.Glide
-import com.example.gallery.BR
-import com.example.gallery.R
-import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseActivity
-import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
+import com.example.gallery.base.utils.ImagePipelineConfigFactory
 import com.example.gallery.databinding.ActivityAlbumBinding
-import com.example.gallery.databinding.ItemImageBinding
-import com.example.gallery.main.model.AlbumItemModel
+import com.example.gallery.main.adapters.AlbumAdapter
 import com.example.gallery.main.state.AlbumViewModel
+import com.facebook.drawee.backends.pipeline.Fresco
 
 class AlbumActivity : BaseActivity() {
-    private lateinit var viewModel: AlbumViewModel
-    private lateinit var binding: ActivityAlbumBinding
-    private lateinit var adapter: BaseRecyclerViewAdapter<AlbumItemModel, ItemImageBinding>
-
-    override fun initViewModel() {
-        viewModel = getActiityScopeViewModel(AlbumViewModel::class.java)
-    }
-
-    override fun getBindingConfig() = BindingConfig(R.layout.activity_album, BR.viewModel, viewModel)
+    private val viewModel: AlbumViewModel by viewModels()
+    private lateinit var adapter: AlbumAdapter
+    override val binding: ActivityAlbumBinding by lazy { ActivityAlbumBinding.inflate(layoutInflater) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = getBinding() as ActivityAlbumBinding
+        Fresco.initialize(this, ImagePipelineConfigFactory.getImagePipelineConfig(this))
         initView()
+        initData()
         observe()
     }
 
     private fun initView() {
-        viewModel.getImages()
-        adapter = object : BaseRecyclerViewAdapter<AlbumItemModel, ItemImageBinding>(this) {
-            override fun getResourceId(viewType: Int) = R.layout.item_image
-
-            override fun onBindItem(binding: ItemImageBinding, item: AlbumItemModel, position: Int) {
-                Glide.with(this@AlbumActivity).load(item.path).into(binding.image)
-            }
-        }
-        binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
+        setContentView(binding.root)
+        adapter = AlbumAdapter(this)
+        binding.recyclerView.layoutManager = GridLayoutManager(this, viewModel.spamCount.value!!)
         binding.recyclerView.adapter = adapter
+    }
+
+    private fun initData() {
+        viewModel.getImages()
     }
 
     private fun observe() {
         viewModel.album.observe(this) {
             adapter.data = it
+        }
+        viewModel.spamCount.observe(this) {
+            (binding.recyclerView.layoutManager as GridLayoutManager).spanCount = it
+            adapter.spamCount = it
         }
     }
 }

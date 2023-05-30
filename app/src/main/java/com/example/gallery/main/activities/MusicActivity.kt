@@ -3,12 +3,11 @@ package com.example.gallery.main.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blankj.utilcode.util.SPUtils
-import com.example.gallery.BR
 import com.example.gallery.R
 import com.example.gallery.Strings
-import com.example.gallery.base.bindings.BindingConfig
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
 import com.example.gallery.databinding.ActivityMusicBinding
@@ -18,18 +17,12 @@ import com.example.gallery.main.views.player.view.VideoInfo
 import com.example.gallery.media.local.bean.Music
 
 class MusicActivity : BaseActivity() {
-    private lateinit var viewModel: MusicViewModel
+    private val viewModel: MusicViewModel by viewModels()
     private lateinit var adapter: BaseRecyclerViewAdapter<Music, ItemSongBinding>
-    private lateinit var binding: ActivityMusicBinding
-    override fun initViewModel() {
-        viewModel = getActiityScopeViewModel(MusicViewModel::class.java)
-    }
-
-    override fun getBindingConfig() = BindingConfig(R.layout.activity_music, BR.viewModel, viewModel)
+    override val binding: ActivityMusicBinding by lazy { ActivityMusicBinding.inflate(layoutInflater) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = getBinding() as ActivityMusicBinding
         binding.toolbar.title = getString(R.string.music_library)
         initRecyclerView()
         observeViewModel()

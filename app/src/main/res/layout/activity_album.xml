@@ -3,7 +3,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <import type="com.example.gallery.main.state.AlbumViewModel"/>
+
         <variable
                 name="viewModel"
                 type="AlbumViewModel"/>
@@ -16,6 +18,7 @@
         <com.google.android.material.appbar.MaterialToolbar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
                 app:navigationIcon="@drawable/ic_back"
                 android:id="@+id/toolbar"
                 android:background="@color/black"

@@ -10,7 +10,6 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:fitsSystemWindows="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -18,6 +17,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:navigationIcon="@drawable/ic_back"
+                android:fitsSystemWindows="true"
                 android:id="@+id/toolbar"
                 android:background="@color/black"
                 app:title="@string/app_name"

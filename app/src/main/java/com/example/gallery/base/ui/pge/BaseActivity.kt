@@ -5,27 +5,29 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.Toast
 import androidx.annotation.NonNull
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blankj.utilcode.util.AdaptScreenUtils
 import com.blankj.utilcode.util.ScreenUtils
 import com.example.gallery.base.BaseApplication
-import com.example.gallery.base.bindings.DataBindingActivity
 import com.example.gallery.base.response.manager.NetworkStateManager
 
-abstract class BaseActivity : DataBindingActivity() {
+abstract class BaseActivity : AppCompatActivity() {
     private var activityProvider: ViewModelProvider? = null
         get() {
             if (field == null) {
@@ -44,11 +46,15 @@ abstract class BaseActivity : DataBindingActivity() {
             return field
         }
 
+    protected abstract val binding: ViewDataBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setCeiling()
         lifecycle.addObserver(NetworkStateManager.instance)
         initPermission()
-
+        binding.lifecycleOwner = this
+        setContentView(binding.root)
     }
 
     private fun getAppFactory(activity: Activity): ViewModelProvider.Factory {
@@ -61,11 +67,11 @@ abstract class BaseActivity : DataBindingActivity() {
                 + "Application. You can't request ViewModel before onCreate call."
     )
 
-    protected fun <T : ViewModel> getActiityScopeViewModel(modelClass: Class<T>) = activityProvider!!.get(modelClass)
+    protected fun <T : ViewModel> getActivityScopeViewModel(modelClass: Class<T>) = activityProvider!![modelClass]
 
     protected fun <T : ViewModel> getApplicationScopeViewModel(modelClass: Class<T>) = applicationProvider!![modelClass]
 
-    fun getResorces() =
+    override fun getResources() =
         if (ScreenUtils.isPortrait()) AdaptScreenUtils.adaptWidth(super.getResources(), 375)
         else AdaptScreenUtils.adaptHeight(super.getResources(), 640)
 
@@ -80,20 +86,12 @@ abstract class BaseActivity : DataBindingActivity() {
         startActivity(intent)
     }
 
-    private fun showLongToast(text: String?) {
-        Toast.makeText(applicationContext, text, Toast.LENGTH_LONG).show()
-    }
-
-    private fun showShortToast(text: String?) {
-        Toast.makeText(applicationContext, text, Toast.LENGTH_SHORT).show()
-    }
-
-    protected fun showLongToast(stringRes: Int) {
-        showLongToast(applicationContext.getString(stringRes))
-    }
-
-    protected fun showShortToast(stringRes: Int) {
-        showShortToast(applicationContext.getString(stringRes))
+    private fun setCeiling() {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = Color.TRANSPARENT
     }
 
     //点击EditText之外的区域隐藏键盘
@@ -123,7 +121,7 @@ abstract class BaseActivity : DataBindingActivity() {
     /**
      * android 6.0 以上需要动态申请权限
      */
-    protected fun initPermission() {
+    fun initPermission() {
         val permissions = arrayOf(
             Manifest.permission.INTERNET,
             Manifest.permission.READ_EXTERNAL_STORAGE,
