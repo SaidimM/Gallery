@@ -5,21 +5,18 @@ import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.ExifInterface
 import android.net.Uri
 import android.provider.MediaStore
-import android.text.TextUtils
-import android.util.Log
 import com.blankj.utilcode.util.ArrayUtils
 import com.blankj.utilcode.util.Utils
 import com.example.gallery.R
 import com.example.gallery.Strings.LYRIC_DIR
+import com.example.gallery.main.model.AlbumItemModel
 import com.example.gallery.media.local.bean.ImgFolderBean
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.local.bean.Video
-import com.example.gallery.media.local.enums.SortType
+import com.example.gallery.media.local.enums.MediaType
 import java.io.*
-import java.lang.reflect.Field
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
@@ -426,7 +423,7 @@ object LocalMediaUtils {
     /**
      * 得到图片文件夹集合
      */
-    suspend fun getImageFolders(): ArrayList<ImgFolderBean> {
+    private suspend fun getImageFolders(): ArrayList<ImgFolderBean> {
         val folders: ArrayList<ImgFolderBean> = arrayListOf()
         // 扫描图片
         var c: Cursor? = null
@@ -469,23 +466,23 @@ object LocalMediaUtils {
     /**
      * 通过图片文件夹的路径获取该目录下的图片
      */
-    suspend fun getImgListByDir(dir: String): ArrayList<String> {
-        val imgPaths = ArrayList<String>()
+    private suspend fun getImgListByDir(dir: String): ArrayList<Path> {
+        val imgPaths = ArrayList<Path>()
         val directory = File(dir)
         if (!directory.exists()) {
             return imgPaths
         }
         val files = directory.listFiles() ?: return imgPaths
         for (file in files) {
-            val path = file.absolutePath
-            if (isPicFile(path)) {
+            val path = file.toPath()
+            if (isPicFile(path.toString())) {
                 imgPaths.add(path)
             }
         }
         return imgPaths
     }
 
-    fun isPicFile(file: String): Boolean {
+    private fun isPicFile(file: String): Boolean {
         //文件名后缀，即文件类型
         val index = file.lastIndexOf(".")
         if (index == -1) return false
@@ -494,31 +491,48 @@ object LocalMediaUtils {
         return ArrayUtils.contains(s, suffixName.lowercase(Locale.getDefault()))
     }
 
-    suspend fun getFileListByFolder(folder: ImgFolderBean): ArrayList<File> {
-        val files = arrayListOf<File>()
-        val pathList: ArrayList<String> = getImgListByDir(folder.dir)
-        pathList.forEach { path -> files.add(File(path)) }
-        return files
+    private suspend fun getFileListByFolder(folder: ImgFolderBean): ArrayList<AlbumItemModel> {
+        val models = arrayListOf<AlbumItemModel>()
+        val pathList: ArrayList<Path> = getImgListByDir(folder.dir)
+        pathList.forEach { path ->
+            models.add(
+                AlbumItemModel(
+                    mediaType = MediaType.IMAGE,
+                    path = path.toString(),
+                    isSelected = false,
+                    foldrName = path.parent.toString(),
+                    createdTime = getFileCreationTime(path),
+                    lastEditedTime = getFileEditedTime(path),
+                    lastAccessTime = getFileAccessedTime(path)
+                )
+            )
+        }
+        return models
     }
 
-    suspend fun getAllImageFiles(sortType: SortType): ArrayList<File> {
-        val files = arrayListOf<File>()
+    suspend fun getAllImageFiles(): ArrayList<AlbumItemModel> {
+        val files = arrayListOf<AlbumItemModel>()
         val folders = getImageFolders()
         folders.forEach { files.addAll(getFileListByFolder(it)) }
+        files.sortBy { -it.createdTime }
         return files
     }
 
-    fun getImageInfo(path: String) {
-        val oldExif = ExifInterface(path)
-        val exifInterfaceClass: Class<ExifInterface> = ExifInterface::class.java
-        val fields: Array<Field> = exifInterfaceClass.fields
-        for (i in fields.indices) {
-            val fieldName: String = fields[i].name
-            if (!TextUtils.isEmpty(fieldName) && fieldName.startsWith("TAG")) {
-                val fieldValue: String = fields[i].get(exifInterfaceClass)?.toString() ?: continue
-                val attribute: String = oldExif.getAttribute(fieldValue) ?: continue
-                Log.e("exif", "$fieldName-$fieldValue-$attribute")
-            }
-        }
+    private fun getFileCreationTime(path: Path): Long {
+        val attrs: BasicFileAttributes =
+            Files.readAttributes(path, BasicFileAttributes::class.java)
+        return attrs.creationTime().toMillis()
+    }
+
+    private fun getFileEditedTime(path: Path): Long {
+        val attrs: BasicFileAttributes =
+            Files.readAttributes(path, BasicFileAttributes::class.java)
+        return attrs.lastModifiedTime().toMillis()
+    }
+
+    private fun getFileAccessedTime(path: Path): Long {
+        val attrs: BasicFileAttributes =
+            Files.readAttributes(path, BasicFileAttributes::class.java)
+        return attrs.lastAccessTime().toMillis()
     }
 }

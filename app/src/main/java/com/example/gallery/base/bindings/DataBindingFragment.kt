@@ -16,7 +16,6 @@ import com.example.gallery.R
 abstract class DataBindingFragment : Fragment() {
     protected lateinit var activity: AppCompatActivity
     private lateinit var binding: ViewDataBinding
-    private var mTvStrictModeTip: TextView? = null
 
     protected abstract fun initViewModel()
 
@@ -28,14 +27,6 @@ abstract class DataBindingFragment : Fragment() {
     }
 
     protected open fun getBinding(): ViewDataBinding? {
-        if (isDebug() && this.mTvStrictModeTip == null) {
-            this.mTvStrictModeTip = TextView(this.context)
-            this.mTvStrictModeTip!!.alpha = 0.5f
-            this.mTvStrictModeTip!!.textSize = 16.0f
-            this.mTvStrictModeTip!!.setBackgroundColor(-1)
-            this.mTvStrictModeTip!!.setText(R.string.debug_fragment_databinding_warning)
-            (this.binding.root as ViewGroup).addView(this.mTvStrictModeTip)
-        }
         return this.binding
     }
 

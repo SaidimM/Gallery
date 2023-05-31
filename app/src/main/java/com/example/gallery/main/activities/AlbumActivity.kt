@@ -8,6 +8,7 @@ import com.example.gallery.base.utils.ImagePipelineConfigFactory
 import com.example.gallery.databinding.ActivityAlbumBinding
 import com.example.gallery.main.adapters.AlbumAdapter
 import com.example.gallery.main.state.AlbumViewModel
+import com.example.gallery.media.local.enums.MediaType
 import com.facebook.drawee.backends.pipeline.Fresco
 
 class AlbumActivity : BaseActivity() {
@@ -26,8 +27,13 @@ class AlbumActivity : BaseActivity() {
     private fun initView() {
         setContentView(binding.root)
         adapter = AlbumAdapter(this)
-        binding.recyclerView.layoutManager = GridLayoutManager(this, viewModel.spamCount.value!!)
         binding.recyclerView.adapter = adapter
+        val manager = GridLayoutManager(this, viewModel.spamCount.value!!)
+        binding.recyclerView.layoutManager = manager
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int) =
+                if (adapter.getItemViewType(position) == 0) 1 else manager.spanCount
+        }
     }
 
     private fun initData() {
@@ -40,7 +46,7 @@ class AlbumActivity : BaseActivity() {
         }
         viewModel.spamCount.observe(this) {
             (binding.recyclerView.layoutManager as GridLayoutManager).spanCount = it
-            adapter.spamCount = it
+            adapter.spanCount = it
         }
     }
 }
