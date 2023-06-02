@@ -24,8 +24,7 @@
                 android:gravity="start|center_vertical"
                 android:paddingHorizontal="16dp"
                 tools:text="time"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="20sp"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

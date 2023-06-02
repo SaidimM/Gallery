@@ -1,11 +1,12 @@
 package com.example.gallery.main.state
 
-import androidx.lifecycle.*
-import com.example.gallery.base.utils.LocalMediaUtils
-import com.example.gallery.main.model.AlbumSortModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.gallery.main.model.AlbumItemModel
+import com.example.gallery.main.model.AlbumSortModel
 import com.example.gallery.media.ImageRepository
-import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.enums.MediaType
 import com.example.gallery.media.local.enums.SortType
 import kotlinx.coroutines.Dispatchers
@@ -20,63 +21,87 @@ class AlbumViewModel : ViewModel() {
     private val _spamCount = MutableLiveData(4)
     val spamCount: LiveData<Int> = _spamCount
 
-    private val _sortOption = MutableLiveData(AlbumSortModel())
-    val sortOption: LiveData<AlbumSortModel> = _sortOption
+    val sortModel = AlbumSortModel()
 
-    private val _album: MutableLiveData<ArrayList<AlbumItemModel>> = MutableLiveData()
+    private val _album: MutableLiveData<ArrayList<AlbumItemModel>> = MutableLiveData(arrayListOf())
     val album: LiveData<ArrayList<AlbumItemModel>> = _album
+
+    private val allImages: ArrayList<AlbumItemModel> = arrayListOf()
 
     fun getImages() {
         viewModelScope.launch {
-            val items = withContext(Dispatchers.IO) { imageRepository.getImages() }
-            sortImages(items, _sortOption.value!!)
-            _album.postValue(items)
+            if (allImages.isEmpty()) withContext(Dispatchers.IO) { allImages.addAll(imageRepository.getImages()) }
+            val sortedImages: ArrayList<AlbumItemModel> = arrayListOf()
+            sortedImages.addAll(allImages)
+            sortImages(sortedImages, sortModel)
+            _album.postValue(sortedImages)
         }
     }
 
-    private fun sortImages(images: ArrayList<AlbumItemModel>, albumSortModel: AlbumSortModel): MutableLiveData<ArrayList<AlbumItemModel>> {
-        val result: MutableLiveData<ArrayList<AlbumItemModel>> = MutableLiveData()
+    private fun sortImages(
+        images: ArrayList<AlbumItemModel> = album.value!!,
+        albumSortModel: AlbumSortModel = AlbumSortModel()
+    ) {
         viewModelScope.launch {
-            launch {
-                images.sortBy {
-                    when(albumSortModel.sortType) {
-                        SortType.CREATED -> -it.createdTime
-                        SortType.EDITED -> -it.lastEditedTime
-                        SortType.ACCESSED -> -it.lastAccessTime
-                    }
-                }
-            }
-            launch { if (!albumSortModel.isDescending) images.reverse() }
-            launch {
-                if (albumSortModel.isShowTime) {
-                    var time = 0L
-                    val oneDayMills = 24 * 60 * 60 * 1000
-                    if (albumSortModel.sortType == SortType.CREATED) {
-                        images.forEachWithIndex { i, image ->
-                            if ((image.createdTime / oneDayMills) * oneDayMills != time) {
-                                time = (image.createdTime / oneDayMills) * oneDayMills
-                                images.add(i, AlbumItemModel(MediaType.TITLE, createdTime = time))
-                            }
-                        }
-                    } else if (albumSortModel.sortType == SortType.EDITED) {
-                        images.forEachWithIndex { i, image ->
-                            if ((image.lastEditedTime / oneDayMills) * oneDayMills != time) {
-                                time = (image.lastEditedTime / oneDayMills) * oneDayMills
-                                images.add(i, AlbumItemModel(MediaType.TITLE, lastEditedTime = time))
-                            }
-                        }
-                    } else if (albumSortModel.sortType == SortType.ACCESSED) {
-                        images.forEachWithIndex { i, image ->
-                            if ((image.lastAccessTime / oneDayMills) * oneDayMills != time) {
-                                time = (image.lastAccessTime / oneDayMills) * oneDayMills
-                                images.add(i, AlbumItemModel(MediaType.TITLE, lastAccessTime = time))
-                            }
-                        }
-                    }
-                }
-            }
-            result.postValue(images)
+            launch { sortByTime(images, albumSortModel) }
+            launch { sortByOrder(images, albumSortModel) }
+            launch { splitByTime(images, albumSortModel) }
         }
-        return result
+    }
+
+    private fun sortByTime(
+        images: ArrayList<AlbumItemModel> = album.value!!,
+        albumSortModel: AlbumSortModel = AlbumSortModel()
+    ) {
+        images.sortBy {
+            when (albumSortModel.sortType) {
+                SortType.CREATED -> -it.createdTime
+                SortType.EDITED -> -it.lastEditedTime
+                SortType.ACCESSED -> -it.lastAccessTime
+            }
+        }
+    }
+
+    private fun sortByOrder(
+        images: ArrayList<AlbumItemModel> = album.value!!,
+        albumSortModel: AlbumSortModel = AlbumSortModel()
+    ) {
+        if (!albumSortModel.isDescending) images.reverse()
+    }
+
+    private fun splitByTime(
+        images: ArrayList<AlbumItemModel> = album.value!!,
+        albumSortModel: AlbumSortModel = AlbumSortModel()
+    ) {
+        if (albumSortModel.splitByTime) {
+            var time = 0L
+            val oneDayMills = 24 * 60 * 60 * 1000
+            when (albumSortModel.sortType) {
+                SortType.CREATED -> {
+                    images.forEachWithIndex { i, image ->
+                        if ((image.createdTime / oneDayMills) * oneDayMills != time) {
+                            time = (image.createdTime / oneDayMills) * oneDayMills
+                            images.add(i, AlbumItemModel(MediaType.TITLE, createdTime = time))
+                        }
+                    }
+                }
+                SortType.EDITED -> {
+                    images.forEachWithIndex { i, image ->
+                        if ((image.lastEditedTime / oneDayMills) * oneDayMills != time) {
+                            time = (image.lastEditedTime / oneDayMills) * oneDayMills
+                            images.add(i, AlbumItemModel(MediaType.TITLE, lastEditedTime = time))
+                        }
+                    }
+                }
+                SortType.ACCESSED -> {
+                    images.forEachWithIndex { i, image ->
+                        if ((image.lastAccessTime / oneDayMills) * oneDayMills != time) {
+                            time = (image.lastAccessTime / oneDayMills) * oneDayMills
+                            images.add(i, AlbumItemModel(MediaType.TITLE, lastAccessTime = time))
+                        }
+                    }
+                }
+            }
+        }
     }
 }

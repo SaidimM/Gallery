@@ -3,7 +3,7 @@ package com.example.gallery.main.model
 import com.example.gallery.media.local.enums.SortType
 
 data class AlbumSortModel(
-    val sortType: SortType = SortType.CREATED,
-    val isDescending: Boolean = true,
-    val isShowTime: Boolean = true
+    var sortType: SortType = SortType.CREATED,
+    var isDescending: Boolean = true,
+    var splitByTime: Boolean = true
 )

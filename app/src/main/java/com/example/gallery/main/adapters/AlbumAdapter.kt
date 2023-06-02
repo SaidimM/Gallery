@@ -38,10 +38,6 @@ class AlbumAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
         }
 
     var albumSortModel = AlbumSortModel()
-        set(value) {
-            field = value
-            data.forEachWithIndex { i, _ -> notifyItemChanged(i) }
-        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding = if (viewType == 1) ItemAlbumTitleBinding.inflate(context.layoutInflater) else ItemAlbumImageBinding.inflate(context.layoutInflater)

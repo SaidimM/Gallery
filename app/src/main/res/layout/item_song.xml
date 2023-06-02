@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/artist"
-                android:textColor="@color/gray_e5"
+                android:textColor="@color/gray_500"
                 android:textSize="14sp"
                 android:ellipsize="end"
                 android:text="@{song.singer}"

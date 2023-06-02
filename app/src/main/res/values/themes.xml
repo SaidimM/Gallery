@@ -1,22 +1,24 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Gallery" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.Gallery" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/teal_500</item>
+        <item name="colorPrimaryVariant">@color/teal_50</item>
+        <item name="colorPrimaryDark">@color/teal_800</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnSurface">@color/teal_100</item>
 
-        <!--注意：Android 21（android 5.0 Lollipop）这个系统开始这个属性设置为true，状态栏会呈现半透明加暗效果，并不能全透明-->
-        <item name="android:windowTranslucentStatus">false</item>
-        <!--注意：导航栏设置透明是为了让activity内容延伸至状态栏，导航栏实际为半透明加暗效果-->
-        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="colorAccent">@color/purple_100</item>
 
-        <item name="android:windowBackground">#121212</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textSize">18sp</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/transparent</item>
+
+        <item name="android:windowBackground">?attr/colorPrimaryVariant</item>
+
+        <!-- Font family. -->
+        <item name="fontFamily">@font/opensans_font</item>
     </style>
 
     <style name="VideoProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
@@ -30,6 +32,13 @@
         <item name="android:minHeight">2.5dp</item>
         <item name="android:progressDrawable">@drawable/video_progressbar</item>
         <item name="android:thumbOffset">5dp</item>
+    </style>
+
+    <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/bottomSheetStyleWrapper</item>
+    </style>
+    <style name="bottomSheetStyleWrapper" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <item name="nav_host_fragment_container" type="id"/>

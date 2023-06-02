@@ -17,4 +17,15 @@
     <string name="album">album</string>
     <string name="video">video</string>
     <string name="image">image</string>
+    <string name="sort">sort</string>
+    <string name="sort_type">Sort type</string>
+    <string name="created_time">Created time</string>
+    <string name="separator_text">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</string>
+    <string name="separated_by_time">separated by time</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="edited_time">Edited time</string>
+    <string name="descending_order">Descending order</string>
+    <string name="ascending_order">Ascending order</string>
+    <string name="accessed_time">Accessed time</string>
 </resources>

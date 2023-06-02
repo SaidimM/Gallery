@@ -494,18 +494,22 @@ object LocalMediaUtils {
     private suspend fun getFileListByFolder(folder: ImgFolderBean): ArrayList<AlbumItemModel> {
         val models = arrayListOf<AlbumItemModel>()
         val pathList: ArrayList<Path> = getImgListByDir(folder.dir)
-        pathList.forEach { path ->
-            models.add(
-                AlbumItemModel(
-                    mediaType = MediaType.IMAGE,
-                    path = path.toString(),
-                    isSelected = false,
-                    foldrName = path.parent.toString(),
-                    createdTime = getFileCreationTime(path),
-                    lastEditedTime = getFileEditedTime(path),
-                    lastAccessTime = getFileAccessedTime(path)
+        try {
+            pathList.forEach { path ->
+                models.add(
+                    AlbumItemModel(
+                        mediaType = MediaType.IMAGE,
+                        path = path.toString(),
+                        isSelected = false,
+                        foldrName = path.parent.toString(),
+                        createdTime = getFileCreationTime(path),
+                        lastEditedTime = getFileEditedTime(path),
+                        lastAccessTime = getFileAccessedTime(path)
+                    )
                 )
-            )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         return models
     }

@@ -39,7 +39,7 @@
                 android:id="@+id/fragment_player"
                 android:name="com.example.gallery.main.fragments.PlayerFragment"
                 android:layout_marginBottom="-80dp"
-                android:background="@color/black_500"
+                android:background="@color/gray_500"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:orientation="horizontal"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
