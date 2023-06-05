@@ -86,7 +86,11 @@ class AlbumAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
     class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     private fun getDate(stamp: Long): String {
-        val simpleDateFormat = SimpleDateFormat("yyyy年MM月dd", Locale.CHINA)
-        return simpleDateFormat.format(stamp)
+        val formatForThisYear = SimpleDateFormat("MMM dd", Locale.US)
+        val formatForOtherYear = SimpleDateFormat("MMM dd, yyyy", Locale.US)
+        val calendar = Calendar.getInstance()
+        calendar.time = Date(stamp)
+        val now = Calendar.getInstance()
+        return if (calendar[Calendar.YEAR] == now[Calendar.YEAR]) formatForThisYear.format(stamp) else formatForOtherYear.format(stamp)
     }
 }
