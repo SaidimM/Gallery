@@ -16,7 +16,6 @@
         <com.google.android.material.appbar.MaterialToolbar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:navigationIcon="@drawable/ic_back"
                 app:navigationIconTint="?attr/colorOnPrimary"
                 android:fitsSystemWindows="true"
                 android:id="@+id/toolbar"

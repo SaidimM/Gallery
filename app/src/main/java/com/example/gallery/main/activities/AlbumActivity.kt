@@ -1,7 +1,11 @@
 package com.example.gallery.main.activities
 
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.FrameLayout
 import androidx.activity.viewModels
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseActivity
@@ -9,8 +13,11 @@ import com.example.gallery.base.utils.ImagePipelineConfigFactory
 import com.example.gallery.databinding.ActivityAlbumBinding
 import com.example.gallery.databinding.DialogAlbumSortBinding
 import com.example.gallery.main.adapters.AlbumAdapter
+import com.example.gallery.main.fragments.PreviewFragment
+import com.example.gallery.main.model.AlbumItemModel
 import com.example.gallery.main.state.AlbumViewModel
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.drawee.view.SimpleDraweeView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class AlbumActivity : BaseActivity() {
@@ -44,6 +51,7 @@ class AlbumActivity : BaseActivity() {
             override fun getSpanSize(position: Int) =
                 if (adapter.getItemViewType(position) == 0) 1 else manager.spanCount
         }
+        adapter.onItemClickListener = { position, index, view -> displayPreview(adapter.data[position], view) }
     }
 
     private fun initData() {
@@ -73,5 +81,18 @@ class AlbumActivity : BaseActivity() {
             }
         }
         bottomSheetDialog.show()
+    }
+
+    private fun displayPreview(imageItem: AlbumItemModel, view: View) {
+        val frame = FrameLayout(this).apply { id = R.id.layout }
+        binding.constraintLayout.addView(frame, MATCH_PARENT, MATCH_PARENT)
+        val fragment = PreviewFragment(imageItem)
+        supportFragmentManager.beginTransaction().add(R.id.layout, fragment).commit()
+        fragment.onClickListener = { supportFragmentManager.beginTransaction().remove(fragment).commit() }
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.fragments.isEmpty()) super.onBackPressed()
+        else supportFragmentManager.beginTransaction().remove(supportFragmentManager.fragments.first()).commit()
     }
 }

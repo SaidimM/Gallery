@@ -15,34 +15,15 @@ import com.example.gallery.R
 
 abstract class DataBindingFragment : Fragment() {
     protected lateinit var activity: AppCompatActivity
-    private lateinit var binding: ViewDataBinding
 
-    protected abstract fun initViewModel()
-
-    protected abstract fun getBindingConfig(): BindingConfig
+    protected abstract val binding: ViewDataBinding
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.activity = context as AppCompatActivity
     }
 
-    protected open fun getBinding(): ViewDataBinding? {
-        return this.binding
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        initViewModel()
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val bindingConfig = getBindingConfig()
-        val binding =
-            DataBindingUtil.inflate<ViewDataBinding>(inflater, getBindingConfig().getLayoutId(), container, false)
-        binding.lifecycleOwner = activity
-        binding.setVariable(bindingConfig.getViewModelId(), bindingConfig.getViewModel())
-        bindingConfig.getBindingParams().forEach { key, value -> binding.setVariable(key, value) }
-        this.binding = binding
         return binding.root
     }
 

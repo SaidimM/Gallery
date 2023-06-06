@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="com.example.gallery.main.model.AlbumItemModel"/>
+        <variable
+                name="item"
+                type="AlbumItemModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:background="?attr/colorOnSurface"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:actualImageScaleType="fitCenter"
+                android:scaleType="fitCenter"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:contentDescription="@string/image"
+                android:id="@+id/image"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

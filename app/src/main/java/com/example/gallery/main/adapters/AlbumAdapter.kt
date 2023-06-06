@@ -62,6 +62,7 @@ class AlbumAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
                 height = width
             }
             setImage(binding.image, item)
+            binding.root.setOnClickListener { onItemClickListener(position, item, binding.root) }
         }
     }
 
@@ -84,6 +85,8 @@ class AlbumAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
     }
 
     class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    var onItemClickListener : (Int, AlbumItemModel, View) -> Unit = { _, _, _ ->  }
 
     private fun getDate(stamp: Long): String {
         val formatForThisYear = SimpleDateFormat("MMM dd", Locale.US)
