@@ -16,16 +16,16 @@
             android:requestLegacyExternalStorage="true"
             android:usesCleartextTraffic="true"
             android:theme="@style/Theme.Gallery">
-        <activity android:name=".main.activities.MainActivity" android:exported="true">
+        <activity android:name=".main.MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".main.activities.MusicActivity" />
-        <activity android:name=".main.activities.PlayerActivity" android:screenOrientation="landscape"/>
-        <activity android:name=".main.activities.AlbumActivity" />
-        <activity android:name=".main.activities.SettingActivity" />
+        <activity android:name=".main.music.MusicActivity" />
+        <activity android:name=".main.video.PlayerActivity" android:screenOrientation="landscape"/>
+        <activity android:name=".main.album.AlbumActivity" />
+        <activity android:name=".main.setting.SettingActivity" />
     </application>
 
 </manifest>

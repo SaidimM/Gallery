@@ -3,10 +3,10 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="com.example.gallery.main.model.AlbumItemModel"/>
+        <import type="com.example.gallery.main.album.models.AlbumItemModel"/>
         <variable
                 name="item"
-                type="AlbumItemModel"/>
+                type="com.example.gallery.main.album.models.AlbumItemModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

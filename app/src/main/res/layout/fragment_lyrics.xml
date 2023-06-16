@@ -3,8 +3,8 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
     <data>
-        <import type="com.example.gallery.main.state.LyricsFragmentViewModel"/>
-        <variable name="viewModel" type="LyricsFragmentViewModel"/>
+        <import type="com.example.gallery.main.music.viewModels.LyricsFragmentViewModel"/>
+        <variable name="viewModel" type="com.example.gallery.main.music.viewModels.LyricsFragmentViewModel"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -15,7 +15,7 @@
                 android:layout_height="match_parent"
                 android:id="@+id/back"/>
 
-        <com.example.gallery.main.views.lyric.LyricsView
+        <com.example.gallery.main.music.lyric.LyricsView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="16dp"

@@ -4,11 +4,11 @@
 
     <data>
 
-        <import type="com.example.gallery.main.state.AlbumViewModel"/>
+        <import type="com.example.gallery.main.album.viewModels.AlbumViewModel"/>
 
         <variable
                 name="viewModel"
-                type="AlbumViewModel"/>
+                type="com.example.gallery.main.album.viewModels.AlbumViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
