@@ -3,7 +3,6 @@ package com.example.gallery.media
 import android.util.Log
 import com.example.gallery.base.response.fastJson.FastJsonConverterFactory
 import com.example.gallery.media.local.bean.Music
-import com.example.gallery.media.local.MusicDatabase
 import com.example.gallery.media.remote.NeteaseApi
 import com.example.gallery.media.remote.album.AlbumResult
 import com.example.gallery.media.remote.lyrics.LyricResult
@@ -26,8 +25,6 @@ class MusicRepository {
         .addConverterFactory(FastJsonConverterFactory.create())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
-
-    private val db: MusicDatabase = MusicDatabase.getInstance()
 
     companion object {
         private var repository: MusicRepository? = null
@@ -54,8 +51,6 @@ class MusicRepository {
                     val song = it.body()!!.result.songs.find { song ->
                         song.duration <= music.duration + 100 && song.duration >= music.duration - 100
                     }
-                    if (song != null) saveMusic(music, song)
-                    else db.getDao().insert(music)
                 }
                 Log.d(this.javaClass.simpleName, it.toString())
                 if (success != null) success()
@@ -80,15 +75,6 @@ class MusicRepository {
             singer
         }
         music.mediaAlbumId = song.album.id.toString()
-        val temp = db.getDao().getMusicByMediaId(music.id.toString())
-        if (temp == null) db.getDao().insert(music)
-        else temp.apply {
-            mediaId = song.id.toString()
-            artistId = song.artists[0].id.toString()
-            mvId = song.mvid
-            mediaAlbumId = song.album.id.toString()
-            db.getDao().update(this)
-        }
     }
 
     fun getMv(music: Music, successful: (MusicVideoResult) -> Unit, failed: ((String) -> Unit)? = null) {

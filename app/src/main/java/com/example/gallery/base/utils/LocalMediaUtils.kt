@@ -11,7 +11,7 @@ import com.blankj.utilcode.util.ArrayUtils
 import com.blankj.utilcode.util.Utils
 import com.example.gallery.R
 import com.example.gallery.Strings.LYRIC_DIR
-import com.example.gallery.main.model.AlbumItemModel
+import com.example.gallery.main.album.models.AlbumItemModel
 import com.example.gallery.media.local.bean.ImgFolderBean
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.local.bean.Video

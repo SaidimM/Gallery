@@ -6,7 +6,7 @@
 
         <variable
                 name="viewModel"
-                type="com.example.gallery.main.state.MainActivityViewModel"/>
+                type="com.example.gallery.main.MainActivityViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

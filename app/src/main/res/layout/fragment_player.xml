@@ -4,10 +4,10 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.example.gallery.main.state.PlayerViewModel"/>
+        <import type="com.example.gallery.main.music.viewModels.PlayerViewModel"/>
         <variable
                 name="viewModel"
-                type="PlayerViewModel"/>
+                type="com.example.gallery.main.music.viewModels.PlayerViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
