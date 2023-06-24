@@ -10,9 +10,9 @@ This is a pretty cool transition for navigate to player view from music list, an
 
 ![Untitled](images/Controller.png)
 
-![Untitled](image/Lyrics.png)
+![Untitled](images/Lyrics.png)
 
-![Untitled](image/Play list.png)
+![Untitled](images/Play list.png)
 
 ## Main player page
 
