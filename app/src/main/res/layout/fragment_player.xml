@@ -4,10 +4,10 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.example.gallery.main.music.viewModels.PlayerViewModel"/>
+        <import type="com.example.gallery.main.music.viewModels.MusicPlayerViewModel"/>
         <variable
                 name="viewModel"
-                type="com.example.gallery.main.music.viewModels.PlayerViewModel"/>
+                type="com.example.gallery.main.music.viewModels.MusicPlayerViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,19 +17,15 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:paddingHorizontal="16dp"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginHorizontal="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:gravity="center_vertical"
                 android:id="@+id/player_layout"
-                android:background="@color/gray_500"
-                app:layout_constraintTop_toTopOf="parent"
+                android:background="@color/gray_900"
                 android:orientation="horizontal">
-
-            <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:id="@+id/player_view"/>
 
             <com.google.android.material.card.MaterialCardView
                     android:layout_width="48dp"
@@ -64,26 +60,30 @@
                     android:layout_marginStart="16dp"
                     android:id="@+id/music_name"/>
 
-            <Button
+            <ImageButton
+                    android:contentDescription="@string/play"
                     android:id="@+id/play"
-                    android:layout_width="24dp"
-                    android:layout_height="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="8dp"
+                    android:background="@color/transparent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/next"
-                    android:layout_marginEnd="16dp"
-                    android:background="@drawable/ic_play"/>
+                    android:src="@drawable/ic_play"/>
 
-            <Button
+            <ImageButton
+                    android:contentDescription="@string/next"
                     android:id="@+id/next"
-                    android:layout_width="40dp"
-                    android:layout_height="28dp"
+                    android:layout_width="wrap_content"
+                    android:paddingHorizontal="8dp"
+                    android:layout_height="match_parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/ic_next"/>
-
+                    android:background="@color/transparent"
+                    android:src="@drawable/ic_next"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

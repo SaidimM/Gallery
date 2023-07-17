@@ -112,11 +112,11 @@ class MusicViewModel : ViewModel() {
         if (musics.value == null) return
         val item = musics.value!![position]
         if (item.id != music.value?.id) {
-            _state.postValue(PlayState.PLAY)
-            _music.postValue(item)
+            _state.value = PlayState.PLAY
+            _music.value = item
             musicPlayer.play(item, musics.value)
         } else if (item.id == music.value?.id) {
-            _state.postValue(PlayState.PAUSE)
+            _state.value = PlayState.PAUSE
             musicPlayer.pause()
         }
     }

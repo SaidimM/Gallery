@@ -28,4 +28,5 @@
     <string name="descending_order">Descending order</string>
     <string name="ascending_order">Ascending order</string>
     <string name="accessed_time">Accessed time</string>
+    <string name="next">next</string>
 </resources>
