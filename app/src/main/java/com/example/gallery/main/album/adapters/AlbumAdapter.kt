@@ -17,30 +17,30 @@ import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.view.SimpleDraweeView
 import com.facebook.imagepipeline.common.ResizeOptions
 import com.facebook.imagepipeline.request.ImageRequestBuilder
-import org.jetbrains.anko.collections.forEachWithIndex
-import org.jetbrains.anko.layoutInflater
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class AlbumAdapter(private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var data: ArrayList<AlbumItemModel> = arrayListOf()
         set(value) {
             field = value
-            data.forEachWithIndex { i, _ -> notifyItemChanged(i) }
+            data.forEachIndexed { i, _ -> notifyItemChanged(i) }
         }
 
     var spanCount = 4
         set(value) {
             field = value
-            data.forEachWithIndex { i, _ -> notifyItemChanged(i) }
+            data.forEachIndexed { i, _ -> notifyItemChanged(i) }
         }
 
     var albumSortModel = AlbumSortModel()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val binding = if (viewType == 1) ItemAlbumTitleBinding.inflate(context.layoutInflater) else ItemAlbumImageBinding.inflate(context.layoutInflater)
+        val layoutInflater = (context as Activity).layoutInflater
+        val binding =
+            if (viewType == 1) ItemAlbumTitleBinding.inflate(layoutInflater)
+            else ItemAlbumImageBinding.inflate(layoutInflater)
         return BaseViewHolder(binding.root)
     }
 
@@ -86,7 +86,7 @@ class AlbumAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
 
     class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-    var onItemClickListener : (Int, AlbumItemModel, View) -> Unit = { _, _, _ ->  }
+    var onItemClickListener: (Int, AlbumItemModel, View) -> Unit = { _, _, _ -> }
 
     private fun getDate(stamp: Long): String {
         val formatForThisYear = SimpleDateFormat("MMM dd", Locale.US)
@@ -94,6 +94,8 @@ class AlbumAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
         val calendar = Calendar.getInstance()
         calendar.time = Date(stamp)
         val now = Calendar.getInstance()
-        return if (calendar[Calendar.YEAR] == now[Calendar.YEAR]) formatForThisYear.format(stamp) else formatForOtherYear.format(stamp)
+        return if (calendar[Calendar.YEAR] == now[Calendar.YEAR]) formatForThisYear.format(stamp) else formatForOtherYear.format(
+            stamp
+        )
     }
 }

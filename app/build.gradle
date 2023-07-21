@@ -65,22 +65,13 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     // retrofit and okhttp
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
     // misc
-    implementation 'com.jakewharton.rxbinding2:rxbinding:2.2.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
-    //kotlin 协程
-    implementation "org.jetbrains.anko:anko:$anko_version"
-    implementation "org.jetbrains.anko:anko-commons:$anko_version"
     //glide
     implementation 'com.github.bumptech.glide:glide:4.13.1'
     kapt 'com.github.bumptech.glide:compiler:4.13.1'
-    //work
-    implementation 'android.arch.work:work-runtime:1.0.1'
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    // fastJson
     implementation 'com.alibaba:fastjson:1.2.79'
-    //coil - image request
-    implementation('io.coil-kt:coil:2.2.2')
     // palette
     implementation 'androidx.palette:palette-ktx:1.0.0'
     // fresco

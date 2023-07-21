@@ -8,9 +8,13 @@ import com.example.gallery.media.remote.album.AlbumResult
 import com.example.gallery.media.remote.lyrics.LyricResult
 import com.example.gallery.media.remote.music.MusicDetailResult
 import com.example.gallery.media.remote.mv.MusicVideoResult
+import com.example.gallery.media.remote.search.Result
+import com.example.gallery.media.remote.search.SearchResult
 import com.example.gallery.media.remote.search.Song
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.flow.flow
 import okhttp3.OkHttpClient
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.util.concurrent.TimeUnit
@@ -36,28 +40,11 @@ class MusicRepository {
 
     }
 
-    fun getMusicInfo(music: Music, success: (() -> Unit)? = null, failed: ((String) -> Unit)? = null) {
-        if (music.name.isEmpty()) return
-        val disposable = endpoint.searchMusic(criteria = "${music.name}%20${music.singer}")
-            .observeOn(Schedulers.io())
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                if (!it.isSuccessful || it.body() == null) return@subscribe
-                val item = it.body()!!.result.songs.find { song ->
-                    song.mvid != 0 && song.duration <= music.duration + 100 && song.duration >= music.duration - 100
-                }
-                if (item != null) saveMusic(music, item)
-                else {
-                    val song = it.body()!!.result.songs.find { song ->
-                        song.duration <= music.duration + 100 && song.duration >= music.duration - 100
-                    }
-                }
-                Log.d(this.javaClass.simpleName, it.toString())
-                if (success != null) success()
-            },{
-                Log.d(this.javaClass.simpleName, it.message.toString())
-                if (failed != null) failed(it.message.toString())
-            })
+    private var endpoint: NeteaseApi = retrofit.create(NeteaseApi::class.java)
+
+    fun getMusicInfo(music: Music) = flow {
+        if (music.name.isEmpty()) error("music name incorrect!")
+        else emit(endpoint.searchMusic(criteria = "${music.name}%20${music.singer}"))
     }
 
     private fun saveMusic(music: Music, song: Song) {
@@ -77,68 +64,22 @@ class MusicRepository {
         music.mediaAlbumId = song.album.id.toString()
     }
 
-    fun getMv(music: Music, successful: (MusicVideoResult) -> Unit, failed: ((String) -> Unit)? = null) {
-        if (music.mvId == 0) return
-        val disposable = endpoint.getMv(music.mvId.toString())
-            .observeOn(Schedulers.io())
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                if (!it.isSuccessful || it.body() == null) return@subscribe
-                successful(it.body()!!)
-            }, { throwable ->
-                throwable.printStackTrace()
-                failed?.let { failed(throwable.message.toString()) }
-            })
+    fun getMv(music: Music) = flow{
+        if (music.mvId == 0) error("Music didn't have any MV!")
+        else emit(endpoint.getMv(music.mvId.toString()))
     }
 
-    fun getAlbum(albumId: String, success: ((AlbumResult) -> Unit)? = null, failed: ((String) -> Unit)? = null) {
-        if (albumId.isEmpty()) return
-        val disposable = endpoint.getAlbumInfo(albumId)
-            .observeOn(Schedulers.io())
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                if (!it.isSuccessful || it.body() == null) return@subscribe
-                Log.d("AlbumImage", it.toString())
-                if (success != null) {
-                    success(it.body()!!)
-                }
-            }, { throwable ->
-                throwable.printStackTrace()
-                failed?.let { failed(throwable.message.toString()) }
-            })
+    fun getAlbum(albumId: String) = flow {
+        if (albumId.isEmpty()) error("album is empty!")
+        else emit(endpoint.getAlbumInfo(albumId))
     }
 
-    fun getMusicDetail(musicId: String, success: ((MusicDetailResult) -> Unit)? = null, failed: ((String) -> Unit)? = null) {
-        if (musicId.isEmpty()) return
-        val disposable = endpoint.getMusicDetail(musicId, "[$musicId]")
-            .observeOn(Schedulers.io())
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                if (!it.isSuccessful || it.body() == null) return@subscribe
-                Log.d("MusicDetail", it.toString())
-                if (success != null) {
-                    success(it.body()!!)
-                }
-            }, { throwable ->
-                throwable.printStackTrace()
-                failed?.let { failed(throwable.message.toString()) }
-            })
+    fun getMusicDetail(musicId: String) = flow {
+        if (musicId.isEmpty()) error("music id is empty!")
+        else emit(endpoint.getMusicDetail(musicId, "[$musicId]"))
     }
 
-    private var endpoint: NeteaseApi = retrofit.create(NeteaseApi::class.java)
+    fun getLyrics(id: String) = flow { emit(endpoint.getLyric(id = id)) }
 
-    fun getLyrics(id: String, success: ((LyricResult) -> Unit)? = null, failed: ((String) -> Unit)? = null) {
-        val disposable = endpoint.getLyric(id = id)
-            .observeOn(Schedulers.io())
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                if (!it.isSuccessful || it.body() == null) return@subscribe
-                success?.let { it1 -> it1(it.body()!!) }
-            }, { throwable ->
-                throwable.printStackTrace()
-                failed?.let { failed(throwable.message.toString()) }
-            })
-    }
-
-    fun getArtist(artistId: String) = endpoint.getArtist(artistId)
+    fun getArtist(artistId: String) = flow { emit(endpoint.getArtist(artistId)) }
 }

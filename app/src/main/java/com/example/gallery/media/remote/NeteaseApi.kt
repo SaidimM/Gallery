@@ -14,7 +14,7 @@ import retrofit2.http.Query
 
 interface NeteaseApi {
     @GET(value = "/api/search/get/web")
-    fun searchMusic(
+    suspend fun searchMusic(
         @Query("csrf_token=hlpretag") token: String = "",
         @Query("hlposttag") tag: String = "",
         @Query("s") criteria: String,
@@ -22,7 +22,7 @@ interface NeteaseApi {
         @Query("offset") offset: Int = 0,
         @Query("total") total: Boolean = true,
         @Query("limit") limit: Int = 20
-    ): Observable<Response<SearchResult>>
+    ): Response<SearchResult>
 
     @GET(value = "/api/song/lyric")
     fun getLyric(
@@ -31,21 +31,21 @@ interface NeteaseApi {
         @Query("lv") lv: Int = -1,
         @Query("kv") kv: Int = -1,
         @Query("tv") tv: Int = -1,
-    ): Observable<Response<LyricResult>>
+    ): Response<LyricResult>
 
     @GET(value = "/api/mv/detail")
-    fun getMv(
+    suspend fun getMv(
         @Query("id") id: String,
         @Query("type") type: String = "mp4"
-    ): Observable<Response<MusicVideoResult>>
+    ): Response<MusicVideoResult>
 
     @GET(value = "/api/album/{album_id}")
-    fun getAlbumInfo(@Path("album_id") albumId: String): Observable<Response<AlbumResult>>
+    suspend fun getAlbumInfo(@Path("album_id") albumId: String): Response<AlbumResult>
 
     @GET(value = "/api/artist/{artist_id}")
-    fun getArtist(@Path("artist_id") artistId: String): Observable<Response<ArtistResult>>
+    suspend fun getArtist(@Path("artist_id") artistId: String): Response<ArtistResult>
 
     //http://music.163.com/api/song/detail/?id=31090820&ids=%5B31090820%5D
     @GET(value = "/api/song/detail/")
-    fun getMusicDetail(@Query("id") id: String, @Query("ids") ids: String): Observable<Response<MusicDetailResult>>
+    fun getMusicDetail(@Query("id") id: String, @Query("ids") ids: String): Response<MusicDetailResult>
 }

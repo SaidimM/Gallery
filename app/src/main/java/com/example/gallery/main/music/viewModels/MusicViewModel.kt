@@ -1,17 +1,15 @@
 package com.example.gallery.main.music.viewModels
 
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import coil.ImageLoader
-import coil.request.ImageRequest
 import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
+import com.bumptech.glide.GlideContext
 import com.example.gallery.Strings
 import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.main.video.player.controller.MusicPlayer
@@ -19,7 +17,9 @@ import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.remote.mv.MusicVideoResult
+import com.facebook.drawee.backends.pipeline.Fresco
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -52,27 +52,13 @@ class MusicViewModel : ViewModel() {
     }
 
     private fun saveAlbumCover(music: Music) {
-        repository.getMusicDetail(
-            music.mediaId,
-            success = {
-                val albumImagePath = Strings.ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg"
-                if (!File(albumImagePath).exists()) {
-                    val request = ImageRequest.Builder(Utils.getApp())
-                        .data(it.songs[0].album.picUrl).target { drawable ->
-                            val bitmap = drawable as BitmapDrawable
-                            LocalMediaUtils.bitmapToFile(albumImagePath, bitmap.bitmap, 100)
-                        }.build()
-                    val imageLoader = ImageLoader.Builder(Utils.getApp()).build()
-                    imageLoader.enqueue(request)
-                }
-            }, failed = {
-                Log.e(this.javaClass.simpleName, it)
-            })
+        viewModelScope.launch {
+            repository.getMusicDetail(music.mediaId).collect {  }
+        }
     }
 
     fun getMv(music: Music) {
-        repository.getMv(music,
-            successful = { _musicVideo.postValue(it) })
+        repository.getMv(music)
     }
 
     fun loadAlbumCover(item: Music, imageView: ImageView) {
@@ -97,15 +83,15 @@ class MusicViewModel : ViewModel() {
 
     fun saveLyric(music: Music) {
         if (music.mediaId.isEmpty()) return
-        repository.getLyrics(
-            music.mediaId,
-            success = {
-                val data = it.lrc.lyric
-                Log.d(this.javaClass.simpleName, data)
-                LocalMediaUtils.writeStringToFile(Strings.LYRIC_DIR + music.mediaId + ".txt", data)
-            }, failed = {
-                Log.e(this.javaClass.simpleName, it)
-            })
+        viewModelScope.launch{
+            repository.getLyrics(music.mediaId).collect{
+                if (it.isSuccessful) {
+                    val data = it.body()!!.lrc.lyric
+                    Log.d(this.javaClass.simpleName, data)
+                    LocalMediaUtils.writeStringToFile(Strings.LYRIC_DIR + music.mediaId + ".txt", data)
+                }
+            }
+        }
     }
 
     fun playMusic(position: Int) {
@@ -125,8 +111,7 @@ class MusicViewModel : ViewModel() {
         if (state.value == PlayState.PLAY) {
             musicPlayer.pause()
             _state.postValue(PlayState.PAUSE)
-        }
-        else {
+        } else {
             musicPlayer.play()
             _state.postValue(PlayState.PLAY)
         }

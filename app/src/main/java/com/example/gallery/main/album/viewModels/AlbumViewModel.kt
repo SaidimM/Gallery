@@ -12,7 +12,6 @@ import com.example.gallery.media.local.enums.SortType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.collections.forEachWithIndex
 
 class AlbumViewModel : ViewModel() {
 
@@ -78,7 +77,7 @@ class AlbumViewModel : ViewModel() {
             val oneDayMills = 24 * 60 * 60 * 1000
             when (albumSortModel.sortType) {
                 SortType.CREATED -> {
-                    images.forEachWithIndex { i, image ->
+                    images.forEachIndexed { i, image ->
                         if ((image.createdTime / oneDayMills) * oneDayMills != time) {
                             time = (image.createdTime / oneDayMills) * oneDayMills
                             images.add(i, AlbumItemModel(MediaType.TITLE, createdTime = time))
@@ -86,7 +85,7 @@ class AlbumViewModel : ViewModel() {
                     }
                 }
                 SortType.EDITED -> {
-                    images.forEachWithIndex { i, image ->
+                    images.forEachIndexed { i, image ->
                         if ((image.lastEditedTime / oneDayMills) * oneDayMills != time) {
                             time = (image.lastEditedTime / oneDayMills) * oneDayMills
                             images.add(i, AlbumItemModel(MediaType.TITLE, lastEditedTime = time))
@@ -94,7 +93,7 @@ class AlbumViewModel : ViewModel() {
                     }
                 }
                 SortType.ACCESSED -> {
-                    images.forEachWithIndex { i, image ->
+                    images.forEachIndexed { i, image ->
                         if ((image.lastAccessTime / oneDayMills) * oneDayMills != time) {
                             time = (image.lastAccessTime / oneDayMills) * oneDayMills
                             images.add(i, AlbumItemModel(MediaType.TITLE, lastAccessTime = time))
