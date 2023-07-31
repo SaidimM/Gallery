@@ -73,34 +73,43 @@ class AlbumViewModel : ViewModel() {
         albumSortModel: AlbumSortModel = AlbumSortModel()
     ) {
         if (albumSortModel.splitByTime) {
+            val sorted: ArrayList<AlbumItemModel> = arrayListOf()
             var time = 0L
             val oneDayMills = 24 * 60 * 60 * 1000
             when (albumSortModel.sortType) {
                 SortType.CREATED -> {
                     images.forEachIndexed { i, image ->
-                        if ((image.createdTime / oneDayMills) * oneDayMills != time) {
-                            time = (image.createdTime / oneDayMills) * oneDayMills
-                            images.add(i, AlbumItemModel(MediaType.TITLE, createdTime = time))
+                        val currentDayMills = (image.createdTime / oneDayMills) * oneDayMills
+                        if (currentDayMills != time) {
+                            time = currentDayMills
+                            sorted.add(AlbumItemModel(MediaType.TITLE, createdTime = time))
                         }
+                        sorted.add(image)
                     }
                 }
                 SortType.EDITED -> {
                     images.forEachIndexed { i, image ->
-                        if ((image.lastEditedTime / oneDayMills) * oneDayMills != time) {
-                            time = (image.lastEditedTime / oneDayMills) * oneDayMills
-                            images.add(i, AlbumItemModel(MediaType.TITLE, lastEditedTime = time))
+                        val currentDayMills = (image.lastEditedTime / oneDayMills) * oneDayMills
+                        if (currentDayMills != time) {
+                            time = currentDayMills
+                            sorted.add(AlbumItemModel(MediaType.TITLE, lastEditedTime = time))
                         }
+                        sorted.add(image)
                     }
                 }
                 SortType.ACCESSED -> {
                     images.forEachIndexed { i, image ->
-                        if ((image.lastAccessTime / oneDayMills) * oneDayMills != time) {
-                            time = (image.lastAccessTime / oneDayMills) * oneDayMills
-                            images.add(i, AlbumItemModel(MediaType.TITLE, lastAccessTime = time))
+                        val currentDayMills = (image.lastAccessTime / oneDayMills) * oneDayMills
+                        if (currentDayMills != time) {
+                            time = currentDayMills
+                            sorted.add(AlbumItemModel(MediaType.TITLE, lastAccessTime = time))
                         }
+                        sorted.add(image)
                     }
                 }
             }
+            images.clear()
+            images.addAll(sorted)
         }
     }
 }
