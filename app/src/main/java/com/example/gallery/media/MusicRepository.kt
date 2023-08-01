@@ -1,18 +1,23 @@
 package com.example.gallery.media
 
+import com.blankj.utilcode.util.LogUtils
 import com.example.gallery.base.response.fastJson.FastJsonConverterFactory
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.remote.NeteaseApi
 import com.example.gallery.media.remote.search.Song
 import kotlinx.coroutines.flow.flow
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 
 class MusicRepository {
+    private val loggingInterceptor =
+        HttpLoggingInterceptor { LogUtils.d("Http message: $it") }.apply { level = HttpLoggingInterceptor.Level.BODY }
     private val client = OkHttpClient.Builder()
         .callTimeout(3000, TimeUnit.MILLISECONDS)
         .connectTimeout(3000, TimeUnit.MILLISECONDS)
+        .addInterceptor(loggingInterceptor)
         .build()
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://music.163.com").client(client)

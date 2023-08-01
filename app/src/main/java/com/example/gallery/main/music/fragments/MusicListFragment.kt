@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blankj.utilcode.util.SPUtils
+import com.blankj.utilcode.util.SnackbarUtils
 import com.example.gallery.R
 import com.example.gallery.Strings
 import com.example.gallery.base.ui.pge.BaseFragment
@@ -46,6 +47,7 @@ class MusicListFragment : BaseFragment() {
                 binding.root.setOnClickListener {
                     SPUtils.getInstance().put(Strings.MUSIC_INDEX, position)
                     state.playMusic(position)
+                    state.getMusicInfo()
                 }
                 binding.mv.visibility = if (item.mvId == 0) View.GONE else View.VISIBLE
                 lifecycleScope.launchWhenCreated { loadAlbumCover(item, binding.albumImage) }
@@ -71,6 +73,9 @@ class MusicListFragment : BaseFragment() {
         }
         state.musics.observe(this) {
             adapter.data = it
+        }
+        state.progress.observe(this) {
+            SnackbarUtils.with(requireView()).setAction("progress: ${it * 100}%") { }
         }
     }
 }

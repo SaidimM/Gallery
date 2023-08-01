@@ -21,7 +21,7 @@ interface NeteaseApi {
         @Query("type") type: Int = 1,
         @Query("offset") offset: Int = 0,
         @Query("total") total: Boolean = true,
-        @Query("limit") limit: Int = 20
+        @Query("limit") limit: Int = 5
     ): Response<SearchResult>
 
     @GET(value = "/api/song/lyric")

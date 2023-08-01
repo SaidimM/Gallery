@@ -7,19 +7,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
-import com.bumptech.glide.GlideContext
 import com.example.gallery.Strings
 import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.main.video.player.controller.MusicPlayer
 import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.bean.Music
-import com.example.gallery.media.remote.mv.MusicVideoResult
-import com.facebook.drawee.backends.pipeline.Fresco
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -31,9 +32,6 @@ class MusicViewModel : ViewModel() {
     val musicPlayer = MusicPlayer()
     var index: Int = 0
 
-    private var _musicVideo: MutableLiveData<MusicVideoResult> = MutableLiveData()
-    val musicVideo: LiveData<MusicVideoResult> = _musicVideo
-
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
 
@@ -43,22 +41,15 @@ class MusicViewModel : ViewModel() {
     private var _state = MutableLiveData<PlayState>()
     val state: LiveData<PlayState> = _state
 
+    private var _progress = MutableLiveData<Float>()
+    val progress: LiveData<Float> = _progress
+
     fun loadMusic() {
         viewModelScope.launch(Dispatchers.IO) {
             _musics.value?.clear()
             val list = LocalMediaUtils.getMusic(Utils.getApp())
             _musics.postValue(list)
         }
-    }
-
-    private fun saveAlbumCover(music: Music) {
-        viewModelScope.launch {
-            repository.getMusicDetail(music.mediaId).collect {  }
-        }
-    }
-
-    fun getMv(music: Music) {
-        repository.getMv(music)
     }
 
     fun loadAlbumCover(item: Music, imageView: ImageView) {
@@ -81,10 +72,25 @@ class MusicViewModel : ViewModel() {
         }
     }
 
+    fun getMusicInfo() {
+        if (music.value == null) return
+        viewModelScope.launch {
+            repository.getMusicInfo(music.value!!)
+                .catch { LogUtils.e(it) }
+                .collect { response ->
+                    if (response.isSuccessful && response.body() != null) {
+                        response.body()!!.result.songs.forEach { song -> LogUtils.d(song) }
+//                        music.mvId = response.body()!!.result.songs[0].mvid
+                    }
+                }
+        }
+    }
+
     fun saveLyric(music: Music) {
         if (music.mediaId.isEmpty()) return
-        viewModelScope.launch{
-            repository.getLyrics(music.mediaId).collect{
+        viewModelScope.launch {
+            repository.getLyrics(music.mediaId)
+                .catch { LogUtils.e(it) }.collect {
                 if (it.isSuccessful) {
                     val data = it.body()!!.lrc.lyric
                     Log.d(this.javaClass.simpleName, data)
