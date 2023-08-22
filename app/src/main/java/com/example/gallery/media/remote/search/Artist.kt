@@ -1,13 +1,14 @@
 package com.example.gallery.media.remote.search
 
 data class Artist(
-    val albumSize: Int,
-    val alias: List<Any?>,
-    val id: Int,
-    val img1v1: Int,
-    val img1v1Url: String,
-    val name: String,
-    val picId: Int,
-    val picUrl: Any?,
-    val trans: Any?
+    val albumSize: Int = 0,
+    val alias: List<String> = listOf(),
+    val fansGroup: String = "",
+    val id: Int = 0,
+    val img1v1: Int = 0,
+    val img1v1Url: String = "",
+    val name: String = "",
+    val picId: Int = 0,
+    val picUrl: String = "",
+    val trans: String = ""
 )

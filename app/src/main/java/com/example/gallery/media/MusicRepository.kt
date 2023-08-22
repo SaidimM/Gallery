@@ -1,6 +1,6 @@
 package com.example.gallery.media
 
-import com.blankj.utilcode.util.LogUtils
+import LogUtil
 import com.example.gallery.base.response.fastJson.FastJsonConverterFactory
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.remote.NeteaseApi
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 
 class MusicRepository {
     private val loggingInterceptor =
-        HttpLoggingInterceptor { LogUtils.d("Http message: $it") }.apply { level = HttpLoggingInterceptor.Level.BODY }
+        HttpLoggingInterceptor { LogUtil.d("Http message: $it") }.apply { level = HttpLoggingInterceptor.Level.BODY }
     private val client = OkHttpClient.Builder()
         .callTimeout(3000, TimeUnit.MILLISECONDS)
         .connectTimeout(3000, TimeUnit.MILLISECONDS)

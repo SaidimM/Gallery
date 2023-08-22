@@ -1,6 +1,6 @@
 package com.example.gallery.media.remote.search
 
 data class Result(
-    val songCount: Int,
-    val songs: List<Song>
+    val songCount: Int = 0,
+    val songs: List<Song> = listOf()
 )

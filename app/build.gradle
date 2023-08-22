@@ -71,7 +71,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.13.1'
     kapt 'com.github.bumptech.glide:compiler:4.13.1'
     // fastJson
-    implementation 'com.alibaba:fastjson:1.2.79'
+    implementation 'com.alibaba:fastjson:2.0.31'
     // palette
     implementation 'androidx.palette:palette-ktx:1.0.0'
     // fresco

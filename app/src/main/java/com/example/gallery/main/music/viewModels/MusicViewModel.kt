@@ -26,6 +26,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 class MusicViewModel : ViewModel() {
+    private val TAG = "MusicViewModel"
 
     private val repository = MusicRepository.getInstance()
 
@@ -76,7 +77,7 @@ class MusicViewModel : ViewModel() {
         if (music.value == null) return
         viewModelScope.launch {
             repository.getMusicInfo(music.value!!)
-                .catch { LogUtils.e(it) }
+                .catch { LogUtil.e(TAG, it.message.toString()) }
                 .collect { response ->
                     if (response.isSuccessful && response.body() != null) {
                         response.body()!!.result.songs.forEach { song -> LogUtils.d(song) }
