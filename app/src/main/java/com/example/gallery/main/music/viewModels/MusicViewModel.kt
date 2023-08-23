@@ -50,6 +50,7 @@ class MusicViewModel : ViewModel() {
             _musics.value?.clear()
             val list = LocalMediaUtils.getMusic(Utils.getApp())
             _musics.postValue(list)
+            repository.getAllSongsInfo(list)
         }
     }
 
@@ -79,10 +80,10 @@ class MusicViewModel : ViewModel() {
             repository.getMusicInfo(music.value!!)
                 .catch { LogUtil.e(TAG, it.message.toString()) }
                 .collect { response ->
-                    if (response.isSuccessful && response.body() != null) {
-                        response.body()!!.result.songs.forEach { song -> LogUtils.d(song) }
-//                        music.mvId = response.body()!!.result.songs[0].mvid
-                    }
+//                    if (response.isSuccessful && response.body() != null) {
+//                        response.body()!!.result.songs.forEach { song -> LogUtils.d(song) }
+////                        music.mvId = response.body()!!.result.songs[0].mvid
+//                    }
                 }
         }
     }
