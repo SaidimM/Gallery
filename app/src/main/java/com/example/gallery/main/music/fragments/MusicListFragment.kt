@@ -45,9 +45,9 @@ class MusicListFragment : BaseFragment() {
                     viewModel.getMv(item)
                 }
                 binding.root.setOnClickListener {
-                    SPUtils.getInstance().put(Strings.MUSIC_INDEX, position)
-                    state.playMusic(position)
+                    state.play(position)
                     state.getMusicInfo()
+                    state.saveCurrentMusic()
                 }
                 binding.mv.visibility = if (item.mvId == 0) View.GONE else View.VISIBLE
                 lifecycleScope.launchWhenCreated { loadAlbumCover(item, binding.albumImage) }
@@ -73,6 +73,7 @@ class MusicListFragment : BaseFragment() {
         }
         state.musics.observe(this) {
             adapter.data = it
+            state.getLastPlayedMusic()
         }
         state.progress.observe(this) {
             SnackbarUtils.with(requireView()).setAction("progress: ${it * 100}%") { }

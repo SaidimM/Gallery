@@ -19,12 +19,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:layout_marginBottom="16dp"
-                android:layout_marginHorizontal="8dp"
+                android:background="@drawable/bg_top_corner_16"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:gravity="center_vertical"
                 android:id="@+id/player_layout"
-                android:background="@color/gray_900"
                 android:orientation="horizontal">
 
             <com.google.android.material.card.MaterialCardView

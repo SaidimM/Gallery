@@ -2,6 +2,9 @@ package com.example.gallery.media
 
 import LogUtil
 import android.util.Log
+import com.blankj.utilcode.util.SPUtils
+import com.example.gallery.Strings
+import com.example.gallery.Strings.MUSIC_ID
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.remote.NeteaseApi
 import com.example.gallery.media.remote.search.Song
@@ -15,6 +18,7 @@ import java.util.concurrent.TimeUnit
 
 class MusicRepository {
     private val TAG = "MusicRepository"
+
     private val loggingInterceptor =
         HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
     private val client = OkHttpClient.Builder()
@@ -106,4 +110,8 @@ class MusicRepository {
     fun getLyrics(id: String) = flow { emit(endpoint.getLyric(id = id)) }
 
     fun getArtist(artistId: String) = flow { emit(endpoint.getArtist(artistId)) }
+
+    fun getLastPlayedMusic(): Long = SPUtils.getInstance().getString(MUSIC_ID, "0").toLong()
+
+    fun saveLastPlayedMusic(music: Music) = SPUtils.getInstance().put(MUSIC_ID, music.id.toString())
 }

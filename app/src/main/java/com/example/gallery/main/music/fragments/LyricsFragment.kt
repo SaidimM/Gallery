@@ -49,7 +49,7 @@ class LyricsFragment : BaseFragment() {
         viewModel.lyrics.observe(viewLifecycleOwner) {
             lifecycleScope.launch(Dispatchers.Main) {
                 binding.lyricsView.data = it
-                binding.lyricsView.setOnDoubleTapListener { state.musicPlayer.seekTo(it) }
+                binding.lyricsView.setOnDoubleTapListener { state.seekTo(it) }
             }
         }
     }

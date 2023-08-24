@@ -10,92 +10,30 @@
                 type="com.example.gallery.main.music.viewModels.MusicViewModel"/>
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:fitsSystemWindows="true"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:id="@+id/coordinator">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.fragment.app.FragmentContainerView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:id="@+id/fragment_list"
+                android:name="com.example.gallery.main.music.fragments.MusicListFragment"
+                tools:layout="@layout/fragment_music_list"/>
 
-            <androidx.fragment.app.FragmentContainerView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/fragment_list"
-                    android:name="com.example.gallery.main.music.fragments.MusicListFragment"
-                    tools:layout="@layout/fragment_music_list"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.fragment.app.FragmentContainerView
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:layout_marginBottom="16dp"
-                android:layout_marginHorizontal="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+                app:behavior_hideable="false"
+                app:behavior_peekHeight="80dp"
                 android:gravity="center_vertical"
                 android:id="@+id/player_layout"
-                android:background="@color/gray_900"
-                android:orientation="horizontal">
+                android:name="com.example.gallery.main.music.fragments.MusicPlayerFragment"
+                tools:layout="@layout/fragment_player"
+                android:orientation="horizontal"/>
 
-            <com.google.android.material.card.MaterialCardView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginHorizontal="16dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:id="@+id/album">
-
-                <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:id="@+id/album_cover"
-                        android:contentDescription="@string/album_cover"/>
-            </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:ellipsize="end"
-                    android:lines="1"
-                    tools:text="Lights on"
-                    android:textColor="@color/white"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/album"
-                    app:layout_constraintEnd_toStartOf="@id/play"
-                    android:layout_marginStart="16dp"
-                    android:id="@+id/music_name"/>
-
-            <ImageButton
-                    android:contentDescription="@string/play"
-                    android:id="@+id/play"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:paddingHorizontal="8dp"
-                    android:background="@color/transparent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/next"
-                    android:src="@drawable/ic_play"/>
-
-            <ImageButton
-                    android:contentDescription="@string/next"
-                    android:id="@+id/next"
-                    android:layout_width="wrap_content"
-                    android:paddingHorizontal="8dp"
-                    android:layout_height="match_parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="8dp"
-                    android:background="@color/transparent"
-                    android:src="@drawable/ic_next"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

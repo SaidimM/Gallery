@@ -83,4 +83,6 @@ class MusicPlayer {
     fun seekTo(position: Int) { player.seekTo(position) }
 
     fun getCurrentMusic() = list[position]
+
+    fun recycle() = player.release()
 }

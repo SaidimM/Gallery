@@ -28,6 +28,7 @@ import com.example.gallery.base.BaseApplication
 import com.example.gallery.base.response.manager.NetworkStateManager
 
 abstract class BaseActivity : AppCompatActivity() {
+    protected val TAG by lazy { javaClass.simpleName }
     private var activityProvider: ViewModelProvider? = null
         get() {
             if (field == null) {
@@ -50,6 +51,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        LogUtil.d(TAG, TAG)
         setCeiling()
         lifecycle.addObserver(NetworkStateManager.instance)
         initPermission()
@@ -170,5 +172,30 @@ abstract class BaseActivity : AppCompatActivity() {
             return !(event.x > left && event.x < right && event.y > top && event.y < bottom)
         }
         return false
+    }
+
+    override fun onStart() {
+        super.onStart()
+        LogUtil.d(TAG, TAG)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        LogUtil.d(TAG, TAG)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LogUtil.d(TAG, TAG)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        LogUtil.d(TAG, TAG)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LogUtil.d(TAG, TAG)
     }
 }

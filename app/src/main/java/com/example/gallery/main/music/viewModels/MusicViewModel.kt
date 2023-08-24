@@ -19,8 +19,6 @@ import com.example.gallery.media.local.bean.Music
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -30,8 +28,8 @@ class MusicViewModel : ViewModel() {
 
     private val repository = MusicRepository.getInstance()
 
-    val musicPlayer = MusicPlayer()
-    var index: Int = 0
+    private val musicPlayer = MusicPlayer()
+    private var index: Int = 0
 
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
@@ -50,7 +48,6 @@ class MusicViewModel : ViewModel() {
             _musics.value?.clear()
             val list = LocalMediaUtils.getMusic(Utils.getApp())
             _musics.postValue(list)
-            repository.getAllSongsInfo(list)
         }
     }
 
@@ -102,7 +99,8 @@ class MusicViewModel : ViewModel() {
         }
     }
 
-    fun playMusic(position: Int) {
+    fun play(position: Int = index) {
+        index = position
         if (musics.value == null) return
         val item = musics.value!![position]
         if (item.id != music.value?.id) {
@@ -117,16 +115,30 @@ class MusicViewModel : ViewModel() {
 
     fun onPlayPressed() {
         if (state.value == PlayState.PLAY) {
-            musicPlayer.pause()
             _state.postValue(PlayState.PAUSE)
         } else {
-            musicPlayer.play()
             _state.postValue(PlayState.PLAY)
         }
+        play()
     }
+
+    fun seekTo(position: Int) = musicPlayer.seekTo(position)
 
     fun onNextPressed() {
         musicPlayer.playNext()
         _music.postValue(musicPlayer.getCurrentMusic())
+    }
+
+    fun getLastPlayedMusic() {
+        val lastPlayedMusicId = repository.getLastPlayedMusic()
+        _music.value = musics.value?.let { list -> list.find { it.id == lastPlayedMusicId } } ?: _musics.value?.get(0)
+    }
+
+    fun saveCurrentMusic() {
+        music.value?.let { repository.saveLastPlayedMusic(it) }
+    }
+
+    fun recyclePlayer() {
+        musicPlayer.recycle()
     }
 }

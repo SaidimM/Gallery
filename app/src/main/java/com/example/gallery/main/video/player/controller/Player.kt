@@ -76,6 +76,8 @@ class Player {
         }
     }
 
+    fun release() = player?.release()
+
     fun start() {
         if (!isInPlaybackState()) return
         player?.start()

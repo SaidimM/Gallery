@@ -3,9 +3,11 @@ package com.example.gallery.main.music.fragments
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.view.View.OnClickListener
@@ -37,7 +39,6 @@ class MusicPlayerFragment : BaseFragment() {
     private fun initView() {
         binding.play.setOnClickListener { state.onPlayPressed() }
         binding.next.setOnClickListener { state.onNextPressed() }
-        binding.playerLayout.background = ColorDrawable(Color.BLACK)
         binding.playerLayout.setOnClickListener {
             it.layoutParams.apply {
                 height = activity.window.decorView.height
@@ -74,15 +75,7 @@ class MusicPlayerFragment : BaseFragment() {
 
     private fun initPlayerBackground(view: View, bitmap: Bitmap) {
         val palette = Palette.from(bitmap).generate()
-        val preColor = (view.background as ColorDrawable).color
-        val newColor = palette.getDarkMutedColor(Color.BLACK)
-        ObjectAnimator.ofInt(
-            preColor, newColor
-        ).apply {
-            addUpdateListener { view.background = ColorDrawable(it.animatedValue as Int) }
-            duration = 500
-            setEvaluator(ArgbEvaluator())
-            start()
-        }
+        val color = view.backgroundTintList?.defaultColor
+        view.background.setTint(palette.getVibrantColor(color?: Color.WHITE))
     }
 }
