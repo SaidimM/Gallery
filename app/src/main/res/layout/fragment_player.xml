@@ -11,16 +11,26 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+            android:background="@drawable/bg_top_corner_16"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+        <FrameLayout
+                android:layout_width="48dp"
+                android:layout_height="4dp"
+                android:id="@+id/drag"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="-4dp"
+                android:background="@drawable/bg_corner_white_2dp"/>
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:background="@drawable/bg_top_corner_16"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/drag"
                 android:gravity="center_vertical"
                 android:id="@+id/player_layout"
                 android:orientation="horizontal">

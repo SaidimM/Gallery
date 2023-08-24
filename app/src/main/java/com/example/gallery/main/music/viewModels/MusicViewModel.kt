@@ -16,6 +16,7 @@ import com.example.gallery.main.video.player.controller.MusicPlayer
 import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.bean.Music
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
