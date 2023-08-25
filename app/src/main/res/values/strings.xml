@@ -30,4 +30,5 @@
     <string name="accessed_time">Accessed time</string>
     <string name="next">next</string>
     <string name="list">list</string>
+    <string name="player_background">player background</string>
 </resources>

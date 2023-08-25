@@ -10,6 +10,8 @@ class MusicPlayerViewModel : ViewModel() {
 
     private val repository = MusicRepository.getInstance()
 
-    private var _musicVideo: MutableLiveData<MusicVideoResult> = MutableLiveData()
-    val musicVideo: LiveData<MusicVideoResult> = _musicVideo
+    private var _isLyricsShowing = MutableLiveData(false)
+    val isLyricsShowing: LiveData<Boolean> = _isLyricsShowing
+
+
 }
