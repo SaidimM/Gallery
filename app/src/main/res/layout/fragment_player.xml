@@ -15,10 +15,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <ImageView
+        <com.example.gallery.main.music.views.FluidView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:contentDescription="@string/player_background"
                 android:id="@+id/player_back"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
