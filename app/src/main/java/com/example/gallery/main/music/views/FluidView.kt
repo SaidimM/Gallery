@@ -32,8 +32,8 @@ class FluidView(context: Context, attributeSet: AttributeSet? = null) : FrameLay
 
     init {
         addView(viewBottom)
-//        addView(viewMiddle)
-//        addView(viewTop)
+        addView(viewMiddle)
+        addView(viewTop)
         initLayers()
     }
 
