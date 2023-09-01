@@ -3,6 +3,10 @@ package com.example.gallery.main.music.fragments
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.animation.DecelerateInterpolator
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.viewModels
@@ -10,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.base.ui.pge.BaseFragment
+import com.example.gallery.base.utils.AnimationUtils.setListeners
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.databinding.FragmentPlayerBinding
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
@@ -21,10 +26,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MusicPlayerFragment(private val containerView: FragmentContainerView) : BaseFragment() {
+class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
     private val viewModel: MusicPlayerViewModel by viewModels()
-    private val behavior: BottomSheetBehavior<FragmentContainerView> by lazy { BottomSheetBehavior.from(containerView) }
+    private val behavior: BottomSheetBehavior<View> by lazy { BottomSheetBehavior.from(containerView) }
     override val binding: FragmentPlayerBinding by lazy { FragmentPlayerBinding.inflate(layoutInflater) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,6 +39,7 @@ class MusicPlayerFragment(private val containerView: FragmentContainerView) : Ba
     }
 
     private fun initView() {
+        behavior.expandedOffset
         binding.play.setOnClickListener { state.onPlayPressed() }
         binding.next.setOnClickListener { state.onNextPressed() }
         binding.playerLayout.setOnClickListener {
@@ -42,23 +48,31 @@ class MusicPlayerFragment(private val containerView: FragmentContainerView) : Ba
         }
         behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
+                viewModel.updateState(newState)
                 when (newState) {
                     BottomSheetBehavior.STATE_COLLAPSED -> {
                         binding.playerLayout.animate().alphaBy(0f).alpha(1f).setDuration(500).start()
                         (requireActivity() as BaseActivity).setStatusBarContent(true)
+                        binding.largeCover.visibility = View.INVISIBLE
                     }
                     BottomSheetBehavior.STATE_EXPANDED -> {
-                        binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(500).start()
+                        binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
+                        binding.largeCover.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.anim_large_cover).apply {
+                            interpolator = AccelerateDecelerateInterpolator()
+                            setListeners(onStart = { binding.largeCover.visibility = View.VISIBLE })
+                        })
                         (requireActivity() as BaseActivity).setStatusBarContent(false)
                     }
                     else -> {
-                        binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(500).start()
+                        binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(300).start()
                         (requireActivity() as BaseActivity).setStatusBarContent(true)
                     }
                 }
             }
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                viewModel.updateOffset(slideOffset)
+            }
         })
     }
 

@@ -26,7 +26,7 @@ class MusicActivity : BaseActivity() {
     }
 
     private fun initView() {
-        val playerFragment = MusicPlayerFragment(binding.playerLayout)
+        val playerFragment = MusicPlayerFragment(binding.cardView)
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.add(binding.playerLayout.id, playerFragment).commit()
     }

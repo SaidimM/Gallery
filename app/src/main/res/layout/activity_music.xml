@@ -36,17 +36,23 @@
                 android:name="com.example.gallery.main.music.fragments.MusicListFragment"
                 tools:layout="@layout/fragment_music_list"/>
 
-        <androidx.fragment.app.FragmentContainerView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+        <com.google.android.material.card.MaterialCardView
                 app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
                 app:behavior_hideable="false"
-                app:behavior_peekHeight="80dp"
+                app:behavior_peekHeight="96dp"
                 app:behavior_draggable="true"
+                app:cardCornerRadius="8dp"
+                android:id="@+id/card_view"
                 android:gravity="center_vertical"
-                android:id="@+id/player_layout"
-                tools:layout="@layout/fragment_player"
-                android:orientation="horizontal"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
+            <androidx.fragment.app.FragmentContainerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/player_layout"
+                    tools:layout="@layout/fragment_player"/>
+
+        </com.google.android.material.card.MaterialCardView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
