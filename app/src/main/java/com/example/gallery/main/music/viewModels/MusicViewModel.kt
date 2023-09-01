@@ -1,5 +1,6 @@
 package com.example.gallery.main.music.viewModels
 
+import LogUtil
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.ImageView
@@ -16,7 +17,6 @@ import com.example.gallery.main.video.player.controller.MusicPlayer
 import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.bean.Music
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -83,20 +83,6 @@ class MusicViewModel : ViewModel() {
 ////                        music.mvId = response.body()!!.result.songs[0].mvid
 //                    }
                 }
-        }
-    }
-
-    fun saveLyric(music: Music) {
-        if (music.mediaId.isEmpty()) return
-        viewModelScope.launch {
-            repository.getLyrics(music.mediaId)
-                .catch { LogUtils.e(it) }.collect {
-                if (it.isSuccessful) {
-                    val data = it.body()!!.lrc.lyric
-                    Log.d(this.javaClass.simpleName, data)
-                    LocalMediaUtils.writeStringToFile(Strings.LYRIC_DIR + music.mediaId + ".txt", data)
-                }
-            }
         }
     }
 

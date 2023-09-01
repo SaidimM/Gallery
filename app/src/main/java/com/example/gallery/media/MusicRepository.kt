@@ -2,10 +2,12 @@ package com.example.gallery.media
 
 import LogUtil
 import android.util.Log
+import androidx.room.Room
 import com.blankj.utilcode.util.SPUtils
-import com.example.gallery.Strings
+import com.blankj.utilcode.util.Utils
 import com.example.gallery.Strings.MUSIC_ID
 import com.example.gallery.media.local.bean.Music
+import com.example.gallery.media.local.database.GalleryDatabase
 import com.example.gallery.media.remote.NeteaseApi
 import com.example.gallery.media.remote.search.Song
 import kotlinx.coroutines.FlowPreview
@@ -30,6 +32,7 @@ class MusicRepository {
         .baseUrl("https://music.163.com").client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
+    private val dao = Room.databaseBuilder(Utils.getApp(), GalleryDatabase::class.java, "gallery").build().getMusicDao()
 
     companion object {
         private var repository: MusicRepository? = null
@@ -107,7 +110,14 @@ class MusicRepository {
         else emit(endpoint.getMusicDetail(musicId, "[$musicId]"))
     }
 
-    fun getLyrics(id: String) = flow { emit(endpoint.getLyric(id = id)) }
+    fun getLyrics(id: String) = flow {
+        val result = endpoint.getLyric(id = id)
+        if (!result.isSuccessful || result.body() == null) {
+            error("request failed!")
+        }
+        val body = result.body()!!
+        emit(body)
+    }
 
     fun getArtist(artistId: String) = flow { emit(endpoint.getArtist(artistId)) }
 

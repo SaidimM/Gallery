@@ -4,19 +4,18 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.view.animation.DecelerateInterpolator
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.base.ui.pge.BaseFragment
+import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
 import com.example.gallery.base.utils.AnimationUtils.setListeners
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.databinding.FragmentPlayerBinding
+import com.example.gallery.databinding.ItemLyricBinding
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
 import com.example.gallery.main.video.player.state.PlayState
@@ -31,6 +30,37 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     private val viewModel: MusicPlayerViewModel by viewModels()
     private val behavior: BottomSheetBehavior<View> by lazy { BottomSheetBehavior.from(containerView) }
     override val binding: FragmentPlayerBinding by lazy { FragmentPlayerBinding.inflate(layoutInflater) }
+    private val bottomSheetBehaviorCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            when (newState) {
+                BottomSheetBehavior.STATE_COLLAPSED -> {
+                    binding.playerLayout.animate().alphaBy(0f).alpha(1f).setDuration(500).start()
+                    (requireActivity() as BaseActivity).setStatusBarContent(true)
+                    binding.largeCover.visibility = View.INVISIBLE
+                }
+
+                BottomSheetBehavior.STATE_EXPANDED -> {
+                    binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
+                    binding.largeCover.startAnimation(
+                        AnimationUtils.loadAnimation(
+                            requireContext(),
+                            R.anim.anim_large_cover
+                        ).apply {
+                            interpolator = AccelerateDecelerateInterpolator()
+                            setListeners(onStart = { binding.largeCover.visibility = View.VISIBLE })
+                        })
+                    (requireActivity() as BaseActivity).setStatusBarContent(false)
+                }
+
+                else -> {
+                    binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(300).start()
+                    (requireActivity() as BaseActivity).setStatusBarContent(true)
+                }
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,34 +76,7 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
             if (behavior.state != BottomSheetBehavior.STATE_EXPANDED) behavior.state =
                 BottomSheetBehavior.STATE_EXPANDED
         }
-        behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                viewModel.updateState(newState)
-                when (newState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
-                        binding.playerLayout.animate().alphaBy(0f).alpha(1f).setDuration(500).start()
-                        (requireActivity() as BaseActivity).setStatusBarContent(true)
-                        binding.largeCover.visibility = View.INVISIBLE
-                    }
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-                        binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
-                        binding.largeCover.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.anim_large_cover).apply {
-                            interpolator = AccelerateDecelerateInterpolator()
-                            setListeners(onStart = { binding.largeCover.visibility = View.VISIBLE })
-                        })
-                        (requireActivity() as BaseActivity).setStatusBarContent(false)
-                    }
-                    else -> {
-                        binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(300).start()
-                        (requireActivity() as BaseActivity).setStatusBarContent(true)
-                    }
-                }
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                viewModel.updateOffset(slideOffset)
-            }
-        })
+        behavior.addBottomSheetCallback(bottomSheetBehaviorCallback)
     }
 
     private fun observeViewModel() {
@@ -85,6 +88,7 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
             }
             binding.musicName.text = it.name
             initPlayDetails(it)
+            initMusic(it)
         }
         state.state.observe(viewLifecycleOwner) {
             if (it == PlayState.PLAY) binding.play.setImageDrawable(
@@ -93,8 +97,7 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
                     R.drawable.ic_pause,
                     requireActivity().theme
                 )
-            )
-            else binding.play.setImageDrawable(
+            ) else binding.play.setImageDrawable(
                 ResourcesCompat.getDrawable(
                     requireActivity().resources,
                     R.drawable.ic_play,
@@ -102,12 +105,21 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
                 )
             )
         }
+        viewModel.lyrics.observe(viewLifecycleOwner) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                binding.lyricsView.data = it
+                binding.lyricsView.setOnDoubleTapListener { state.seekTo(it) }
+            }
+        }
+    }
+
+    private fun initMusic(music: Music) {
+        val isFileExists = viewModel.getLyric(music)
+        if (!isFileExists) viewModel.saveLyric(music)
     }
 
     private fun initPlayDetails(music: Music) {
-        lifecycleScope.launch {
-            state.music.value?.let { loadAlbumCover(music, binding.largeCover) }
-        }
+        lifecycleScope.launch { state.music.value?.let { loadAlbumCover(music, binding.largeCover) } }
         binding.songName.text = music.name
         binding.singerName.text = music.singer
     }

@@ -40,8 +40,6 @@ class LyricsFragment : BaseFragment() {
     private fun initMusic() {
         music = state.music.value ?: return
         viewModel.setMusic(music)
-        val isFileExists = viewModel.getLyric()
-        if (!isFileExists) state.saveLyric(music)
         state.loadAlbumCover(music, binding.albumCover)
     }
 
