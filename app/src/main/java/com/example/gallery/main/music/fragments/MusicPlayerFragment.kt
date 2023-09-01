@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.gallery.R
+import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.databinding.FragmentPlayerBinding
@@ -41,10 +42,19 @@ class MusicPlayerFragment(private val containerView: FragmentContainerView) : Ba
         }
         behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    binding.playerLayout.animate().alphaBy(0f).alpha(1f).setDuration(500).start()
-                } else {
-                    binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(500).start()
+                when (newState) {
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        binding.playerLayout.animate().alphaBy(0f).alpha(1f).setDuration(500).start()
+                        (requireActivity() as BaseActivity).setStatusBarContent(true)
+                    }
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(500).start()
+                        (requireActivity() as BaseActivity).setStatusBarContent(false)
+                    }
+                    else -> {
+                        binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(500).start()
+                        (requireActivity() as BaseActivity).setStatusBarContent(true)
+                    }
                 }
             }
 

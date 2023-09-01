@@ -1,10 +1,12 @@
 package com.example.gallery.base.ui.pge
 
+import LogUtil
 import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Rect
 import android.net.Uri
@@ -94,6 +96,23 @@ abstract class BaseActivity : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = Color.TRANSPARENT
+        setStatusBarContent(isLightTheme(this))
+    }
+
+    fun setStatusBarContent(isWhite: Boolean) {
+        var vis: Int = window.decorView.systemUiVisibility
+        vis = if (isWhite) {
+            vis or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+            vis and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+        }
+        window.decorView.systemUiVisibility = vis
+    }
+
+    private fun isLightTheme(context: Context):Boolean{
+        val flag=context.resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK
+        return flag != Configuration.UI_MODE_NIGHT_YES
     }
 
     //点击EditText之外的区域隐藏键盘
