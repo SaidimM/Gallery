@@ -11,6 +11,7 @@ import com.example.gallery.base.BaseApplication
 import com.example.gallery.base.bindings.DataBindingFragment
 
 abstract class BaseFragment : DataBindingFragment() {
+    protected val TAG = this.javaClass.simpleName
     private var mFragmentProvider: ViewModelProvider? = null
     private var mActivityProvider: ViewModelProvider? = null
     private var mApplicationProvider: ViewModelProvider? = null

@@ -57,7 +57,7 @@ class MusicPlayerFragment(private val containerView: FragmentContainerView) : Ba
             var bitmap: Bitmap?
             lifecycleScope.launchWhenCreated {
                 bitmap = withContext(Dispatchers.Main) { loadAlbumCover(it, binding.albumCover) }
-                launch(Dispatchers.Main) { binding.playerBack.initBackground(bitmap!!) }
+                binding.fluidView.initBackground(bitmap!!)
             }
             binding.musicName.text = it.name
             initPlayDetails(it)
