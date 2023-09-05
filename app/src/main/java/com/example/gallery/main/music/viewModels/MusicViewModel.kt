@@ -18,8 +18,6 @@ import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.bean.Music
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -69,20 +67,6 @@ class MusicViewModel : ViewModel() {
             this.launch(Dispatchers.Main) {
                 Glide.with(imageView).load(bitmap).into(imageView)
             }
-        }
-    }
-
-    fun getMusicInfo() {
-        if (music.value == null) return
-        viewModelScope.launch {
-            repository.getMusicInfo(music.value!!)
-                .catch { LogUtil.e(TAG, it.message.toString()) }
-                .collect { response ->
-//                    if (response.isSuccessful && response.body() != null) {
-//                        response.body()!!.result.songs.forEach { song -> LogUtils.d(song) }
-////                        music.mvId = response.body()!!.result.songs[0].mvid
-//                    }
-                }
         }
     }
 

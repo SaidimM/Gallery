@@ -9,6 +9,7 @@ import com.example.gallery.Strings.MUSIC_ID
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.local.database.GalleryDatabase
 import com.example.gallery.media.remote.NeteaseApi
+import com.example.gallery.media.remote.search.SearchResult
 import com.example.gallery.media.remote.search.Song
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
@@ -47,19 +48,7 @@ class MusicRepository {
 
     private var endpoint: NeteaseApi = retrofit.create(NeteaseApi::class.java)
 
-    fun getMusicInfo(music: Music) = flow {
-        if (music.name.isEmpty()) error("music name incorrect!")
-        else emit(endpoint.searchMusic(criteria = "${music.name}%20${music.singer}"))
-    }
-
-    @OptIn(FlowPreview::class)
-    suspend fun getAllSongsInfo(musicList: ArrayList<Music>) {
-        musicList.asFlow().flatMapConcat { searchMusic(it) }.catch {
-            LogUtil.e(TAG, it.message.toString())
-        }.collect { Log.d(TAG, it.name) }
-    }
-
-    private fun searchMusic(music: Music) = flow {
+    fun searchMusic(music: Music) = flow {
         val response = endpoint.searchMusic(criteria = "${music.name}%20${music.singer}")
         if (!response.isSuccessful || response.body() == null) {
             LogUtil.d(TAG, response.message())
@@ -74,7 +63,7 @@ class MusicRepository {
         }
         val song = result.result.songs[0]
         saveMusic(music, song)
-        kotlinx.coroutines.delay(1000)
+        saveMusicToDatabase(music)
         emit(music)
     }
 
@@ -94,6 +83,8 @@ class MusicRepository {
         }
         music.mediaAlbumId = song.album.id.toString()
     }
+
+    private fun saveMusicToDatabase(music: Music) = dao.saveMusic(music)
 
     fun getMv(music: Music) = flow {
         if (music.mvId == 0) error("Music didn't have any MV!")
@@ -116,6 +107,8 @@ class MusicRepository {
             error("request failed!")
         }
         val body = result.body()!!
+        if (body.code != 200) error("response error, response code: ${body.code}")
+        Log.d(this.javaClass.simpleName, body.lrc.lyric)
         emit(body)
     }
 

@@ -1,6 +1,5 @@
 package com.example.gallery.main.music.fragments
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -11,11 +10,9 @@ import androidx.lifecycle.lifecycleScope
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.base.ui.pge.BaseFragment
-import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
 import com.example.gallery.base.utils.AnimationUtils.setListeners
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.databinding.FragmentPlayerBinding
-import com.example.gallery.databinding.ItemLyricBinding
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
 import com.example.gallery.main.video.player.state.PlayState
@@ -23,7 +20,7 @@ import com.example.gallery.media.local.bean.Music
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runBlocking
 
 class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
@@ -81,14 +78,8 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
 
     private fun observeViewModel() {
         state.music.observe(viewLifecycleOwner) {
-            var bitmap: Bitmap?
-            lifecycleScope.launchWhenCreated {
-                bitmap = withContext(Dispatchers.Main) { loadAlbumCover(it, binding.albumCover) }
-                binding.fluidView.initBackground(bitmap!!)
-            }
-            binding.musicName.text = it.name
+            viewModel.initMusic(it)
             initPlayDetails(it)
-            initMusic(it)
         }
         state.state.observe(viewLifecycleOwner) {
             if (it == PlayState.PLAY) binding.play.setImageDrawable(
@@ -113,13 +104,11 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
         }
     }
 
-    private fun initMusic(music: Music) {
-        val isFileExists = viewModel.getLyric(music)
-        if (!isFileExists) viewModel.saveLyric(music)
-    }
-
     private fun initPlayDetails(music: Music) {
-        lifecycleScope.launch { state.music.value?.let { loadAlbumCover(music, binding.largeCover) } }
+        val bitmap = runBlocking(Dispatchers.IO) { loadAlbumCover(music, binding.albumCover) }
+        lifecycleScope.launch { loadAlbumCover(music, binding.largeCover) }
+        binding.fluidView.initBackground(bitmap)
+        binding.musicName.text = music.name
         binding.songName.text = music.name
         binding.singerName.text = music.singer
     }

@@ -46,7 +46,6 @@ class MusicListFragment : BaseFragment() {
                 }
                 binding.root.setOnClickListener {
                     state.play(position)
-                    state.getMusicInfo()
                     state.saveCurrentMusic()
                 }
                 binding.mv.visibility = if (item.mvId == 0) View.GONE else View.VISIBLE

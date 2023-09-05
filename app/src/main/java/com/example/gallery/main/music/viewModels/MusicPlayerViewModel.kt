@@ -1,33 +1,56 @@
 package com.example.gallery.main.music.viewModels
 
-import android.util.Log
+import LogUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blankj.utilcode.util.LogUtils
 import com.example.gallery.Strings
 import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.remote.lyrics.Lyric
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
 
 class MusicPlayerViewModel : ViewModel() {
+    private val TAG = "MusicPlayerViewModel"
 
     private val repository = MusicRepository.getInstance()
 
     private var _lyrics = MutableLiveData<ArrayList<Lyric>>()
     val lyrics: LiveData<ArrayList<Lyric>> = _lyrics
 
-    fun getLyric(music: Music): Boolean {
+    fun initMusic(music: Music) {
+        viewModelScope.launch {
+            flow<Music> {
+                searchMusic(music)
+                    .map { findLyrics(it).single() }
+                    .map { getLyrics(it).single() }
+                    .catch { LogUtil.e(TAG, it.message.toString()) }
+                    .collect { _lyrics.postValue(it) }
+            }
+        }
+    }
+
+    private fun searchMusic(music: Music) = flow {
+        if (music.mediaId.isNotEmpty()) emit(music)
+        else repository.searchMusic(music).collect { emit(it) }
+    }
+
+    private fun findLyrics(music: Music) = flow {
         val path = Strings.LYRIC_DIR + music.mediaId + ".txt"
-        if (!File(path).exists()) return false
+        if (File(path).exists()) emit(music)
+        else repository.getLyrics(music.mediaId).collect {
+            LocalMediaUtils.writeStringToFile(Strings.LYRIC_DIR + music.mediaId + ".txt", it.lrc.lyric)
+            emit(music)
+        }
+    }
+
+    private fun getLyrics(music: Music) = flow {
+        val path = Strings.LYRIC_DIR + music.mediaId + ".txt"
+        if (!File(path).exists()) error("$path does not exist!")
         val data = LocalMediaUtils.readFile(path)
         val strings: ArrayList<String> = data.split(Regex("\n"), 0) as ArrayList<String>
         val lyrics: ArrayList<Lyric> = arrayListOf()
@@ -43,25 +66,10 @@ class MusicPlayerViewModel : ViewModel() {
                 if (lyrics.isNotEmpty()) lyrics.last().endPosition = min + sec
             } catch (e: Exception) {
                 e.printStackTrace()
-                return@forEach
+                error(e)
             }
         }
         val newList = lyrics.filter { it.text.isNotEmpty() } as ArrayList
-        _lyrics.postValue(newList)
-        return true
-    }
-
-    fun saveLyric(music: Music) {
-        if (music.mediaId.isEmpty()) return
-        viewModelScope.launch {
-            repository.getLyrics(music.mediaId)
-                .catch { LogUtils.e(it) }
-                .collect {
-                    if (it.code == 200) {
-                        Log.d(this.javaClass.simpleName, it.lrc.lyric)
-                        LocalMediaUtils.writeStringToFile(Strings.LYRIC_DIR + music.mediaId + ".txt", it.lrc.lyric)
-                    }
-                }
-        }
+        emit(newList)
     }
 }
