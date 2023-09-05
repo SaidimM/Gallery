@@ -39,7 +39,7 @@ object LocalMediaUtils {
 
     //获取专辑封面的Uri
     private val albumArtUri = Uri.parse("content://media/external/audio/albumart")
-    suspend fun getMusic(context: Context): ArrayList<Music> {
+    fun getMusic(context: Context): ArrayList<Music> {
         val list = arrayListOf<Music>()
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER

@@ -19,5 +19,5 @@ interface MusicDao {
     fun getMusic(id: Int): Music
 
     @Query("SELECT * FROM music")
-    fun getAll()
+    fun getAll(): List<Music>
 }

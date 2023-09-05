@@ -6,11 +6,13 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnimationUtils
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.utils.AnimationUtils.setListeners
+import com.example.gallery.base.utils.ViewUtils.getAlbumBitmap
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.databinding.FragmentPlayerBinding
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
@@ -19,6 +21,8 @@ import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.local.bean.Music
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -78,7 +82,7 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
 
     private fun observeViewModel() {
         state.music.observe(viewLifecycleOwner) {
-            viewModel.initMusic(it)
+//            viewModel.initMusic(it)
             initPlayDetails(it)
         }
         state.state.observe(viewLifecycleOwner) {
@@ -105,9 +109,12 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     }
 
     private fun initPlayDetails(music: Music) {
-        val bitmap = runBlocking(Dispatchers.IO) { loadAlbumCover(music, binding.albumCover) }
+        lifecycleScope.launch { loadAlbumCover(music, binding.albumCover) }
         lifecycleScope.launch { loadAlbumCover(music, binding.largeCover) }
-        binding.fluidView.initBackground(bitmap)
+        lifecycleScope.launch{
+            val bitmap = getAlbumBitmap(music).flowOn(Dispatchers.IO).single()
+            launch(Dispatchers.Main) { binding.fluidView.initBackground(bitmap) }
+        }
         binding.musicName.text = music.name
         binding.songName.text = music.name
         binding.singerName.text = music.singer

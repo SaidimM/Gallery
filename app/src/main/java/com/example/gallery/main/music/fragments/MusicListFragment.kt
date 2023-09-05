@@ -46,7 +46,7 @@ class MusicListFragment : BaseFragment() {
                 }
                 binding.root.setOnClickListener {
                     state.play(position)
-                    state.saveCurrentMusic()
+//                    state.saveCurrentMusic()
                 }
                 binding.mv.visibility = if (item.mvId == 0) View.GONE else View.VISIBLE
                 lifecycleScope.launchWhenCreated { loadAlbumCover(item, binding.albumImage) }
@@ -61,7 +61,7 @@ class MusicListFragment : BaseFragment() {
     }
 
     private fun observe() {
-        viewModel.musicVideo.observe(this) {
+        viewModel.musicVideo.observe(viewLifecycleOwner) {
             val intent = Intent(requireContext(), PlayerActivity::class.java)
             val link = it.data.brs.let { br ->
                 br.`1080` ?: br.`720` ?: br.`480` ?: br.`240`
@@ -70,11 +70,11 @@ class MusicListFragment : BaseFragment() {
             intent.putExtra("video", info)
             startActivity(intent)
         }
-        state.musics.observe(this) {
+        state.musics.observe(viewLifecycleOwner) {
             adapter.data = it
-            state.getLastPlayedMusic()
+//            state.getLastPlayedMusic()
         }
-        state.progress.observe(this) {
+        state.progress.observe(viewLifecycleOwner) {
             SnackbarUtils.with(requireView()).setAction("progress: ${it * 100}%") { }
         }
     }
