@@ -14,7 +14,7 @@ class App : BaseApplication() {
         Fresco.initialize(this, ImagePipelineConfigFactory.getImagePipelineConfig(this))
 
         // SQLiteStudio Service
-        SQLiteStudioService.instance().setPort(20009)
+        SQLiteStudioService.instance().setPort(19980)
         SQLiteStudioService.instance().start(this)
     }
 }

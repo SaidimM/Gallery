@@ -28,6 +28,7 @@ import com.blankj.utilcode.util.AdaptScreenUtils
 import com.blankj.utilcode.util.ScreenUtils
 import com.example.gallery.base.BaseApplication
 import com.example.gallery.base.response.manager.NetworkStateManager
+import com.example.gallery.base.utils.ContextUtils.isLightTheme
 
 abstract class BaseActivity : AppCompatActivity() {
     protected val TAG by lazy { javaClass.simpleName }
@@ -96,7 +97,7 @@ abstract class BaseActivity : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = Color.TRANSPARENT
-        setStatusBarContent(isLightTheme(this))
+        setStatusBarContent(isLightTheme())
     }
 
     fun setStatusBarContent(isWhite: Boolean) {
@@ -107,12 +108,6 @@ abstract class BaseActivity : AppCompatActivity() {
             vis and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
         }
         window.decorView.systemUiVisibility = vis
-    }
-
-    private fun isLightTheme(context: Context):Boolean{
-        val flag=context.resources.configuration.uiMode and
-                Configuration.UI_MODE_NIGHT_MASK
-        return flag != Configuration.UI_MODE_NIGHT_YES
     }
 
     //点击EditText之外的区域隐藏键盘
@@ -136,7 +131,7 @@ abstract class BaseActivity : AppCompatActivity() {
         //获取View可见区域的bottom
         val rect = Rect()
         window.decorView.getWindowVisibleDisplayFrame(rect)
-        return screenHeight - rect.bottom !== 0
+        return screenHeight - rect.bottom != 0
     }
 
     /**

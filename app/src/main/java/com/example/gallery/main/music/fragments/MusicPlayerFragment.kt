@@ -2,14 +2,11 @@ package com.example.gallery.main.music.fragments
 
 import android.os.Bundle
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnimationUtils
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.example.gallery.R
-import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.utils.AnimationUtils.setListeners
 import com.example.gallery.base.utils.ViewUtils.getAlbumBitmap
@@ -24,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
@@ -36,26 +32,18 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
             when (newState) {
                 BottomSheetBehavior.STATE_COLLAPSED -> {
                     binding.playerLayout.animate().alphaBy(0f).alpha(1f).setDuration(500).start()
-                    (requireActivity() as BaseActivity).setStatusBarContent(true)
                     binding.largeCover.visibility = View.INVISIBLE
                 }
 
                 BottomSheetBehavior.STATE_EXPANDED -> {
                     binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
                     binding.largeCover.startAnimation(
-                        AnimationUtils.loadAnimation(
-                            requireContext(),
-                            R.anim.anim_large_cover
-                        ).apply {
-                            interpolator = AccelerateDecelerateInterpolator()
-                            setListeners(onStart = { binding.largeCover.visibility = View.VISIBLE })
-                        })
-                    (requireActivity() as BaseActivity).setStatusBarContent(false)
+                        AnimationUtils.loadAnimation(requireContext(), R.anim.anim_large_cover)
+                            .apply { this.setListeners(onStart = { binding.largeCover.visibility = View.VISIBLE }) })
                 }
 
                 else -> {
                     binding.playerLayout.animate().alphaBy(1f).alpha(0f).setDuration(300).start()
-                    (requireActivity() as BaseActivity).setStatusBarContent(true)
                 }
             }
         }
@@ -70,7 +58,6 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     }
 
     private fun initView() {
-        behavior.expandedOffset
         binding.play.setOnClickListener { state.onPlayPressed() }
         binding.next.setOnClickListener { state.onNextPressed() }
         binding.playerLayout.setOnClickListener {
@@ -82,7 +69,7 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
 
     private fun observeViewModel() {
         state.music.observe(viewLifecycleOwner) {
-//            viewModel.initMusic(it)
+            viewModel.initMusic(it)
             initPlayDetails(it)
         }
         state.state.observe(viewLifecycleOwner) {
@@ -109,9 +96,9 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     }
 
     private fun initPlayDetails(music: Music) {
-        lifecycleScope.launch { loadAlbumCover(music, binding.albumCover) }
-        lifecycleScope.launch { loadAlbumCover(music, binding.largeCover) }
-        lifecycleScope.launch{
+        lifecycleScope.launch(Dispatchers.IO) { loadAlbumCover(music, binding.albumCover) }
+        lifecycleScope.launch(Dispatchers.IO) { loadAlbumCover(music, binding.largeCover) }
+        lifecycleScope.launch(Dispatchers.IO) {
             val bitmap = getAlbumBitmap(music).flowOn(Dispatchers.IO).single()
             launch(Dispatchers.Main) { binding.fluidView.initBackground(bitmap) }
         }

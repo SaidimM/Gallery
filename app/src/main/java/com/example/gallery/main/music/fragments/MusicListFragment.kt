@@ -46,7 +46,7 @@ class MusicListFragment : BaseFragment() {
                 }
                 binding.root.setOnClickListener {
                     state.play(position)
-//                    state.saveCurrentMusic()
+                    state.saveCurrentMusic()
                 }
                 binding.mv.visibility = if (item.mvId == 0) View.GONE else View.VISIBLE
                 lifecycleScope.launchWhenCreated { loadAlbumCover(item, binding.albumImage) }

@@ -18,6 +18,8 @@ import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.bean.Music
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -45,8 +47,7 @@ class MusicViewModel : ViewModel() {
     fun loadMusic() {
         viewModelScope.launch(Dispatchers.IO) {
             _musics.value?.clear()
-            val list = LocalMediaUtils.getMusic(Utils.getApp())
-            _musics.postValue(list)
+            repository.getMusics().catch { LogUtil.e(TAG, it.message.toString()) }.collect { _musics.postValue(it) }
         }
     }
 

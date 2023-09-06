@@ -16,7 +16,7 @@ interface MusicDao {
     fun updateMusic(music: Music)
 
     @Query("SELECT * FROM music WHERE id = :id LIMIT 1")
-    fun getMusic(id: Int): Music
+    fun getMusic(id: Long): Music?
 
     @Query("SELECT * FROM music")
     fun getAll(): List<Music>

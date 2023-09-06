@@ -10,6 +10,7 @@ import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.remote.lyrics.Lyric
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
@@ -23,21 +24,19 @@ class MusicPlayerViewModel : ViewModel() {
     val lyrics: LiveData<ArrayList<Lyric>> = _lyrics
 
     fun initMusic(music: Music) {
-        viewModelScope.launch {
-            flow<Music> {
-                searchMusic(music)
-                    .map { findLyrics(it).single() }
-                    .map { getLyrics(it).single() }
-                    .catch { LogUtil.e(TAG, it.message.toString()) }
-                    .collect { _lyrics.postValue(it) }
-            }
+        viewModelScope.launch(Dispatchers.IO) {
+            searchMusic(music)
+                .map { findLyrics(it).single() }
+                .map { getLyrics(it).single() }
+                .catch { LogUtil.e(TAG, it.message.toString()) }
+                .collect { _lyrics.postValue(it) }
         }
     }
 
     private fun searchMusic(music: Music) = flow {
         if (music.mediaId.isNotEmpty()) emit(music)
         else repository.searchMusic(music).collect { emit(it) }
-    }
+    }.catch { LogUtil.e(TAG, it.message.toString()) }
 
     private fun findLyrics(music: Music) = flow {
         val path = Strings.LYRIC_DIR + music.mediaId + ".txt"
@@ -46,7 +45,7 @@ class MusicPlayerViewModel : ViewModel() {
             LocalMediaUtils.writeStringToFile(Strings.LYRIC_DIR + music.mediaId + ".txt", it.lrc.lyric)
             emit(music)
         }
-    }
+    }.catch { LogUtil.e(TAG, it.message.toString()) }
 
     private fun getLyrics(music: Music) = flow {
         val path = Strings.LYRIC_DIR + music.mediaId + ".txt"
@@ -71,5 +70,5 @@ class MusicPlayerViewModel : ViewModel() {
         }
         val newList = lyrics.filter { it.text.isNotEmpty() } as ArrayList
         emit(newList)
-    }
+    }.catch { LogUtil.e(TAG, it.message.toString()) }
 }

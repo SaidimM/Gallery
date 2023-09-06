@@ -25,7 +25,13 @@ object ViewUtils {
     suspend fun loadAlbumCover(item: Music, imageView: ImageView) {
         getAlbumBitmap(item)
             .catch { LogUtil.e(TAG, it.message.toString()) }
-            .collect { Glide.with(imageView).load(it).into(imageView) }
+            .collect {
+                coroutineScope {
+                    launch(Dispatchers.Main) {
+                        Glide.with(imageView).load(it).into(imageView)
+                    }
+                }
+            }
     }
 
     suspend fun getAlbumBitmap(music: Music) = flow<Bitmap> {
