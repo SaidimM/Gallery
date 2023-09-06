@@ -31,7 +31,7 @@ interface NeteaseApi {
     ): Response<SearchResult>
 
     @GET(value = "/api/song/lyric")
-    fun getLyric(
+    suspend fun getLyric(
         @Query("os") os: String = "pc",
         @Query("id") id: String,
         @Query("lv") lv: Int = -1,

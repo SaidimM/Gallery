@@ -72,7 +72,7 @@ class MusicListFragment : BaseFragment() {
         }
         state.musics.observe(viewLifecycleOwner) {
             adapter.data = it
-//            state.getLastPlayedMusic()
+            state.getLastPlayedMusic()
         }
         state.progress.observe(viewLifecycleOwner) {
             SnackbarUtils.with(requireView()).setAction("progress: ${it * 100}%") { }
