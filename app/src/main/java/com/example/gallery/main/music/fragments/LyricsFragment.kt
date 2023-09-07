@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.ScreenUtils
 import com.bumptech.glide.Glide
 import com.example.gallery.base.ui.pge.BaseFragment
+import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.base.utils.blurHash.BlurHashDecoder
 import com.example.gallery.databinding.FragmentLyricsBinding
 import com.example.gallery.main.music.viewModels.LyricsFragmentViewModel
@@ -40,7 +41,7 @@ class LyricsFragment : BaseFragment() {
     private fun initMusic() {
         music = state.music.value ?: return
         viewModel.setMusic(music)
-        state.loadAlbumCover(music, binding.albumCover)
+        lifecycleScope.launchWhenCreated { loadAlbumCover(music, binding.albumCover) }
     }
 
     private fun observeData() {

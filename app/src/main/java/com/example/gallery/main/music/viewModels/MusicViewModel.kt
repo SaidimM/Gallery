@@ -51,26 +51,6 @@ class MusicViewModel : ViewModel() {
         }
     }
 
-    fun loadAlbumCover(item: Music, imageView: ImageView) {
-        val albumCoverPath = Strings.ALBUM_COVER_DIR + "${item.mediaAlbumId}.jpg"
-        viewModelScope.launch {
-            val bitmap = withContext(Dispatchers.IO) {
-                if (File(albumCoverPath).exists()) {
-                    BitmapFactory.decodeFile(albumCoverPath)
-                } else LocalMediaUtils.getArtwork(
-                    Utils.getApp(),
-                    item.id,
-                    item.albumId,
-                    allowdefalut = true,
-                    small = false
-                )
-            }
-            this.launch(Dispatchers.Main) {
-                Glide.with(imageView).load(bitmap).into(imageView)
-            }
-        }
-    }
-
     fun play(position: Int = index) {
         index = position
         if (musics.value == null) return
