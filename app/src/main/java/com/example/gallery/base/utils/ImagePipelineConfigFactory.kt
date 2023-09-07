@@ -68,7 +68,7 @@ object ImagePipelineConfigFactory {
         configBuilder
             .setBitmapMemoryCacheParamsSupplier { bitmapCacheParams }
             .setMainDiskCacheConfig(
-                DiskCacheConfig.newBuilder(Utils.getApp())
+                DiskCacheConfig.newBuilder(context)
                     .setBaseDirectoryPath(getExternalCacheDir(context))
                     .setBaseDirectoryName(IMAGE_PIPELINE_CACHE_DIR)
                     .setMaxCacheSize(MAX_DISK_CACHE_SIZE.toLong())

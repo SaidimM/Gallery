@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.example.gallery.base.utils.GeneralUtils.dp
+import com.blankj.utilcode.util.Utils
 
 class VerticalProgressView : View {
     constructor(context: Context) : super(context)
@@ -65,5 +65,13 @@ class VerticalProgressView : View {
             else -> defaultHeight
         }
         setMeasuredDimension(with, height)
+    }
+
+    private val Int.dp: Int get() = run {
+        return toFloat().dp
+    }
+    private val Float.dp: Int get() = run {
+        val scale: Float = Utils.getApp().resources.displayMetrics.density
+        return (this * scale + 0.5f).toInt()
     }
 }

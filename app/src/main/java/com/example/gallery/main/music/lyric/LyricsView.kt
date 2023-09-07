@@ -17,7 +17,6 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.animation.doOnEnd
 import com.example.gallery.media.remote.lyrics.Lyric
-import com.example.gallery.base.utils.GeneralUtils.dp
 import java.lang.StrictMath.abs
 
 class LyricsView : View {
@@ -131,6 +130,7 @@ class LyricsView : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        if (isInEditMode) return
         if (lineStartIndexes.isEmpty() || data.isEmpty()) return
         var startIndex = 0
         for (i in 0 until lineStartIndexes.size) {
@@ -297,5 +297,14 @@ class LyricsView : View {
 
     interface LyricsListener {
         fun onDoubleTap(position: Int)
+    }
+
+    private val Int.dp: Int get() = run {
+        return toFloat().dp
+    }
+
+    private val Float.dp: Int get() = run {
+        val scale: Float = context.resources.displayMetrics.density
+        return (this * scale + 0.5f).toInt()
     }
 }
