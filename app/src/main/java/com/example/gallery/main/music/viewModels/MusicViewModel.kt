@@ -13,6 +13,7 @@ import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
 import com.example.gallery.Strings
 import com.example.gallery.base.utils.LocalMediaUtils
+import com.example.gallery.main.video.player.IMediaPlayer
 import com.example.gallery.main.video.player.controller.MusicPlayer
 import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.MusicRepository
@@ -29,7 +30,7 @@ class MusicViewModel : ViewModel() {
 
     private val repository = MusicRepository.getInstance()
 
-    private val musicPlayer = MusicPlayer()
+    private val musicPlayer: IMediaPlayer = MusicPlayer()
     private var index: Int = 0
 
     private var _music = MutableLiveData<Music>()

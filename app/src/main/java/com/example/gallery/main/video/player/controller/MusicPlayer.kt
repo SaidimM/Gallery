@@ -1,12 +1,13 @@
 package com.example.gallery.main.video.player.controller
 
 import android.media.MediaPlayer
+import com.example.gallery.main.video.player.IMediaPlayer
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.main.video.player.listener.PlayerListener
 import com.example.gallery.main.video.player.controller.PlayMode.*
 import kotlin.random.Random
 
-class MusicPlayer {
+class MusicPlayer : IMediaPlayer {
     private var playMode: PlayMode = LIST
     private val list: ArrayList<Music> = arrayListOf()
     private val historyList: ArrayList<Music> = arrayListOf()
@@ -29,7 +30,7 @@ class MusicPlayer {
 
     init { player.playerListener = listener }
 
-    fun playNext() {
+    override fun playNext() {
         if (list.isEmpty()) return
         position = when (playMode) {
             LIST -> if (position == list.size - 1) 0 else position + 1
@@ -40,7 +41,7 @@ class MusicPlayer {
         player.initialize()
     }
 
-    fun playPrevious() {
+    override fun playPrevious() {
         if (list.isEmpty()) return
         position = when(playMode) {
             LIST -> if (position == 0) list.size -1 else position - 1
@@ -56,7 +57,7 @@ class MusicPlayer {
         list.add(music)
     }
 
-    fun play(music: Music? = null, musics: ArrayList<Music>? = null) {
+    override fun play(music: Music?, musics: ArrayList<Music>?) {
         if (musics != null && music != null && musics != list) {
             list.clear()
             list.addAll(musics)
@@ -76,13 +77,13 @@ class MusicPlayer {
         player.initialize()
     }
 
-    fun pause() {
+    override fun pause() {
         player.pause()
     }
 
-    fun seekTo(position: Int) { player.seekTo(position) }
+    override fun seekTo(position: Int) { player.seekTo(position) }
 
-    fun getCurrentMusic() = list[position]
+    override fun getCurrentMusic() = list[position]
 
-    fun recycle() = player.release()
+    override fun recycle() = player.release()
 }

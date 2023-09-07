@@ -17,7 +17,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.animation.doOnEnd
 import com.example.gallery.media.remote.lyrics.Lyric
-import com.example.gallery.main.video.player.GeneralTools.dp
+import com.example.gallery.base.utils.GeneralUtils.dp
 import java.lang.StrictMath.abs
 
 class LyricsView : View {

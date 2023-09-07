@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.example.gallery.main.video.player.GeneralTools.dp
+import com.example.gallery.base.utils.GeneralUtils.dp
 
 class VerticalProgressView : View {
     constructor(context: Context) : super(context)

@@ -4,10 +4,10 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.TextView
 import com.example.gallery.R
-import com.example.gallery.main.video.player.GeneralTools
+import com.example.gallery.base.utils.GeneralUtils
+import com.example.gallery.base.utils.GeneralUtils.millisecondToString
 
 class VideoProgressOverlay : FrameLayout {
 
@@ -29,9 +29,9 @@ class VideoProgressOverlay : FrameLayout {
     }
 
     fun updateProgress(currentPosition: Int, difference: Int) {
-        val text = GeneralTools.millisecondToString(currentPosition)
+        val text = currentPosition.millisecondToString()
         position.text = text
-        var diff = GeneralTools.millisecondToString(difference)
+        var diff = difference.millisecondToString()
         if (text == "00 : 00") diff = "00 : 00"
         val diffText = if (difference >= 0) "( + $diff )" else "( - $diff )"
         differ.text = diffText

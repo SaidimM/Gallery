@@ -8,7 +8,8 @@ import android.view.LayoutInflater
 import android.view.SurfaceHolder
 import android.widget.*
 import com.example.gallery.R
-import com.example.gallery.main.video.player.GeneralTools
+import com.example.gallery.base.utils.GeneralUtils
+import com.example.gallery.base.utils.GeneralUtils.millisecondToString
 import com.example.gallery.main.video.player.controller.Player
 import com.example.gallery.main.video.player.listener.IVideoInfo
 import com.example.gallery.main.video.player.listener.PlayerListener
@@ -129,8 +130,8 @@ class VideoControllerOverlay : FrameLayout {
 
     fun showProgress() {
         if (player.getDuration() == 0) return
-        val durationText = "${GeneralTools.millisecondToString(player.getCurrentPosition(), false)} / ${
-            GeneralTools.millisecondToString(player.getDuration(), false)
+        val durationText = "${player.getCurrentPosition().millisecondToString()} / ${
+            player.getDuration().millisecondToString()
         }"
         duration.text = durationText
         val duration = player.getDuration()
