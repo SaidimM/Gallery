@@ -22,13 +22,13 @@ import java.io.File
 object ViewUtils {
 
     const val TAG = ""
-    suspend fun loadAlbumCover(item: Music, imageView: ImageView) {
+    suspend fun loadAlbumCover(item: Music, imageView: ImageView, with: Int = imageView.width, height: Int = imageView.height) {
         getAlbumBitmap(item)
             .catch { LogUtil.e(TAG, it.message.toString()) }
             .collect {
                 coroutineScope {
                     launch(Dispatchers.Main) {
-                        Glide.with(imageView).load(it).into(imageView)
+                        Glide.with(imageView).load(it).override(with, height).into(imageView)
                     }
                 }
             }
