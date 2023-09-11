@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gallery.Strings
 import com.example.gallery.base.utils.LocalMediaUtils
+import com.example.gallery.main.music.enums.PlayerViewState
 import com.example.gallery.media.MusicRepository
 import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.remote.lyrics.Lyric
@@ -22,6 +23,9 @@ class MusicPlayerViewModel : ViewModel() {
 
     private var _lyrics = MutableLiveData<ArrayList<Lyric>>()
     val lyrics: LiveData<ArrayList<Lyric>> = _lyrics
+
+    private var _viewState = MutableLiveData<PlayerViewState>()
+    val viewState: LiveData<PlayerViewState> = _viewState
 
     fun initMusic(music: Music) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -71,4 +75,12 @@ class MusicPlayerViewModel : ViewModel() {
         val newList = lyrics.filter { it.text.isNotEmpty() } as ArrayList
         emit(newList)
     }.catch { LogUtil.e(TAG, it.message.toString()) }
+
+    fun updateViewState() {
+        when (viewState.value) {
+            null -> _viewState.value = PlayerViewState.LYRICS
+            PlayerViewState.ALBUM -> _viewState.value = PlayerViewState.LYRICS
+            else -> _viewState.value = PlayerViewState.ALBUM
+        }
+    }
 }

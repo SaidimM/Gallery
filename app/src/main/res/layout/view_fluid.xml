@@ -19,14 +19,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:alpha="0.5"
+                android:alpha="0.6"
                 android:id="@+id/fluid_middle"/>
 
         <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:alpha="0.5"
+                android:alpha="1"
                 android:id="@+id/fluid_top"/>
     </FrameLayout>
 </layout>
