@@ -23,28 +23,38 @@
                 android:layout_height="match_parent"
                 android:id="@+id/fluid_view"/>
 
+        <androidx.recyclerview.widget.RecyclerView
+                app:layout_constraintTop_toBottomOf="@id/button"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:overScrollMode="never"
+                android:visibility="gone"
+                android:alpha="0"
+                android:layout_marginTop="112dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/recyclerView"/>
 
         <ImageView
                 android:layout_width="48dp"
+                android:layout_height="24dp"
+                android:id="@+id/button"
+                app:layout_constraintBottom_toTopOf="@id/album"
                 android:contentDescription="@string/slider"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:id="@+id/slider"
-                android:src="@drawable/ic_separator"
-                android:paddingVertical="6dp"
-                android:layout_gravity="center"
-                android:layout_height="12dp"/>
-
+                android:backgroundTint="@color/white"
+                android:src="@drawable/ic_separator"/>
 
         <com.google.android.material.card.MaterialCardView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 app:cardCornerRadius="4dp"
                 android:elevation="8dp"
-                app:layout_constraintTop_toBottomOf="@id/slider"
+                app:layout_constraintTop_toBottomOf="@id/button"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginHorizontal="24dp"
                 android:layout_gravity="center"
                 android:id="@+id/album">
 
@@ -63,14 +73,14 @@
                 android:textSize="20sp"
                 android:ellipsize="end"
                 android:lines="1"
-                tools:text="Lights on"
+                tools:text="I don't even know your name"
                 android:textColor="@color/white"
-                android:layout_marginEnd="16dp"
                 app:layout_constraintTop_toTopOf="@id/album"
                 app:layout_constraintBottom_toBottomOf="@id/album"
-                app:layout_constraintStart_toEndOf="@id/album"
-                app:layout_constraintEnd_toStartOf="@id/play"
-                android:layout_marginStart="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="88dp"
+                android:layout_marginEnd="96dp"
                 android:id="@+id/music_name"/>
 
         <ImageButton

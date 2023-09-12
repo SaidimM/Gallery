@@ -3,8 +3,12 @@ package com.example.gallery.base.utils
 import LogUtil
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
 import com.example.gallery.Strings
@@ -14,7 +18,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -22,7 +25,12 @@ import java.io.File
 object ViewUtils {
 
     const val TAG = ""
-    suspend fun loadAlbumCover(item: Music, imageView: ImageView, with: Int = imageView.width, height: Int = imageView.height) {
+    suspend fun loadAlbumCover(
+        item: Music,
+        imageView: ImageView,
+        with: Int = imageView.width,
+        height: Int = imageView.height
+    ) {
         getAlbumBitmap(item)
             .catch { LogUtil.e(TAG, it.message.toString()) }
             .collect {
@@ -48,5 +56,36 @@ object ViewUtils {
             )
         } ?: error("couldn't get album cover!")
         emit(bitmap)
+    }
+
+    fun View.setMargins(start: Int = 0, top: Int = 0, end: Int = 0, bottom: Int = 0) {
+        val parent = this.parent
+        val layoutParams = this.layoutParams
+        when (parent) {
+            is ConstraintLayout -> {
+                (layoutParams as ConstraintLayout.LayoutParams).setMargins(start, top, end, bottom)
+            }
+
+            is LinearLayout -> {
+                (layoutParams as LinearLayout.LayoutParams).setMargins(start, top, end, bottom)
+            }
+
+            is FrameLayout -> {
+                (layoutParams as FrameLayout.LayoutParams).setMargins(start, top, end, bottom)
+            }
+        }
+        this.layoutParams = layoutParams
+    }
+
+    fun View.setHeight(height: Int) {
+        val layoutParams = this.layoutParams
+        layoutParams.height = height
+        this.layoutParams = layoutParams
+    }
+
+    fun View.setWidth(width: Int) {
+        val layoutParams = this.layoutParams
+        layoutParams.width = width
+        this.layoutParams = layoutParams
     }
 }

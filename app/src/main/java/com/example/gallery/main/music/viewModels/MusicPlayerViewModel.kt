@@ -57,6 +57,7 @@ class MusicPlayerViewModel : ViewModel() {
         val data = LocalMediaUtils.readFile(path)
         val strings: ArrayList<String> = data.split(Regex("\n"), 0) as ArrayList<String>
         val lyrics: ArrayList<Lyric> = arrayListOf()
+        var position = 0
         strings.forEach { string ->
             try {
                 if (string == "") return@forEach
@@ -64,7 +65,8 @@ class MusicPlayerViewModel : ViewModel() {
                 val time = string.substring(string.indexOf('[') + 1, string.indexOf(']'))
                 val min = time.substring(0, time.indexOf(':')).toInt() * 60 * 1000
                 val sec = (time.substring(time.indexOf(':') + 1).toFloat() * 1000).toInt()
-                val lyric = Lyric(min + sec, text)
+                val lyric = Lyric(position, text, min + sec)
+                position = min + sec
                 lyrics.add(lyric)
                 if (lyrics.isNotEmpty()) lyrics.last().endPosition = min + sec
             } catch (e: Exception) {

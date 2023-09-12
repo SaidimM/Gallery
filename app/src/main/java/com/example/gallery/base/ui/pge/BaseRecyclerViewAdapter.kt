@@ -35,4 +35,22 @@ abstract class BaseRecyclerViewAdapter<T, B : ViewDataBinding>(private val conte
     class BaseViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
 
     override fun getItemCount() = data.size
+
+    protected val Int.dp: Int get() = run {
+        return toFloat().dp
+    }
+
+    protected val Float.dp: Int get() = run {
+        val scale: Float = context.resources.displayMetrics.density
+        return (this * scale + 0.5f).toInt()
+    }
+
+    protected val Int.px: Int get() = run {
+        return toFloat().px
+    }
+
+    protected val Float.px: Int get() = run {
+        val scale: Float = context.resources.displayMetrics.density
+        return ((this - 0.5f) / scale).toInt()
+    }
 }
