@@ -1,11 +1,17 @@
 package com.example.gallery.main.music.fragments
 
 import android.animation.ObjectAnimator
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.children
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.gallery.R
@@ -16,15 +22,20 @@ import com.example.gallery.base.utils.ViewUtils.setHeight
 import com.example.gallery.base.utils.ViewUtils.setMargins
 import com.example.gallery.base.utils.ViewUtils.setWidth
 import com.example.gallery.databinding.FragmentPlayerBinding
-import com.example.gallery.main.music.adapters.LyricsAdapter
 import com.example.gallery.main.music.enums.PlayerViewState
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
 import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.local.bean.Music
+import com.example.gallery.media.remote.lyrics.Lyric
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlin.math.sqrt
 
@@ -36,12 +47,6 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     private val bottomSheetBehaviorCallback = object : BottomSheetBehavior.BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) = onSheetStateChanges(newState)
         override fun onSlide(bottomSheet: View, slideOffset: Float) = onSheetSlides(slideOffset)
-    }
-    private val adapter: LyricsAdapter by lazy { LyricsAdapter(binding.recyclerView) }
-
-    private val albumClickListener = OnClickListener {
-        if (behavior.state == BottomSheetBehavior.STATE_COLLAPSED) behavior.state = BottomSheetBehavior.STATE_EXPANDED
-        else viewModel.updateViewState()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,7 +64,6 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
                 BottomSheetBehavior.STATE_EXPANDED
             else viewModel.updateViewState()
         }
-        binding.recyclerView.adapter = adapter
     }
 
     private fun observeViewModel() {
@@ -83,10 +87,8 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
             )
         }
         viewModel.lyrics.observe(viewLifecycleOwner) {
-            lifecycleScope.launch(Dispatchers.Main) {
-                adapter.data = it
-                adapter.start()
-            }
+            binding.lyricsView.data = it
+            lifecycleScope.launch { binding.lyricsView.start() }
         }
         viewModel.viewState.observe(viewLifecycleOwner) {
             when (it) {
@@ -96,8 +98,8 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
                         addUpdateListener { animator -> changeAlbumCoverOffset(sqrt(animator.animatedValue as Float * animator.animatedValue as Float * animator.animatedValue as Float)) }
                         start()
                     }
-                    binding.recyclerView.clearAnimation()
-                    binding.recyclerView.animate()
+                    binding.lyricsView.clearAnimation()
+                    binding.lyricsView.animate()
                         .alphaBy(1f).alpha(0f)
                         .setDuration(200).start()
                     binding.songName.animate().alphaBy(0f).alpha(1f)
@@ -114,8 +116,8 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
                         addUpdateListener { animator -> changeAlbumCoverOffset(animator.animatedValue as Float * animator.animatedValue as Float * animator.animatedValue as Float) }
                         start()
                     }
-                    binding.recyclerView.clearAnimation()
-                    binding.recyclerView.animate()
+                    binding.lyricsView.clearAnimation()
+                    binding.lyricsView.animate()
                         .alphaBy(0f).alpha(1f)
                         .setDuration(200).start()
                     binding.songName.animate().alphaBy(1f).alpha(0f)

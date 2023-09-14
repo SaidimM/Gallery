@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
@@ -87,5 +88,25 @@ object ViewUtils {
         val layoutParams = this.layoutParams
         layoutParams.width = width
         this.layoutParams = layoutParams
+    }
+
+    fun View.toSizeString() = "height: ${this.measuredHeight}, top: ${this.top}"
+
+    val Int.dp: Int get() = run {
+        return toFloat().dp
+    }
+
+    val Float.dp: Int get() = run {
+        val scale: Float = Utils.getApp().resources.displayMetrics.density
+        return (this * scale + 0.5f).toInt()
+    }
+
+    val Int.px: Int get() = run {
+        return toFloat().px
+    }
+
+    val Float.px: Int get() = run {
+        val scale: Float = Utils.getApp().resources.displayMetrics.density
+        return ((this - 0.5f) / scale).toInt()
     }
 }
