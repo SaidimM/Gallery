@@ -13,7 +13,7 @@ abstract class BaseRecyclerViewAdapter<T, B : ViewDataBinding>(private val conte
     var data: ArrayList<T> = arrayListOf()
         set(value) {
             field = value
-            notifyDataSetChanged()
+            field.forEachIndexed { index, _ -> notifyItemChanged(index) }
         }
 
     protected abstract fun getResourceId(viewType: Int): Int

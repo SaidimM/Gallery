@@ -1,21 +1,15 @@
 package com.example.gallery.main.music.fragments
 
 import android.animation.ObjectAnimator
-import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.children
-import androidx.core.view.doOnLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseFragment
+import com.example.gallery.base.utils.AnimationUtils.setListeners
 import com.example.gallery.base.utils.ViewUtils.getAlbumBitmap
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.base.utils.ViewUtils.setHeight
@@ -27,15 +21,10 @@ import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
 import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.local.bean.Music
-import com.example.gallery.media.remote.lyrics.Lyric
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlin.math.sqrt
 
@@ -64,6 +53,7 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
                 BottomSheetBehavior.STATE_EXPANDED
             else viewModel.updateViewState()
         }
+        binding.lyricsView.setDragListener { animateController() }
     }
 
     private fun observeViewModel() {
@@ -89,6 +79,7 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
         viewModel.lyrics.observe(viewLifecycleOwner) {
             binding.lyricsView.data = it
             lifecycleScope.launch { binding.lyricsView.start() }
+            animateController()
         }
         viewModel.viewState.observe(viewLifecycleOwner) {
             when (it) {
@@ -159,14 +150,25 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     }
 
     private fun changeAlbumCoverOffset(offset: Float) {
-        val scale = 48 + (320 - 48) * offset * offset
+        val scale = 56 + (320 - 56) * offset * offset
         val marginTop = 96 * offset
-        val marginStart = 24.dp + ((binding.root.width - 320.dp) / 2 - 24.dp) * offset
+        val marginStart = 32.dp + ((binding.root.width - 320.dp) / 2 - 32.dp) * offset
         binding.album.setWidth(scale.dp)
         binding.album.setHeight(scale.dp)
         binding.album.setMargins(marginStart.toInt(), marginTop.dp)
         binding.musicName.alpha = ((1 - offset) * (1 - offset))
-        binding.album.radius = 4 + (8 - 4).dp.toFloat() * offset
+        binding.album.radius = 8 + (16 - 6).dp.toFloat() * offset
+    }
+
+    private fun animateController(): Boolean {
+        lifecycleScope.launch(Dispatchers.Main) {
+            if (binding.controller.visibility != View.VISIBLE) binding.controller.animate().alphaBy(0f).alpha(1f).setDuration(500)
+                .setListeners(onStart = { binding.controller.visibility = View.VISIBLE }).start()
+            delay(5000)
+            binding.controller.animate().alphaBy(1f).alpha(0f).setDuration(500)
+                .setListeners(onStart = { binding.controller.visibility = View.GONE }).start()
+        }
+        return true
     }
 
     private fun initPlayDetails(music: Music) {

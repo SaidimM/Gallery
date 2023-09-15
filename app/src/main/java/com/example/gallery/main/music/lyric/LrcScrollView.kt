@@ -8,7 +8,10 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.DragEvent
+import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -51,9 +54,7 @@ class LrcScrollView : FrameLayout {
 
     private var isFullDisplay = false
 
-    private val bottomViewHeight = 96.dp
-
-    private var defaultColor = Color.parseColor("#C4C4C4")
+    private val bottomViewHeight = 144.dp
 
     init {
         setPadding(16.dp, 0, 16.dp, 0)
@@ -69,6 +70,7 @@ class LrcScrollView : FrameLayout {
             field.clear()
             field.addAll(value)
             linearLayout.removeAllViews()
+            index = 0
             field.forEach {
                 val textView = TextView(context).apply {
                     layoutParams = LinearLayout.LayoutParams(
@@ -79,7 +81,7 @@ class LrcScrollView : FrameLayout {
                     setTextColor(Color.WHITE)
                     setPadding(16.dp, 16.dp, 16.dp, 16.dp)
                     val font = ResourcesCompat.getFont(context, R.font.roboto_black)
-                    alpha = 0.4f
+                    alpha = 0f
                     setTypeface(font, Typeface.BOLD)
                 }
                 linearLayout.addView(textView)
@@ -100,7 +102,12 @@ class LrcScrollView : FrameLayout {
                     texts.add(view as TextView)
                 }
             }
+            scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY -> setTextsAlpha(isFullDisplay) }
         }
+
+    fun setDragListener(afterFrag: () -> Boolean) {
+        scrollView.setOnDragListener { _, _ -> afterFrag() }
+    }
 
     suspend fun start(position: Int = 0) {
         data.find { position >= it.position && position < it.endPosition }?.let { this.index = data.indexOf(it) }
@@ -116,7 +123,7 @@ class LrcScrollView : FrameLayout {
             coroutineScope {
                 launch(Dispatchers.Main) {
                     scrollToIndex(it)
-                    delay(250)
+                    delay(150)
                     animateIndexText(it)
                     alphaAnimateTexts(it)
                 }
@@ -125,12 +132,14 @@ class LrcScrollView : FrameLayout {
     }
 
     private fun scrollToIndex(index: Int) {
+        if (offsets.size <= index) return
+        this.index = index
         val offset = offsets[index]
         if (offset <= 32.dp) return
-        ObjectAnimator.ofInt(scrollView.scrollY, offsets[index] - 32.dp).apply {
+        ObjectAnimator.ofInt(scrollView.scrollY, offsets[index] - 16.dp).apply {
             setDuration(400)
             addUpdateListener { scrollView.scrollY = it.animatedValue as Int }
-            interpolator = AccelerateDecelerateInterpolator()
+            interpolator = DecelerateInterpolator()
             start()
         }
     }
@@ -163,22 +172,25 @@ class LrcScrollView : FrameLayout {
         }
     }
 
-    private fun alphaAnimateTexts(index: Int, isFullDisplay: Boolean = false) {
-        if (index != 0) {
-            val preText = texts[index - 1]
-            preText.animate().alphaBy(1f).alpha(0.4f).setDuration(200).start()
-        }
-        texts[index].animate().alphaBy(0.4f).alpha(1f).start()
-
+    private fun setTextsAlpha(isFullDisplay: Boolean = false) {
         this.isFullDisplay = isFullDisplay
-        val displayHeight = scrollView.height - if (isFullDisplay) 0 else bottomViewHeight
+        val displayHeight = scrollView.height
         var deltaHeight = displayHeight
-        var deltaIndex = index
+        var deltaIndex = offsets.findLast { scrollView.scrollY - it > 0 }?.let { offsets.indexOf(it) } ?: 0
         while (deltaHeight > 0) {
-            val textView = texts[index]
-            textView.alpha = 0.4f * (deltaHeight * displayHeight)
+            val textView = texts[deltaIndex]
+            val alpha = 0.4f * (deltaHeight.toFloat() / displayHeight)
+            textView.alpha = alpha
             deltaHeight -= textView.height
             deltaIndex ++
         }
+    }
+
+    private fun alphaAnimateTexts(index: Int) {
+        if (index != 0) {
+            val preText = texts[index - 1]
+            preText.animate().alphaBy(1f).alpha(0.2f).setDuration(200).start()
+        }
+        texts[index].animate().alphaBy(0.4f).alpha(1f).start()
     }
 }
