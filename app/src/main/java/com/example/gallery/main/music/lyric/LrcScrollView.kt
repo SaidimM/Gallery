@@ -122,6 +122,7 @@ class LrcScrollView : FrameLayout {
         }.collect {
             coroutineScope {
                 launch(Dispatchers.Main) {
+                    if (it == -1) return@launch
                     scrollToIndex(it)
                     delay(150)
                     animateIndexText(it)

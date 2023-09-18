@@ -1,14 +1,19 @@
 package com.example.gallery.main.music.fragments
 
 import android.animation.ObjectAnimator
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.palette.graphics.Palette
+import androidx.palette.graphics.Palette.Swatch
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseFragment
+import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
 import com.example.gallery.base.utils.AnimationUtils.setListeners
 import com.example.gallery.base.utils.ViewUtils.getAlbumBitmap
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
@@ -16,6 +21,7 @@ import com.example.gallery.base.utils.ViewUtils.setHeight
 import com.example.gallery.base.utils.ViewUtils.setMargins
 import com.example.gallery.base.utils.ViewUtils.setWidth
 import com.example.gallery.databinding.FragmentPlayerBinding
+import com.example.gallery.databinding.ItemColorBinding
 import com.example.gallery.main.music.enums.PlayerViewState
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
@@ -23,8 +29,12 @@ import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.local.bean.Music
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlin.math.sqrt
 
@@ -36,6 +46,14 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     private val bottomSheetBehaviorCallback = object : BottomSheetBehavior.BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) = onSheetStateChanges(newState)
         override fun onSlide(bottomSheet: View, slideOffset: Float) = onSheetSlides(slideOffset)
+    }
+    private val colorAdapter by lazy {
+        object : BaseRecyclerViewAdapter<Swatch?, ItemColorBinding>(requireContext()) {
+            override fun getResourceId(viewType: Int) = R.layout.item_color
+            override fun onBindItem(binding: ItemColorBinding, item: Swatch?, position: Int) {
+                binding.setColor(item?.rgb ?: Color.WHITE)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,6 +72,9 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
             else viewModel.updateViewState()
         }
         binding.lyricsView.setDragListener { animateController() }
+        binding.recyclerView.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.recyclerView.adapter = colorAdapter
     }
 
     private fun observeViewModel() {
@@ -162,7 +183,8 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
 
     private fun animateController(): Boolean {
         lifecycleScope.launch(Dispatchers.Main) {
-            if (binding.controller.visibility != View.VISIBLE) binding.controller.animate().alphaBy(0f).alpha(1f).setDuration(500)
+            if (binding.controller.visibility != View.VISIBLE) binding.controller.animate().alphaBy(0f).alpha(1f)
+                .setDuration(500)
                 .setListeners(onStart = { binding.controller.visibility = View.VISIBLE }).start()
             delay(5000)
             binding.controller.animate().alphaBy(1f).alpha(0f).setDuration(500)
@@ -174,7 +196,20 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     private fun initPlayDetails(music: Music) {
         lifecycleScope.launch(Dispatchers.IO) { loadAlbumCover(music, binding.albumCover, 320.dp, 320.dp) }
         lifecycleScope.launch(Dispatchers.IO) {
-            getAlbumBitmap(music).collect { launch(Dispatchers.Main) { binding.fluidView.initBackground(it) } }
+            getAlbumBitmap(music).collect {
+                launch(Dispatchers.Main) {
+                    binding.fluidView.initBackground(it)
+                    val palette = Palette.from(it).generate()
+                    val colors = arrayListOf<Swatch?>()
+                    colors.add(palette.vibrantSwatch)
+                    colors.add(palette.mutedSwatch)
+                    colors.add(palette.darkVibrantSwatch)
+                    colors.add(palette.darkMutedSwatch)
+                    colors.add(palette.lightVibrantSwatch)
+                    colors.add(palette.lightMutedSwatch)
+                    colorAdapter.data = colors
+                }
+            }
         }
         binding.musicName.text = music.name
         binding.songName.text = music.name

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable name="color" type="Integer"/>
+    </data>
+    <com.google.android.material.card.MaterialCardView
+            android:padding="4dp"
+            android:layout_margin="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <View
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@{color}"
+                android:id="@+id/color"/>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>
