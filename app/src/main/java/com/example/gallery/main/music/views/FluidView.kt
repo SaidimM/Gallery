@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -23,12 +22,11 @@ class FluidView(context: Context, attributeSet: AttributeSet? = null) : FrameLay
 
     private val binding: ViewFluidBinding by lazy {
         DataBindingUtil.inflate(
-            LayoutInflater.from(context),
-            R.layout.view_fluid,
-            this,
-            true
+            LayoutInflater.from(context), R.layout.view_fluid, this, true
         )
     }
+
+    private val radius by lazy { sqrt((this@FluidView.width * this@FluidView.width + this@FluidView.height * this@FluidView.height).toDouble()).toInt() }
 
     fun initBackground(bitmap: Bitmap) {
         palette = Palette.from(bitmap).generate()
@@ -39,15 +37,11 @@ class FluidView(context: Context, attributeSet: AttributeSet? = null) : FrameLay
 
     private fun drawRectBottom() {
         binding.fluidBottom.background = GradientDrawable(
-            GradientDrawable.Orientation.TOP_BOTTOM,
-            intArrayOf(
-                palette.getDarkMutedColor(Color.WHITE),
-                palette.getDarkVibrantColor(Color.WHITE)
+            GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(
+                palette.getDarkMutedColor(Color.WHITE), palette.getDarkVibrantColor(Color.WHITE)
             )
-        )
+        ).apply { setBounds(left, top, (radius * 0.7f).toInt(), (radius * 0.7f).toInt()) }
         binding.fluidBottom.layoutParams.apply {
-            val radius =
-                sqrt((this@FluidView.width * this@FluidView.width + this@FluidView.height * this@FluidView.height).toDouble()).toInt()
             width = radius
             height = radius
         }
@@ -60,13 +54,10 @@ class FluidView(context: Context, attributeSet: AttributeSet? = null) : FrameLay
 
     private fun drawRectMiddle() {
         binding.fluidMiddle.background = GradientDrawable(
-            GradientDrawable.Orientation.TL_BR,
-            intArrayOf(Color.WHITE, Color.TRANSPARENT)
-        )
+            GradientDrawable.Orientation.TR_BL, intArrayOf(Color.WHITE, Color.TRANSPARENT)
+        ).apply { setBounds(radius / 2, 0, radius / 2, radius) }
         binding.fluidMiddle.backgroundTintMode = PorterDuff.Mode.DST_OUT
         binding.fluidMiddle.layoutParams.apply {
-            val radius =
-                sqrt((this@FluidView.width * this@FluidView.width * 4 / 9 + this@FluidView.height * this@FluidView.height * 4 / 9).toDouble()).toInt() * 2
             this.width = radius
             this.height = radius
         }
@@ -79,15 +70,11 @@ class FluidView(context: Context, attributeSet: AttributeSet? = null) : FrameLay
 
     private fun drawRectTop() {
         binding.fluidTop.background = GradientDrawable(
-            GradientDrawable.Orientation.TOP_BOTTOM,
-            intArrayOf(
-                palette.getVibrantColor(Color.WHITE),
-                palette.getMutedColor(Color.WHITE)
+            GradientDrawable.Orientation.TR_BL, intArrayOf(
+                palette.getVibrantColor(Color.WHITE), palette.getMutedColor(Color.WHITE)
             )
-        )
+        ).apply { this.setBounds(radius, 0, radius, 0) }
         binding.fluidTop.layoutParams.apply {
-            val radius =
-                sqrt((this@FluidView.width * this@FluidView.width + this@FluidView.height * this@FluidView.height).toDouble()).toInt()
             this.width = radius
             this.height = radius
         }
