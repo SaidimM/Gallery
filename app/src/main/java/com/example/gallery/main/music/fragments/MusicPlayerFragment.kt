@@ -25,16 +25,13 @@ import com.example.gallery.databinding.ItemColorBinding
 import com.example.gallery.main.music.enums.PlayerViewState
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
+import com.example.gallery.main.music.views.EaseCubicInterpolator
 import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.local.bean.Music
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlin.math.sqrt
 
@@ -47,6 +44,7 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
         override fun onStateChanged(bottomSheet: View, newState: Int) = onSheetStateChanges(newState)
         override fun onSlide(bottomSheet: View, slideOffset: Float) = onSheetSlides(slideOffset)
     }
+    private val bezierInterpolator = EaseCubicInterpolator(0.25f,0.25f,0.15f,1f)
     private val colorAdapter by lazy {
         object : BaseRecyclerViewAdapter<Swatch?, ItemColorBinding>(requireContext()) {
             override fun getResourceId(viewType: Int) = R.layout.item_color
@@ -106,38 +104,38 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
             when (it) {
                 PlayerViewState.ALBUM -> {
                     ObjectAnimator.ofFloat(0f, 1f).apply {
-                        duration = 200
-                        addUpdateListener { animator -> changeAlbumCoverOffset(sqrt(animator.animatedValue as Float * animator.animatedValue as Float * animator.animatedValue as Float)) }
+                        interpolator = bezierInterpolator
+                        duration = 500
+                        addUpdateListener { animator -> changeAlbumCoverOffset(animator.animatedValue as Float) }
                         start()
                     }
                     binding.lyricsView.clearAnimation()
-                    binding.lyricsView.animate()
-                        .alphaBy(1f).alpha(0f)
-                        .setDuration(200).start()
+                    binding.lyricsView.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
                     binding.songName.animate().alphaBy(0f).alpha(1f)
                         .translationYBy(4.dp.toFloat()).translationY(0f)
-                        .setInterpolator { alpha -> alpha * alpha }.setDuration(200).start()
+                        .setInterpolator(bezierInterpolator).setDuration(200).start()
                     binding.singerName.animate().alphaBy(0f).alpha(1f)
                         .translationYBy(4.dp.toFloat()).translationY(0f)
-                        .setInterpolator { alpha -> alpha * alpha }.setDuration(200).start()
+                        .setInterpolator(bezierInterpolator).setDuration(200).start()
+                    binding.recyclerView.animate().alphaBy(0f).alpha(1f).setDuration(200).start()
                 }
 
                 PlayerViewState.LYRICS -> {
                     ObjectAnimator.ofFloat(1f, 0f).apply {
-                        duration = 320
-                        addUpdateListener { animator -> changeAlbumCoverOffset(animator.animatedValue as Float * animator.animatedValue as Float * animator.animatedValue as Float) }
+                        interpolator = bezierInterpolator
+                        duration = 500
+                        addUpdateListener { animator -> changeAlbumCoverOffset(animator.animatedValue as Float) }
                         start()
                     }
                     binding.lyricsView.clearAnimation()
-                    binding.lyricsView.animate()
-                        .alphaBy(0f).alpha(1f)
-                        .setDuration(200).start()
+                    binding.lyricsView.animate().alphaBy(0f).alpha(1f).setDuration(200).start()
                     binding.songName.animate().alphaBy(1f).alpha(0f)
                         .translationYBy(0f).translationY(8.dp.toFloat())
-                        .setInterpolator { alpha -> sqrt(alpha) }.setDuration(320).start()
+                        .setInterpolator(bezierInterpolator).setDuration(320).start()
                     binding.singerName.animate().alphaBy(1f).alpha(0f)
                         .translationYBy(0f).translationY(8.dp.toFloat())
-                        .setInterpolator { alpha -> sqrt(alpha) }.setDuration(320).start()
+                        .setInterpolator(bezierInterpolator).setDuration(320).start()
+                    binding.recyclerView.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
                 }
 
                 else -> {}
@@ -147,13 +145,13 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
 
     private fun onSheetStateChanges(newState: Int) {
         if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-            binding.play.animate().alphaBy(0f).alpha(1f).setDuration(500)
+            binding.play.animate().alphaBy(0f).alpha(1f).setDuration(200)
                 .setInterpolator(AccelerateDecelerateInterpolator()).start()
-            binding.next.animate().alphaBy(0f).alpha(1f).setDuration(500)
+            binding.next.animate().alphaBy(0f).alpha(1f).setDuration(200)
                 .setInterpolator(AccelerateDecelerateInterpolator()).start()
         } else {
-            binding.play.animate().alphaBy(1f).alpha(0f).setDuration(500).start()
-            binding.next.animate().alphaBy(1f).alpha(0f).setDuration(500).start()
+            binding.play.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
+            binding.next.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
         }
     }
 
@@ -171,7 +169,7 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     }
 
     private fun changeAlbumCoverOffset(offset: Float) {
-        val scale = 56 + (320 - 56) * offset * offset
+        val scale = 56 + (320 - 56) * offset
         val marginTop = 96 * offset
         val marginStart = 32.dp + ((binding.root.width - 320.dp) / 2 - 32.dp) * offset
         binding.album.setWidth(scale.dp)

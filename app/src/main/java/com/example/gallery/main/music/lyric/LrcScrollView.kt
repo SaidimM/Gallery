@@ -102,7 +102,7 @@ class LrcScrollView : FrameLayout {
                     texts.add(view as TextView)
                 }
             }
-            scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY -> setTextsAlpha(isFullDisplay) }
+            scrollView.setOnScrollChangeListener { _, _, _, _, _ -> setTextsAlpha() }
         }
 
     fun setDragListener(afterFrag: () -> Boolean) {
@@ -173,15 +173,13 @@ class LrcScrollView : FrameLayout {
         }
     }
 
-    private fun setTextsAlpha(isFullDisplay: Boolean = false) {
-        this.isFullDisplay = isFullDisplay
+    private fun setTextsAlpha() {
         val displayHeight = scrollView.height
         var deltaHeight = displayHeight
         var deltaIndex = offsets.findLast { scrollView.scrollY - it > 0 }?.let { offsets.indexOf(it) } ?: 0
         while (deltaHeight > 0) {
             val textView = texts[deltaIndex]
-            val alpha = 0.4f * (deltaHeight.toFloat() / displayHeight)
-            textView.alpha = alpha
+            textView.alpha = 0.4f * (deltaHeight.toFloat() / displayHeight)
             deltaHeight -= textView.height
             deltaIndex ++
         }

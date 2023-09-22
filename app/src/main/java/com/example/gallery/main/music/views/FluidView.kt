@@ -55,7 +55,10 @@ class FluidView(context: Context, attributeSet: AttributeSet? = null) : FrameLay
     private fun drawRectMiddle() {
         binding.fluidMiddle.background = GradientDrawable(
             GradientDrawable.Orientation.TR_BL, intArrayOf(Color.WHITE, Color.TRANSPARENT)
-        ).apply { setBounds(radius / 2, 0, radius / 2, radius) }
+        ).apply {
+            setBounds(radius / 2, 0, radius / 2, radius)
+            setTintMode(PorterDuff.Mode.DST_OUT)
+        }
         binding.fluidMiddle.backgroundTintMode = PorterDuff.Mode.DST_OUT
         binding.fluidMiddle.layoutParams.apply {
             this.width = radius
@@ -73,7 +76,10 @@ class FluidView(context: Context, attributeSet: AttributeSet? = null) : FrameLay
             GradientDrawable.Orientation.TR_BL, intArrayOf(
                 palette.getVibrantColor(Color.WHITE), palette.getMutedColor(Color.WHITE)
             )
-        ).apply { this.setBounds(radius, 0, radius, 0) }
+        ).apply {
+            this.setBounds(radius, 0, radius, 0)
+            setTintMode(PorterDuff.Mode.DST_ATOP)
+        }
         binding.fluidTop.layoutParams.apply {
             this.width = radius
             this.height = radius
