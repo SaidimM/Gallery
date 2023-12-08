@@ -32,16 +32,9 @@ class AlbumActivity : BaseActivity() {
     }
 
     private fun initView() {
-        setContentView(binding.root)
+        title = getString(R.string.album)
         adapter = AlbumAdapter(this)
         adapter.albumSortModel = viewModel.sortModel
-        binding.toolbar.inflateMenu(R.menu.menu_album)
-        binding.toolbar.setOnMenuItemClickListener {
-            if (it.itemId == R.id.menu_item_sort) {
-                showBottomSheetDialog()
-                true
-            } else false
-        }
         binding.recyclerView.adapter = adapter
         val manager = GridLayoutManager(this, viewModel.spamCount.value!!)
         binding.recyclerView.layoutManager = manager

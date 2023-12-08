@@ -1,14 +1,12 @@
 package com.example.gallery.main.music
 
+import LogUtil
 import android.os.Bundle
-import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.FragmentContainerView
+import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.databinding.ActivityMusicBinding
 import com.example.gallery.main.music.fragments.MusicPlayerFragment
 import com.example.gallery.main.music.viewModels.MusicViewModel
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 
 class MusicActivity : BaseActivity() {
@@ -26,6 +24,7 @@ class MusicActivity : BaseActivity() {
     }
 
     private fun initView() {
+        title = getString(R.string.music)
         val playerFragment = MusicPlayerFragment(binding.cardView)
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.add(binding.playerLayout.id, playerFragment).commit()
@@ -34,5 +33,10 @@ class MusicActivity : BaseActivity() {
     override fun onStop() {
         viewModel.recyclePlayer()
         super.onStop()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        LogUtil.d("onBackPressed")
     }
 }

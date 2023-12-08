@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.View.MeasureSpec
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
@@ -97,6 +98,8 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
         }
         viewModel.lyrics.observe(viewLifecycleOwner) {
             binding.lyricsView.data = it
+            binding.lyricsView.measure(MeasureSpec.EXACTLY, MeasureSpec.EXACTLY)
+            binding.lyricsView.layout(binding.lyricsView.left, binding.lyricsView.top, binding.lyricsView.right, binding.lyricsView.bottom)
             lifecycleScope.launch { binding.lyricsView.start() }
             animateController()
         }

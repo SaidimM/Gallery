@@ -84,7 +84,9 @@ class MusicViewModel : ViewModel() {
 
     fun getLastPlayedMusic() {
         val lastPlayedMusicId = repository.getLastPlayedMusic()
-        _music.value = musics.value?.let { list -> list.find { it.id == lastPlayedMusicId } } ?: _musics.value?.get(0)
+        var music = musics.value?.let { list -> list.find { it.id == lastPlayedMusicId } }
+        if (_musics.value != null && _musics.value?.isEmpty() == false) music = _musics.value?.get(0)
+        music?.let { _music.value = music }
     }
 
     fun saveCurrentMusic() {

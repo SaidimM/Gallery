@@ -24,7 +24,7 @@ abstract class BaseRecyclerViewAdapter<T, B : ViewDataBinding>(private val conte
         val binding = DataBindingUtil.getBinding<B>(holder.itemView)
         val item = data[position]
         if (binding == null) return
-        return onBindItem(binding, item, position)
+        onBindItem(binding, item, position)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

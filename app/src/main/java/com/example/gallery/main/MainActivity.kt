@@ -19,6 +19,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         if (PermissionUtils.isGranted(android.Manifest.permission_group.STORAGE)) {
             binding.music.visibility = View.VISIBLE
             binding.album.visibility = View.VISIBLE
@@ -29,7 +30,6 @@ class MainActivity : BaseActivity() {
             binding.video.visibility = View.GONE
             super.initPermission()
         }
-        binding.toolbar.navigationIcon?.setVisible(false, false)
     }
 
     fun onClick(view: View) {

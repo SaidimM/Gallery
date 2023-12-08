@@ -65,9 +65,10 @@ class MusicPlayerViewModel : ViewModel() {
                 val time = string.substring(string.indexOf('[') + 1, string.indexOf(']'))
                 val min = time.substring(0, time.indexOf(':')).toInt() * 60 * 1000
                 val sec = (time.substring(time.indexOf(':') + 1).toFloat() * 1000).toInt()
-                val lyric = Lyric(position, text, min + sec)
+                val lyric = Lyric(position, min + sec, text)
                 position = min + sec
                 lyrics.add(lyric)
+                LogUtil.d(TAG, lyric.toString())
                 if (lyrics.isNotEmpty()) lyrics.last().endPosition = min + sec
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -112,7 +112,7 @@ class LogUtil {
                     val logTraceElement = stackArray[index]
                     val logPre = StringBuilder()
                     logPre.append("(")
-                    logPre.append(logTraceElement.fileName)
+                    logPre.append(tag)
                     logPre.append(":")
                     logPre.append(logTraceElement.lineNumber)
                     logPre.append(")")

@@ -81,8 +81,8 @@ abstract class VideoGestureView : FrameLayout, View.OnTouchListener {
 
     private val simpleOnGestureListener = object : GestureDetector.SimpleOnGestureListener() {
         override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-            Log.e(tag, "onScroll: e1" + e1!!.x + " " + e1.y)
-            Log.e(tag, "onScroll: e2" + e2!!.x + " " + e2.y)
+            Log.e(tag, "onScroll: e1" + e1.x + " " + e1.y)
+            Log.e(tag, "onScroll: e2" + e2.x + " " + e2.y)
             Log.e(tag, "onScroll: $distanceX")
             Log.e(tag, "onScroll: $distanceY")
             if (width == 0 || height == 0) return false

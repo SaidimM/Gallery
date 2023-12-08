@@ -16,22 +16,9 @@
             android:fitsSystemWindows="true"
             android:id="@+id/coordinator">
 
-        <com.google.android.material.appbar.MaterialToolbar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fitsSystemWindows="true"
-                app:navigationIcon="@drawable/ic_back"
-                app:navigationIconTint="?attr/colorOnPrimary"
-                android:id="@+id/toolbar"
-                android:background="@color/transparent"
-                app:title="@string/music"
-                app:titleTextColor="?attr/colorOnPrimary"
-                app:layout_constraintTop_toTopOf="parent"/>
-
         <androidx.fragment.app.FragmentContainerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="54dp"
                 android:id="@+id/fragment_list"
                 android:name="com.example.gallery.main.music.fragments.MusicListFragment"
                 tools:layout="@layout/fragment_music_list"/>

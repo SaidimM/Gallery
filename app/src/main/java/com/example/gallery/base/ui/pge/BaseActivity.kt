@@ -9,14 +9,17 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.Toolbar
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -26,9 +29,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blankj.utilcode.util.AdaptScreenUtils
 import com.blankj.utilcode.util.ScreenUtils
+import com.example.gallery.R
 import com.example.gallery.base.BaseApplication
 import com.example.gallery.base.response.manager.NetworkStateManager
 import com.example.gallery.base.utils.ContextUtils.isLightTheme
+import com.google.android.material.appbar.MaterialToolbar
 
 abstract class BaseActivity : AppCompatActivity() {
     protected val TAG by lazy { javaClass.simpleName }
@@ -97,10 +102,22 @@ abstract class BaseActivity : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = Color.TRANSPARENT
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setStatusBarContent(isLightTheme())
     }
 
-    fun setStatusBarContent(isWhite: Boolean) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+        return if (item.itemId == android.R.id.home) {
+            onBackPressed()
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun setStatusBarContent(isWhite: Boolean) {
         var vis: Int = window.decorView.systemUiVisibility
         vis = if (isWhite) {
             vis or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -199,26 +216,26 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        LogUtil.d(TAG, TAG)
+        LogUtil.d(TAG, "onStart")
     }
 
     override fun onResume() {
         super.onResume()
-        LogUtil.d(TAG, TAG)
+        LogUtil.d(TAG, "onResume")
     }
 
     override fun onPause() {
         super.onPause()
-        LogUtil.d(TAG, TAG)
+        LogUtil.d(TAG, "onPause")
     }
 
     override fun onStop() {
         super.onStop()
-        LogUtil.d(TAG, TAG)
+        LogUtil.d(TAG, "onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.d(TAG, TAG)
+        LogUtil.d(TAG, "onDestroy")
     }
 }

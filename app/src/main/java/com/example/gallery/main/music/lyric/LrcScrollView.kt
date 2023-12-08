@@ -1,16 +1,12 @@
 package com.example.gallery.main.music.lyric
 
 import LogUtil
-import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.DragEvent
-import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -19,19 +15,13 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.children
 import androidx.core.view.doOnLayout
-import androidx.core.view.iterator
 import androidx.core.widget.NestedScrollView
 import com.example.gallery.R
 import com.example.gallery.base.utils.ViewUtils.dp
 import com.example.gallery.base.utils.ViewUtils.px
 import com.example.gallery.media.remote.lyrics.Lyric
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 class LrcScrollView : FrameLayout {
     constructor(context: Context) : super(context)
@@ -52,10 +42,6 @@ class LrcScrollView : FrameLayout {
 
     private var index: Int = 0
 
-    private var isFullDisplay = false
-
-    private val bottomViewHeight = 144.dp
-
     init {
         setPadding(16.dp, 0, 16.dp, 0)
         linearLayout.orientation = LinearLayout.VERTICAL
@@ -69,7 +55,8 @@ class LrcScrollView : FrameLayout {
         set(value) {
             field.clear()
             field.addAll(value)
-            linearLayout.removeAllViews()
+            clearAnimation()
+            linearLayout.removeAllViewsInLayout()
             index = 0
             field.forEach {
                 val textView = TextView(context).apply {
@@ -81,7 +68,7 @@ class LrcScrollView : FrameLayout {
                     setTextColor(Color.WHITE)
                     setPadding(16.dp, 16.dp, 16.dp, 16.dp)
                     val font = ResourcesCompat.getFont(context, R.font.roboto_black)
-                    alpha = 0f
+                    alpha = 0.4f
                     setTypeface(font, Typeface.BOLD)
                 }
                 linearLayout.addView(textView)
@@ -102,34 +89,37 @@ class LrcScrollView : FrameLayout {
                     texts.add(view as TextView)
                 }
             }
+            measure(MeasureSpec.EXACTLY, MeasureSpec.EXACTLY)
+            layout(left, top, right, bottom)
             scrollView.setOnScrollChangeListener { _, _, _, _, _ -> setTextsAlpha() }
         }
 
-    fun setDragListener(afterFrag: () -> Boolean) {
-        scrollView.setOnDragListener { _, _ -> afterFrag() }
-    }
+    fun setDragListener(afterFrag: () -> Boolean) = scrollView.setOnDragListener { _, _ -> afterFrag() }
 
+    @OptIn(FlowPreview::class)
     suspend fun start(position: Int = 0) {
         data.find { position >= it.position && position < it.endPosition }?.let { this.index = data.indexOf(it) }
-        data.subList(index, data.size - 1).asFlow().transform {
-            LogUtil.d(TAG, it.toString())
-            val delay = it.endPosition - it.position
-            delay(delay.toLong())
-            LogUtil.d(TAG, "delay: $delay")
-            this@LrcScrollView.index = data.indexOf(it)
-            emit(this@LrcScrollView.index)
-            LogUtil.d(TAG, "index: ${this@LrcScrollView.index}")
-        }.collect {
-            coroutineScope {
-                launch(Dispatchers.Main) {
-                    if (it == -1) return@launch
-                    scrollToIndex(it)
-                    delay(150)
-                    animateIndexText(it)
-                    alphaAnimateTexts(it)
+        data.subList(index, data.size - 1).asFlow()
+            .onEach { delay(it.endPosition.toLong() - it.position) }
+            .flatMapConcat {
+                flow {
+                    LogUtil.d(TAG, it.toString())
+                    index = data.indexOf(it)
+                    LogUtil.d(TAG, "index: $index")
+                    if (index == -1) return@flow
+                    emit(index)
+                }
+            }.catch {
+                LogUtil.e(TAG, it.toString())
+            }.collect {
+                coroutineScope {
+                    launch(Dispatchers.Main) {
+                        scrollToIndex(it)
+                        animateIndexText(it)
+                        alphaAnimateTexts(it)
+                    }
                 }
             }
-        }
     }
 
     private fun scrollToIndex(index: Int) {
@@ -181,7 +171,7 @@ class LrcScrollView : FrameLayout {
             val textView = texts[deltaIndex]
             textView.alpha = 0.4f * (deltaHeight.toFloat() / displayHeight)
             deltaHeight -= textView.height
-            deltaIndex ++
+            deltaIndex++
         }
     }
 
