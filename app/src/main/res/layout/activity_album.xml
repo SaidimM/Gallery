@@ -12,16 +12,27 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:fitsSystemWindows="true"
             android:id="@+id/constraint_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                app:navigationIcon="@drawable/ic_back"
+                app:navigationIconTint="?attr/colorOnPrimary"
+                android:id="@+id/toolbar"
+                android:background="@color/transparent"
+                app:title="@string/album"
+                app:titleTextColor="?attr/colorOnPrimary"
+                app:layout_constraintTop_toTopOf="parent"/>
 
         <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:id="@+id/recycler_view"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toolbar"
                 app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

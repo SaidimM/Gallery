@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.activity.viewModels
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseActivity
@@ -43,6 +44,8 @@ class AlbumActivity : BaseActivity() {
                 if (adapter.getItemViewType(position) == 0) 1 else manager.spanCount
         }
         adapter.onItemClickListener = { position, index, view -> displayPreview(adapter.data[position], view) }
+        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(this, R.drawable.ic_back)
     }
 
     private fun initData() {
