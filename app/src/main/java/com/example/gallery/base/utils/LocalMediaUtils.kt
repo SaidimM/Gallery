@@ -466,17 +466,16 @@ object LocalMediaUtils {
     /**
      * 通过图片文件夹的路径获取该目录下的图片
      */
-    private suspend fun getImgListByDir(dir: String): ArrayList<Path> {
-        val imgPaths = ArrayList<Path>()
+    private fun getImgListByDir(dir: String): ArrayList<File> {
+        val imgPaths = ArrayList<File>()
         val directory = File(dir)
         if (!directory.exists()) {
             return imgPaths
         }
         val files = directory.listFiles() ?: return imgPaths
         for (file in files) {
-            val path = file.toPath()
-            if (isPicFile(path.toString())) {
-                imgPaths.add(path)
+            if (isPicFile(file.path)) {
+                imgPaths.add(file)
             }
         }
         return imgPaths
@@ -491,20 +490,20 @@ object LocalMediaUtils {
         return ArrayUtils.contains(s, suffixName.lowercase(Locale.getDefault()))
     }
 
-    private suspend fun getFileListByFolder(folder: ImgFolderBean): ArrayList<AlbumItemModel> {
+    private fun getFileListByFolder(folder: ImgFolderBean): ArrayList<AlbumItemModel> {
         val models = arrayListOf<AlbumItemModel>()
-        val pathList: ArrayList<Path> = getImgListByDir(folder.dir)
+        val files: ArrayList<File> = getImgListByDir(folder.dir)
         try {
-            pathList.forEach { path ->
+            files.forEach { file ->
                 models.add(
                     AlbumItemModel(
                         mediaType = MediaType.IMAGE,
-                        path = path.toString(),
+                        path = file.path,
                         isSelected = false,
-                        foldrName = path.parent.toString(),
-                        createdTime = getFileCreationTime(path),
-                        lastEditedTime = getFileEditedTime(path),
-                        lastAccessTime = getFileAccessedTime(path)
+                        foldrName = if (file.parent == null) "" else file.parent.toString(),
+                        createdTime = file.lastModified(),
+                        lastEditedTime = file.lastModified(),
+                        lastAccessTime = file.lastModified()
                     )
                 )
             }
@@ -520,23 +519,5 @@ object LocalMediaUtils {
         folders.forEach { files.addAll(getFileListByFolder(it)) }
         files.sortBy { -it.createdTime }
         return files
-    }
-
-    private fun getFileCreationTime(path: Path): Long {
-        val attrs: BasicFileAttributes =
-            Files.readAttributes(path, BasicFileAttributes::class.java)
-        return attrs.creationTime().toMillis()
-    }
-
-    private fun getFileEditedTime(path: Path): Long {
-        val attrs: BasicFileAttributes =
-            Files.readAttributes(path, BasicFileAttributes::class.java)
-        return attrs.lastModifiedTime().toMillis()
-    }
-
-    private fun getFileAccessedTime(path: Path): Long {
-        val attrs: BasicFileAttributes =
-            Files.readAttributes(path, BasicFileAttributes::class.java)
-        return attrs.lastAccessTime().toMillis()
     }
 }

@@ -16,31 +16,34 @@ class VideoSystemOverlay : FrameLayout {
         defStyleAttrs
     )
 
-    private lateinit var volume_bar: VerticalProgressView
-    private lateinit var light_bar: VerticalProgressView
-    private lateinit var text: TextView
+    private var volumeBar: VerticalProgressView
+    private var lightBar: VerticalProgressView
+    private var text: TextView
 
     init {
         LayoutInflater.from(context).inflate(R.layout.video_overlay_system, this)
+        volumeBar = findViewById(R.id.volume_bar)
+        lightBar = findViewById(R.id.light_bar)
+        text = findViewById(R.id.text)
     }
 
     fun updateVolume(value: Int) {
-        volume_bar.progress = value
-        volume_bar.visibility = VISIBLE
+        volumeBar.progress = value
+        volumeBar.visibility = VISIBLE
         val valueText = "volume: $value%"
         text.text = valueText
     }
 
     fun updateBrightness(value: Int) {
-        light_bar.progress = value
-        light_bar.visibility = VISIBLE
+        lightBar.progress = value
+        lightBar.visibility = VISIBLE
         val valueText = "brightness: $value%"
         text.text = valueText
     }
 
     fun hide() {
-        volume_bar.visibility = GONE
-        light_bar.visibility = GONE
+        volumeBar.visibility = GONE
+        lightBar.visibility = GONE
         text.text = ""
     }
 }
