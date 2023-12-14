@@ -34,7 +34,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlin.math.sqrt
 
 class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }

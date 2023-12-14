@@ -1,5 +1,6 @@
 package com.example.gallery.main.album
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -11,17 +12,16 @@ import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.base.utils.ImagePipelineConfigFactory
 import com.example.gallery.databinding.ActivityAlbumBinding
-import com.example.gallery.databinding.DialogAlbumSortBinding
 import com.example.gallery.main.album.adapters.AlbumAdapter
 import com.example.gallery.main.album.fragments.PreviewFragment
 import com.example.gallery.main.album.models.AlbumItemModel
 import com.example.gallery.main.album.viewModels.AlbumViewModel
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class AlbumActivity : BaseActivity() {
     private val viewModel: AlbumViewModel by viewModels()
     private lateinit var adapter: AlbumAdapter
+    private lateinit var fragment: PreviewFragment
     override val binding: ActivityAlbumBinding by lazy { ActivityAlbumBinding.inflate(layoutInflater) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +43,7 @@ class AlbumActivity : BaseActivity() {
             override fun getSpanSize(position: Int) =
                 if (adapter.getItemViewType(position) == 0) 1 else manager.spanCount
         }
-        adapter.onItemClickListener = { position, index, view -> displayPreview(adapter.data[position], view) }
+        adapter.onItemClickListener = { _, item, view -> displayPreview(item, view) }
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(this, R.drawable.ic_back)
     }
@@ -53,40 +53,33 @@ class AlbumActivity : BaseActivity() {
     }
 
     private fun observe() {
-        viewModel.album.observe(this) {
-            adapter.data = it
-        }
-        viewModel.spamCount.observe(this) {
-            (binding.recyclerView.layoutManager as GridLayoutManager).spanCount = it
-            adapter.spanCount = it
-        }
-    }
-
-    private fun showBottomSheetDialog() {
-        val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialog).apply {
-            setCancelable(true)
-            val binding = DialogAlbumSortBinding.inflate(layoutInflater)
-            setContentView(binding.root)
-            binding.sortModel = viewModel.sortModel
-            binding.cancelButton.setOnClickListener { cancel() }
-            binding.confirmButton.setOnClickListener {
-                viewModel.getImages()
-                cancel()
-            }
-        }
-        bottomSheetDialog.show()
+        viewModel.album.observe(this) { adapter.data = it }
     }
 
     private fun displayPreview(imageItem: AlbumItemModel, view: View) {
         val frame = FrameLayout(this).apply { id = R.id.layout }
+        frame.setBackgroundColor(Color.BLACK)
+        frame.setBackgroundColor(Color.TRANSPARENT)
         binding.constraintLayout.addView(frame, MATCH_PARENT, MATCH_PARENT)
-        val fragment = PreviewFragment(imageItem)
+        fragment = PreviewFragment(view, imageItem)
         supportFragmentManager.beginTransaction().add(R.id.layout, fragment).commit()
-        fragment.onClickListener = { supportFragmentManager.beginTransaction().remove(fragment).commit() }
+        fragment.onClick = { onBackPressed() }
     }
 
     override fun onBackPressed() {
         if (supportFragmentManager.fragments.isEmpty()) super.onBackPressed()
-        else supportFragmentManager.beginTransaction().remove(supportFragmentManager.fragments.first()).commit()
+        else {
+            fragment.onBackPressed {
+                supportFragmentManager.beginTransaction()
+                    .remove(supportFragmentManager.fragments.first()).commit()
+                binding.constraintLayout.findViewById<FrameLayout>(R.id.layout)
+                    ?.let { binding.constraintLayout.removeView(it) }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        Fresco.getImagePipeline().clearCaches()
+        super.onDestroy()
     }
 }

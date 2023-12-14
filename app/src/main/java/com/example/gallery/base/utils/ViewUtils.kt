@@ -4,11 +4,9 @@ import LogUtil
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
@@ -87,6 +85,13 @@ object ViewUtils {
     fun View.setWidth(width: Int) {
         val layoutParams = this.layoutParams
         layoutParams.width = width
+        this.layoutParams = layoutParams
+    }
+
+    fun View.setSizes(width: Int, height: Int) {
+        val layoutParams = this.layoutParams
+        layoutParams.width = width
+        layoutParams.height = height
         this.layoutParams = layoutParams
     }
 

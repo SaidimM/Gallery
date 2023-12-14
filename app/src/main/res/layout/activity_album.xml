@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
-        <import type="com.example.gallery.main.album.viewModels.AlbumViewModel"/>
+        <import type="com.example.gallery.main.album.viewModels.AlbumViewModel" />
 
         <variable
                 name="viewModel"
-                type="com.example.gallery.main.album.viewModels.AlbumViewModel"/>
+                type="com.example.gallery.main.album.viewModels.AlbumViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,13 +27,16 @@
                 android:background="@color/transparent"
                 app:title="@string/album"
                 app:titleTextColor="?attr/colorOnPrimary"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:id="@+id/recycler_view"
+                tools:listitem="@layout/item_album_image"
+                app:spanCount="4"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintTop_toBottomOf="@id/toolbar"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

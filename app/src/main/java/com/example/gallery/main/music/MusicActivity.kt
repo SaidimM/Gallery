@@ -1,8 +1,6 @@
 package com.example.gallery.main.music
 
-import LogUtil
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseActivity
@@ -43,7 +41,8 @@ class MusicActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if (behavior.state == BottomSheetBehavior.STATE_EXPANDED) behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        if (behavior.state == BottomSheetBehavior.STATE_EXPANDED) behavior.state =
+            BottomSheetBehavior.STATE_COLLAPSED
         else super.onBackPressed()
     }
 }

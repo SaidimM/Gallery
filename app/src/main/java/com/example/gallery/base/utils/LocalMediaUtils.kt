@@ -1,5 +1,6 @@
 package com.example.gallery.base.utils
 
+import LogUtil
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -423,7 +424,7 @@ object LocalMediaUtils {
     /**
      * 得到图片文件夹集合
      */
-    private suspend fun getImageFolders(): ArrayList<ImgFolderBean> {
+    private fun getImageFolders(): ArrayList<ImgFolderBean> {
         val folders: ArrayList<ImgFolderBean> = arrayListOf()
         // 扫描图片
         var c: Cursor? = null
@@ -431,8 +432,8 @@ object LocalMediaUtils {
             c = Utils.getApp().contentResolver.query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 null,
-                MediaStore.Images.Media.MIME_TYPE + "= ? or " + MediaStore.Images.Media.MIME_TYPE + "= ?",
-                arrayOf("image/jpeg", "image/png"),
+                MediaStore.Images.Media.MIME_TYPE + "= ? or " + MediaStore.Images.Media.MIME_TYPE + "= ? or " + MediaStore.Images.Media.MIME_TYPE + "= ?",
+                arrayOf("image/jpeg", "image/png", "image/webp"),
                 MediaStore.Images.Media.DATE_MODIFIED
             )
             if (c == null) return folders
@@ -450,12 +451,12 @@ object LocalMediaUtils {
                 folderBean.fistImgPath = path
                 if (parentFile.list() == null) continue
                 val count: Int = parentFile.list { _, filename ->
-                    filename.endsWith(".jpeg") || filename.endsWith(".jpg") || filename.endsWith(".png")
+                    filename.endsWith(".jpeg") || filename.endsWith(".jpg") || filename.endsWith(".png") || filename.endsWith(".webp")
                 }!!.size
                 folderBean.count = count
                 folders.add(folderBean)
             }
-        } catch (e: java.lang.Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         } finally {
             c?.close()
@@ -486,7 +487,7 @@ object LocalMediaUtils {
         val index = file.lastIndexOf(".")
         if (index == -1) return false
         val suffixName = file.substring(index)
-        val s = arrayOf(".jpg", ".png", ".jpeg")
+        val s = arrayOf(".jpg", ".png", ".jpeg", ".webp")
         return ArrayUtils.contains(s, suffixName.lowercase(Locale.getDefault()))
     }
 
@@ -513,7 +514,7 @@ object LocalMediaUtils {
         return models
     }
 
-    suspend fun getAllImageFiles(): ArrayList<AlbumItemModel> {
+    fun getAllImageFiles(): ArrayList<AlbumItemModel> {
         val files = arrayListOf<AlbumItemModel>()
         val folders = getImageFolders()
         folders.forEach { files.addAll(getFileListByFolder(it)) }

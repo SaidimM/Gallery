@@ -32,6 +32,22 @@ object AnimationUtils {
         })
     }
 
+    fun Animation.onAnimationStart(onStart: (() -> Unit)) {
+        this.setAnimationListener(object : AnimationListener {
+            override fun onAnimationStart(animation: Animation?) = onStart()
+            override fun onAnimationEnd(animation: Animation?) {}
+            override fun onAnimationRepeat(animation: Animation?) {}
+        })
+    }
+
+    fun Animation.onAnimationEnd(onEnd: (() -> Unit)) {
+        this.setAnimationListener(object : AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {}
+            override fun onAnimationEnd(animation: Animation?) = onEnd()
+            override fun onAnimationRepeat(animation: Animation?) {}
+        })
+    }
+
     fun ViewPropertyAnimator.setListeners(
         onStart: (() -> Unit)? = null,
         onEnd: (() -> Unit)? = null,
