@@ -43,7 +43,7 @@ class AlbumActivity : BaseActivity() {
             override fun getSpanSize(position: Int) =
                 if (adapter.getItemViewType(position) == 0) 1 else manager.spanCount
         }
-        adapter.onItemClickListener = { _, item, view -> displayPreview(item, view) }
+        adapter.onItemClickListener = { _, item, _ -> displayPreview(item) }
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(this, R.drawable.ic_back)
     }
@@ -56,12 +56,12 @@ class AlbumActivity : BaseActivity() {
         viewModel.album.observe(this) { adapter.data = it }
     }
 
-    private fun displayPreview(imageItem: AlbumItemModel, view: View) {
+    private fun displayPreview(imageItem: AlbumItemModel) {
         val frame = FrameLayout(this).apply { id = R.id.layout }
         frame.setBackgroundColor(Color.BLACK)
         frame.setBackgroundColor(Color.TRANSPARENT)
         binding.constraintLayout.addView(frame, MATCH_PARENT, MATCH_PARENT)
-        fragment = PreviewFragment(view, imageItem)
+        fragment = PreviewFragment(imageItem)
         supportFragmentManager.beginTransaction().add(R.id.layout, fragment).commit()
         fragment.onClick = { onBackPressed() }
     }

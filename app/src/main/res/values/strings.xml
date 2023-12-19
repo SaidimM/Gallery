@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">Gallery</string>
 
-    <string name="debug_activity_databinding_warning">Debug 提示：此 Activity 未遵循 DataBinding 严格模式，存在 视图调用的 Null 安全风险</string>
-    <string name="debug_fragment_databinding_warning">Debug 提示：此 Fragment 未遵循 DataBinding 严格模式，存在 视图调用的 Null 安全风险</string>
     <string name="network_not_good">network not good</string>
     <string name="wallpaper">wallpaper</string>
     <string name="music">music</string>
@@ -32,4 +30,5 @@
     <string name="list">list</string>
     <string name="player_background">player background</string>
     <string name="slider">separator</string>
+    <string name="pointer">pointer</string>
 </resources>
