@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.gallery.databinding.ItemAlbumImageBinding
 import com.example.gallery.databinding.ItemAlbumTitleBinding
 import com.example.gallery.main.album.models.AlbumItemModel
@@ -30,7 +31,7 @@ class AlbumAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
             data.forEachIndexed { i, _ -> notifyItemChanged(i) }
         }
 
-    var spanCount = 4
+    private var spanCount = 4
         set(value) {
             field = value
             data.forEachIndexed { i, _ -> notifyItemChanged(i) }
@@ -72,15 +73,15 @@ class AlbumAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
 
     private fun setImage(imageView: SimpleDraweeView, item: AlbumItemModel) {
         val window = (context as Activity).window
-        val uri = Uri.parse("file://${item.path}")
         val width = window.decorView.width / spanCount
         val resizeOptions = ResizeOptions(width, width)
         val imageRequest = ImageRequestBuilder
-            .newBuilderWithSource(uri)
+            .newBuilderWithSource(item.uri)
             .setResizeOptions(resizeOptions)
             .build()
         imageView.controller = Fresco.newDraweeControllerBuilder()
-            .setOldController(imageView.controller).setImageRequest(imageRequest)
+            .setOldController(imageView.controller)
+            .setImageRequest(imageRequest)
             .build()
     }
 

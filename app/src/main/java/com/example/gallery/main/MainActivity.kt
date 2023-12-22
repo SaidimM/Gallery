@@ -12,6 +12,7 @@ import com.example.gallery.main.album.AlbumActivity
 import com.example.gallery.main.music.MusicActivity
 import com.example.gallery.main.setting.SettingActivity
 import com.example.gallery.main.video.PlayerActivity
+import com.facebook.drawee.backends.pipeline.Fresco
 
 class MainActivity : BaseActivity() {
     private val viewModel: MainActivityViewModel by viewModels()
@@ -48,5 +49,10 @@ class MainActivity : BaseActivity() {
         binding.music.visibility = View.VISIBLE
         binding.album.visibility = View.VISIBLE
         binding.video.visibility = View.VISIBLE
+    }
+
+    override fun onDestroy() {
+        Fresco.getImagePipeline().clearCaches()
+        super.onDestroy()
     }
 }

@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import com.blankj.utilcode.util.ArrayUtils
+import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.Utils
 import com.example.gallery.R
 import com.example.gallery.Strings.LYRIC_DIR
@@ -18,9 +19,6 @@ import com.example.gallery.media.local.bean.Music
 import com.example.gallery.media.local.bean.Video
 import com.example.gallery.media.local.enums.MediaType
 import java.io.*
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.attribute.BasicFileAttributes
 import java.util.*
 
 
@@ -43,18 +41,26 @@ object LocalMediaUtils {
     fun getMusic(context: Context): ArrayList<Music> {
         val list = arrayListOf<Music>()
         val cursor = context.contentResolver.query(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            null,
+            null,
+            null,
+            MediaStore.Audio.Media.DEFAULT_SORT_ORDER
         )
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 music = Music()
-                name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME))
+                name =
+                    cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME))
                 id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID))
-                singer = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST))
+                singer =
+                    cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST))
                 path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA))
-                duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION))
+                duration =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION))
                 size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE))
-                albumId = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID))
+                albumId =
+                    cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID))
                 //list.add(song);
                 //把歌曲名字和歌手切割开
                 //song.setName(name);
@@ -84,7 +90,7 @@ object LocalMediaUtils {
     }
 
     //    转换歌曲时间的格式
-    suspend fun formatTime(time: Int): String {
+    fun formatTime(time: Int): String {
         return if (time / 1000 % 60 < 10) {
             (time / 1000 / 60).toString() + ":0" + time / 1000 % 60
         } else {
@@ -100,7 +106,7 @@ object LocalMediaUtils {
      * @param allowdefalut
      * @return
      */
-    suspend fun getArtwork(
+    fun getArtwork(
         context: Context,
         song_id: Long,
         album_id: Long,
@@ -387,11 +393,15 @@ object LocalMediaUtils {
                     continue
                 }
                 val id = c.getInt(c.getColumnIndexOrThrow(MediaStore.Video.Media._ID)) // 视频的id
-                val name = c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)) // 视频名称
-                val resolution = c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.RESOLUTION)) //分辨率
+                val name =
+                    c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)) // 视频名称
+                val resolution =
+                    c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.RESOLUTION)) //分辨率
                 val size = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)) // 大小
-                val duration = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)) // 时长
-                val date = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_MODIFIED)) //修改时间
+                val duration =
+                    c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)) // 时长
+                val date =
+                    c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_MODIFIED)) //修改时间
                 val video = Video(id, path, name, resolution, size, date, duration)
                 videos.add(video)
             }
@@ -451,7 +461,9 @@ object LocalMediaUtils {
                 folderBean.fistImgPath = path
                 if (parentFile.list() == null) continue
                 val count: Int = parentFile.list { _, filename ->
-                    filename.endsWith(".jpeg") || filename.endsWith(".jpg") || filename.endsWith(".png") || filename.endsWith(".webp")
+                    filename.endsWith(".jpeg") || filename.endsWith(".jpg") || filename.endsWith(".png") || filename.endsWith(
+                        ".webp"
+                    )
                 }!!.size
                 folderBean.count = count
                 folders.add(folderBean)
@@ -496,17 +508,17 @@ object LocalMediaUtils {
         val files: ArrayList<File> = getImgListByDir(folder.dir)
         try {
             files.forEach { file ->
-                models.add(
-                    AlbumItemModel(
-                        mediaType = MediaType.IMAGE,
-                        path = file.path,
-                        isSelected = false,
-                        foldrName = if (file.parent == null) "" else file.parent.toString(),
-                        createdTime = file.lastModified(),
-                        lastEditedTime = file.lastModified(),
-                        lastAccessTime = file.lastModified()
-                    )
+                val model = AlbumItemModel(
+                    mediaType = MediaType.IMAGE,
+                    uri = Uri.fromFile(file),
+                    isSelected = false,
+                    foldrName = if (file.parent == null) "" else file.parent.toString(),
+                    createdTime = file.lastModified(),
+                    lastEditedTime = file.lastModified(),
+                    lastAccessTime = file.lastModified()
                 )
+                models.add(model)
+                LogUtil.d(TAG, model.toString())
             }
         } catch (e: Exception) {
             e.printStackTrace()

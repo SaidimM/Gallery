@@ -25,7 +25,7 @@ class AlbumViewModel : ViewModel() {
     private val _album: MutableLiveData<ArrayList<AlbumItemModel>> = MutableLiveData(arrayListOf())
     val album: LiveData<ArrayList<AlbumItemModel>> = _album
 
-    private val allImages: ArrayList<AlbumItemModel> = arrayListOf()
+    val allImages: ArrayList<AlbumItemModel> = arrayListOf()
 
     fun getImages() {
         viewModelScope.launch {

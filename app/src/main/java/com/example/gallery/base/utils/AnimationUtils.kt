@@ -48,6 +48,26 @@ object AnimationUtils {
         })
     }
 
+    fun ViewPropertyAnimator.onAnimationStart(onStart: (() -> Unit)): ViewPropertyAnimator {
+        this.setListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator?) = onStart()
+            override fun onAnimationEnd(animation: Animator?) {}
+            override fun onAnimationCancel(animation: Animator?) {}
+            override fun onAnimationRepeat(animation: Animator?) {}
+        })
+        return this
+    }
+
+    fun ViewPropertyAnimator.onAnimationEnd(onEnd: (() -> Unit)): ViewPropertyAnimator {
+        this.setListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator?) {}
+            override fun onAnimationEnd(animation: Animator?) = onEnd()
+            override fun onAnimationCancel(animation: Animator?) {}
+            override fun onAnimationRepeat(animation: Animator?) {}
+        })
+        return this
+    }
+
     fun ViewPropertyAnimator.setListeners(
         onStart: (() -> Unit)? = null,
         onEnd: (() -> Unit)? = null,
