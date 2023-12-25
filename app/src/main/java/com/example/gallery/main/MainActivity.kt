@@ -20,7 +20,8 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         if (PermissionUtils.isGranted(android.Manifest.permission_group.STORAGE)) {
             binding.music.visibility = View.VISIBLE
             binding.album.visibility = View.VISIBLE
