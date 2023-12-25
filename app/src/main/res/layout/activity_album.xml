@@ -18,9 +18,9 @@
             android:layout_height="match_parent">
 
         <com.google.android.material.appbar.MaterialToolbar
+                android:layout_marginTop="24dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fitsSystemWindows="true"
                 app:navigationIcon="@drawable/ic_back"
                 app:navigationIconTint="?attr/colorOnPrimary"
                 android:id="@+id/toolbar"

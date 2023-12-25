@@ -6,7 +6,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
@@ -19,7 +18,6 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.Toolbar
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -60,11 +58,12 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         LogUtil.d(TAG, TAG)
-        setCeiling()
         lifecycle.addObserver(NetworkStateManager.instance)
         initPermission()
         binding.lifecycleOwner = this
         setContentView(binding.root)
+        findViewById<MaterialToolbar>(R.id.toolbar)?.let { setSupportActionBar(it) }
+        setStatusBar()
     }
 
     private fun getAppFactory(activity: Activity): ViewModelProvider.Factory {
@@ -96,7 +95,7 @@ abstract class BaseActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun setCeiling() {
+    private fun setStatusBar() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
@@ -105,6 +104,16 @@ abstract class BaseActivity : AppCompatActivity() {
         supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setStatusBarContent(isLightTheme())
+    }
+
+    protected fun setWindowFullScreen(showStatus: Boolean) {
+        if (showStatus) {
+            window.clearFlags(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+            window.addFlags(View.SYSTEM_UI_FLAG_FULLSCREEN)
+        } else {
+            window.clearFlags(View.SYSTEM_UI_FLAG_FULLSCREEN)
+            window.addFlags(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -38,6 +38,7 @@ class AlbumActivity : BaseActivity() {
     }
 
     private fun initView() {
+        setWindowFullScreen(true)
         title = getString(R.string.album)
         adapter = AlbumAdapter(this)
         adapter.albumSortModel = viewModel.sortModel
@@ -49,9 +50,6 @@ class AlbumActivity : BaseActivity() {
                 if (adapter.getItemViewType(position) == 0) 1 else manager.spanCount
         }
         adapter.onItemClickListener = { _, item, _ -> displayPreview(item) }
-        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
-        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(this, R.drawable.ic_back)
-        binding.viewPager.adapter = fragmentAdapter
     }
 
     private fun initData() {
@@ -63,6 +61,8 @@ class AlbumActivity : BaseActivity() {
     }
 
     private fun displayPreview(item: AlbumItemModel) {
+        setWindowFullScreen(false)
+        if (binding.viewPager.adapter == null) binding.viewPager.adapter = fragmentAdapter
         binding.viewPager.currentItem = viewModel.allImages.indexOf(item)
         val animation = AlphaAnimation(0f, 1f).apply { duration = 500 }
         animation.onAnimationStart { binding.viewPager.visibility = View.VISIBLE }
@@ -71,6 +71,7 @@ class AlbumActivity : BaseActivity() {
 
     override fun onBackPressed() {
         if (binding.viewPager.visibility == View.VISIBLE) {
+            setWindowFullScreen(true)
             val animation = AlphaAnimation(1f, 0f)
             animation.duration = 200
             animation.onAnimationEnd { binding.viewPager.visibility = View.GONE }
