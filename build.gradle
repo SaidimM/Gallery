@@ -1,10 +1,10 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-        kotlin_version = '1.8.10'
-        lifecycleVersion = "2.4.1"
-        navigationVersion = "2.4.2"
-        roomVersion = '2.4.1'
+        kotlin_version = '1.9.0'
+        lifecycleVersion = "2.6.1"
+        navigationVersion = "2.6.0"
+        roomVersion = '2.5.1'
         espressoVersion = '3.4.0'
         anko_version = '0.10.5'
         compose_compiler = "1.4.0"
@@ -16,7 +16,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
