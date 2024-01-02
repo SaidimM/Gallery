@@ -511,6 +511,7 @@ object LocalMediaUtils {
                 val model = AlbumItemModel(
                     mediaType = MediaType.IMAGE,
                     uri = Uri.fromFile(file),
+                    path = file.path,
                     isSelected = false,
                     foldrName = if (file.parent == null) "" else file.parent.toString(),
                     createdTime = file.lastModified(),

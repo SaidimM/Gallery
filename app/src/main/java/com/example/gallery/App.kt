@@ -1,5 +1,6 @@
 package com.example.gallery
 
+import LogUtil
 import com.blankj.utilcode.util.Utils
 import com.example.gallery.base.BaseApplication
 import com.facebook.cache.disk.DiskCacheConfig
@@ -14,6 +15,7 @@ class App : BaseApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        LogUtil.d(TAG, "onCreate")
         initFresco()
         Utils.init(this)
         // SQLiteStudio Service
@@ -22,6 +24,7 @@ class App : BaseApplication() {
     }
 
     companion object {
+        private const val TAG = "Application"
         private val MAX_HEAP_SIZE = Runtime.getRuntime().maxMemory().toInt()
         private val MAX_MEMORY_CACHE_SIZE = MAX_HEAP_SIZE / 4
         private const val MAX_DISK_CACHE_SIZE = 40L * ByteConstants.MB

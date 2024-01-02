@@ -2,10 +2,8 @@ package com.example.gallery.main.album
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.animation.AlphaAnimation
 import androidx.activity.viewModels
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.gallery.R
@@ -17,7 +15,6 @@ import com.example.gallery.main.album.adapters.AlbumAdapter
 import com.example.gallery.main.album.fragments.PreviewFragment
 import com.example.gallery.main.album.models.AlbumItemModel
 import com.example.gallery.main.album.viewModels.AlbumViewModel
-import com.facebook.drawee.backends.pipeline.Fresco
 
 class AlbumActivity : BaseActivity() {
 
@@ -76,7 +73,6 @@ class AlbumActivity : BaseActivity() {
             animation.duration = 200
             animation.onAnimationEnd { binding.viewPager.visibility = View.GONE }
             binding.viewPager.startAnimation(animation)
-        }
-        else super.onBackPressed()
+        } else super.onBackPressed()
     }
 }

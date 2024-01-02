@@ -1,8 +1,12 @@
 package com.example.gallery.main.album.fragments
 
+import LogUtil
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import androidx.fragment.app.viewModels
 import com.example.gallery.base.ui.pge.BaseFragment

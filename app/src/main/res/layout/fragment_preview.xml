@@ -3,11 +3,11 @@
 
     <data>
 
-        <import type="com.example.gallery.main.album.models.AlbumItemModel" />
+        <import type="com.example.gallery.main.album.models.AlbumItemModel"/>
 
         <variable
                 name="item"
-                type="com.example.gallery.main.album.models.AlbumItemModel" />
+                type="com.example.gallery.main.album.models.AlbumItemModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,6 +19,6 @@
         <com.example.gallery.main.album.view.Preview
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/preview" />
+                android:id="@+id/preview"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
