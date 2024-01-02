@@ -25,12 +25,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     dataBinding{
         enabled = true
     }
+    namespace 'com.example.gallery'
 }
 
 dependencies {
@@ -47,7 +48,7 @@ dependencies {
     //utils
     implementation 'com.blankj:utilcodex:1.31.0'
     //data binding
-    implementation 'androidx.databinding:databinding-adapters:7.4.2'
+    implementation 'androidx.databinding:databinding-adapters:8.2.0'
     //navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
