@@ -64,6 +64,7 @@ abstract class BaseActivity : AppCompatActivity() {
         setContentView(binding.root)
         findViewById<MaterialToolbar>(R.id.toolbar)?.let { setSupportActionBar(it) }
         setStatusBar()
+        observe()
     }
 
     private fun getAppFactory(activity: Activity): ViewModelProvider.Factory {
@@ -115,6 +116,8 @@ abstract class BaseActivity : AppCompatActivity() {
             window.addFlags(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
         }
     }
+
+    protected open fun observe() {}
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         super.onOptionsItemSelected(item)

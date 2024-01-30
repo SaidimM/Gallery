@@ -79,7 +79,7 @@ class MusicRepository {
             val iterator = it.artists.iterator()
             var singer = ""
             while (iterator.hasNext()) {
-                singer += iterator.next().name + ","
+                singer += iterator.next().name + ", "
             }
             singer = singer.substring(0, singer.length - 1)
             singer

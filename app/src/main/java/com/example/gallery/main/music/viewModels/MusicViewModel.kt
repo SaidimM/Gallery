@@ -1,18 +1,10 @@
 package com.example.gallery.main.music.viewModels
 
 import LogUtil
-import android.graphics.BitmapFactory
-import android.util.Log
-import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blankj.utilcode.util.LogUtils
-import com.blankj.utilcode.util.Utils
-import com.bumptech.glide.Glide
-import com.example.gallery.Strings
-import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.main.video.player.IMediaPlayer
 import com.example.gallery.main.video.player.controller.MusicPlayer
 import com.example.gallery.main.video.player.state.PlayState
@@ -22,8 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
 
 class MusicViewModel : ViewModel() {
     private val TAG = "MusicViewModel"
@@ -47,7 +37,6 @@ class MusicViewModel : ViewModel() {
 
     fun loadMusic() {
         viewModelScope.launch(Dispatchers.IO) {
-            _musics.value?.clear()
             repository.getMusics().catch { LogUtil.e(TAG, it.message.toString()) }.collect { _musics.postValue(it) }
         }
     }
@@ -72,6 +61,7 @@ class MusicViewModel : ViewModel() {
         } else {
             _state.postValue(PlayState.PLAY)
         }
+        _state.postValue(if (state.value == PlayState.PLAY) PlayState.PAUSE else PlayState.PLAY)
         play()
     }
 

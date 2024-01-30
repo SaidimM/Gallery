@@ -3,7 +3,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <import type="android.view.View"/>
         <variable
                 name="viewModel"
                 type="com.example.gallery.main.MainActivityViewModel"/>
@@ -38,8 +38,8 @@
                     android:textColor="?attr/colorOnPrimary"
                     android:layout_height="100dp"
                     android:id="@+id/music"
-                    android:visibility="gone"
-                    android:onClick="onClick"
+                    android:visibility="@{viewModel.isPermissionGranted() ? View.VISIBLE : View.GONE}"
+                    android:onClick="toMusic"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:gravity="center"/>
@@ -50,26 +50,26 @@
                     android:textColor="?attr/colorOnPrimary"
                     android:layout_height="100dp"
                     android:id="@+id/album"
-                    android:onClick="onClick"
-                    android:visibility="gone"
+                    android:onClick="toAlbum"
+                    android:visibility="@{viewModel.isPermissionGranted() ? View.VISIBLE : View.GONE}"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:gravity="center"/>
 
             <TextView
-                    android:onClick="onClick"
+                    android:onClick="toVideo"
                     android:text="@string/video"
                     android:layout_width="match_parent"
                     android:textColor="?attr/colorOnPrimary"
                     android:layout_height="100dp"
-                    android:visibility="gone"
+                    android:visibility="@{viewModel.isPermissionGranted() ? View.VISIBLE : View.GONE}"
                     android:id="@+id/video"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:gravity="center"/>
 
             <TextView
-                    android:onClick="onClick"
+                    android:onClick="toSetting"
                     android:text="@string/setting"
                     android:layout_width="match_parent"
                     android:textColor="?attr/colorOnPrimary"

@@ -56,7 +56,7 @@ class AlbumActivity : BaseActivity() {
         viewModel.getImages()
     }
 
-    private fun observe() {
+    override fun observe() {
         viewModel.album.observe(this) { adapter.data = it }
     }
 
