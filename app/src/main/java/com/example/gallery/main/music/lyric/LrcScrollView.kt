@@ -19,7 +19,7 @@ import androidx.core.widget.NestedScrollView
 import com.example.gallery.R
 import com.example.gallery.base.utils.ViewUtils.dp
 import com.example.gallery.base.utils.ViewUtils.px
-import com.example.gallery.media.remote.lyrics.Lyric
+import com.example.gallery.media.music.remote.lyrics.Lyric
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 

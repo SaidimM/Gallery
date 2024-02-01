@@ -28,7 +28,7 @@ import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
 import com.example.gallery.main.music.views.EaseCubicInterpolator
 import com.example.gallery.main.video.player.state.PlayState
-import com.example.gallery.media.local.bean.Music
+import com.example.gallery.media.music.local.bean.Music
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

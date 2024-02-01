@@ -8,8 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.gallery.main.video.player.IMediaPlayer
 import com.example.gallery.main.video.player.controller.MusicPlayer
 import com.example.gallery.main.video.player.state.PlayState
-import com.example.gallery.media.MusicRepository
-import com.example.gallery.media.local.bean.Music
+import com.example.gallery.media.music.MusicRepository
+import com.example.gallery.media.music.local.bean.Music
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -26,8 +26,8 @@ class MusicViewModel : ViewModel() {
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
 
-    private var _musics = MutableLiveData<ArrayList<Music>>()
-    val musics: LiveData<ArrayList<Music>> = _musics
+    private var _musics = MutableLiveData<List<Music>>()
+    val musics: LiveData<List<Music>> = _musics
 
     private var _state = MutableLiveData<PlayState>()
     val state: LiveData<PlayState> = _state

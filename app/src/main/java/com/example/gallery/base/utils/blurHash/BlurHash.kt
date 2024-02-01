@@ -1,12 +1,6 @@
 package com.example.gallery.base.utils.blurHash
 
-import com.example.gallery.base.utils.blurHash.Utils.sRGBToLinear
-import com.example.gallery.base.utils.blurHash.Utils.linearTosRGB
-import com.example.gallery.base.utils.blurHash.Utils.signPow
-import com.example.gallery.base.utils.blurHash.Utils.max
 import android.graphics.Bitmap
-import com.example.gallery.base.utils.blurHash.BlurHash
-import com.example.gallery.base.utils.blurHash.Base83
 
 /**
  * Utility methods to calculate blur hashes.

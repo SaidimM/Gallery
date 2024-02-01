@@ -19,7 +19,7 @@ import com.example.gallery.main.music.viewModels.MusicListViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
 import com.example.gallery.main.video.PlayerActivity
 import com.example.gallery.main.video.player.view.VideoInfo
-import com.example.gallery.media.local.bean.Music
+import com.example.gallery.media.music.local.bean.Music
 
 class MusicListFragment : BaseFragment() {
     override val binding: FragmentMusicListBinding by lazy { FragmentMusicListBinding.inflate(layoutInflater) }

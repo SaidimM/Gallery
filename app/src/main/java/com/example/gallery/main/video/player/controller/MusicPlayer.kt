@@ -2,7 +2,7 @@ package com.example.gallery.main.video.player.controller
 
 import android.media.MediaPlayer
 import com.example.gallery.main.video.player.IMediaPlayer
-import com.example.gallery.media.local.bean.Music
+import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.main.video.player.listener.PlayerListener
 import com.example.gallery.main.video.player.controller.PlayMode.*
 import kotlin.random.Random
@@ -57,7 +57,7 @@ class MusicPlayer : IMediaPlayer {
         list.add(music)
     }
 
-    override fun play(music: Music?, musics: ArrayList<Music>?) {
+    override fun play(music: Music?, musics: List<Music>?) {
         if (musics != null && music != null && musics != list) {
             list.clear()
             list.addAll(musics)

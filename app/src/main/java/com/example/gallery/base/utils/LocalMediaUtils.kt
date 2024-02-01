@@ -9,15 +9,14 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import com.blankj.utilcode.util.ArrayUtils
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.Utils
 import com.example.gallery.R
 import com.example.gallery.Strings.LYRIC_DIR
 import com.example.gallery.main.album.models.AlbumItemModel
-import com.example.gallery.media.local.bean.ImgFolderBean
-import com.example.gallery.media.local.bean.Music
-import com.example.gallery.media.local.bean.Video
-import com.example.gallery.media.local.enums.MediaType
+import com.example.gallery.media.album.local.ImgFolderBean
+import com.example.gallery.media.music.local.bean.Music
+import com.example.gallery.media.album.local.Video
+import com.example.gallery.media.music.local.enums.MediaType
 import java.io.*
 import java.util.*
 
@@ -38,8 +37,8 @@ object LocalMediaUtils {
 
     //获取专辑封面的Uri
     private val albumArtUri = Uri.parse("content://media/external/audio/albumart")
-    fun getMusic(context: Context): ArrayList<Music> {
-        val list = arrayListOf<Music>()
+    fun getMusic(context: Context): List<Music> {
+        val list = mutableListOf<Music>()
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             null,

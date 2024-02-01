@@ -217,14 +217,16 @@ abstract class BaseActivity : AppCompatActivity() {
         return false
     }
 
-    protected val Int.dp: Int get() = run {
-        return toFloat().dp
-    }
+    protected val Int.dp: Int
+        get() = run {
+            return toFloat().dp
+        }
 
-    protected val Float.dp: Int get() = run {
-        val scale: Float = resources.displayMetrics.density
-        return (this * scale + 0.5f).toInt()
-    }
+    protected val Float.dp: Int
+        get() = run {
+            val scale: Float = resources.displayMetrics.density
+            return (this * scale + 0.5f).toInt()
+        }
 
     override fun onStart() {
         super.onStart()

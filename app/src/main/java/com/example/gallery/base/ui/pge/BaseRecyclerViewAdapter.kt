@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 abstract class BaseRecyclerViewAdapter<T, B : ViewDataBinding>(private val context: Context) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var data: ArrayList<T> = arrayListOf()
+    var data: List<T> = listOf()
         set(value) {
             field = value
             field.forEachIndexed { index, _ -> notifyItemChanged(index) }

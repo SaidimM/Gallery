@@ -1,7 +1,7 @@
 package com.example.gallery.main.album.models
 
 import android.net.Uri
-import com.example.gallery.media.local.enums.MediaType
+import com.example.gallery.media.music.local.enums.MediaType
 
 data class AlbumItemModel(
     var mediaType: MediaType = MediaType.UNKNOWN,

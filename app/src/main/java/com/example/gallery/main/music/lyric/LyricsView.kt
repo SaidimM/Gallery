@@ -16,7 +16,7 @@ import android.view.VelocityTracker
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.animation.doOnEnd
-import com.example.gallery.media.remote.lyrics.Lyric
+import com.example.gallery.media.music.remote.lyrics.Lyric
 import java.lang.StrictMath.abs
 
 class LyricsView : View {

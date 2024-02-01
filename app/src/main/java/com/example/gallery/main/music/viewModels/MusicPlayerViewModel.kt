@@ -8,9 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.gallery.Strings
 import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.main.music.enums.PlayerViewState
-import com.example.gallery.media.MusicRepository
-import com.example.gallery.media.local.bean.Music
-import com.example.gallery.media.remote.lyrics.Lyric
+import com.example.gallery.media.music.MusicRepository
+import com.example.gallery.media.music.local.bean.Music
+import com.example.gallery.media.music.remote.lyrics.Lyric
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
