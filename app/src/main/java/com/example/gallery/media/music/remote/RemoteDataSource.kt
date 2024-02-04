@@ -1,16 +1,28 @@
 package com.example.gallery.media.music.remote
 
 import LogUtil
-import com.example.gallery.media.music.MusicDataSource
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import com.example.gallery.Strings
 import com.example.gallery.media.music.local.bean.Music
+import com.example.gallery.media.music.remote.album.Album
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
+import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 
-class RemoteDataSource : MusicDataSource {
+class RemoteDataSource {
 
     private val TAG = "RemoteDataSource"
     private val loggingInterceptor =
@@ -26,7 +38,7 @@ class RemoteDataSource : MusicDataSource {
         .build()
     private var endpoint: NeteaseApi = retrofit.create(NeteaseApi::class.java)
 
-    override fun searchMusic(music: Music) = flow {
+    fun searchMusic(music: Music) = flow {
         val response = endpoint.searchMusic(criteria = "${music.name}%20${music.singer}")
         val result = response.body()
         if (!response.isSuccessful || result == null) {
@@ -41,7 +53,7 @@ class RemoteDataSource : MusicDataSource {
         }
     }
 
-    override fun getMv(music: Music) = flow {
+    fun getMv(music: Music) = flow {
         if (music.mvId == 0) {
             emit(Result.failure<String>(Exception("Music has no mv!")))
             return@flow
@@ -55,7 +67,7 @@ class RemoteDataSource : MusicDataSource {
         } else emit(Result.success(result))
     }
 
-    override fun getAlbum(music: Music) = flow {
+    fun getAlbum(music: Music) = flow {
         if (music.mediaAlbumId.isEmpty()) {
             emit(Result.failure<String>(Exception("Music album id is empty!")))
             return@flow
@@ -69,7 +81,26 @@ class RemoteDataSource : MusicDataSource {
         } else emit(Result.success(result))
     }
 
-    override fun getMusicDetail(music: Music) = flow {
+    fun downloadAlbumCover(music: Music, url: String) = flow {
+        val file = File(Strings.ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg")
+        if (file.exists()) emit(BitmapFactory.decodeFile(file.path))
+        else file.createNewFile()
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).execute()
+        val inputStream = response.body?.byteStream()
+        val outputStream = FileOutputStream(file)
+        inputStream?.use { input ->
+            outputStream.use { output ->
+                input.copyTo(output)
+            }
+        }
+        emit(BitmapFactory.decodeFile(file.path))
+    }.flowOn(Dispatchers.IO)
+
+    @OptIn(FlowPreview::class)
+    fun getAlbumCover(music: Music) = getAlbum(music).flatMapConcat { downloadAlbumCover(music, (it.getOrNull() as Album).picUrl.toString()) }
+
+    fun getMusicDetail(music: Music) = flow {
         if (music.mediaId.isEmpty()) {
             Result.failure<String>(Exception("Music id is empty!"))
             return@flow
@@ -83,26 +114,21 @@ class RemoteDataSource : MusicDataSource {
         } else emit(Result.success(result))
     }
 
-    override fun getLyrics(music: Music) = flow {
-        if (music.mediaId.isEmpty()) {
-            Result.failure<String>(Exception("Music id is empty!"))
-            return@flow
-        }
+    fun getLyrics(music: Music) = flow {
+        if (music.mediaId.isEmpty()) error("Music id is empty!")
         val response = endpoint.getLyric(id = music.mediaId)
         val result = response.body()
-        if (!response.isSuccessful || result == null) {
-            emit(Result.failure<String>(Exception("request failed!")))
-        } else if (result.code != 200) {
-            emit(Result.failure<String>(Exception("bad response: ${result.code}")))
-        } else emit(Result.success(result))
+        if (!response.isSuccessful || result == null) error("request failed!")
+        else if (result.code != 200) error("bad response: ${result.code}")
+        else emit(result)
     }
 
-    override fun getArtist(music: Music) = flow {
-        if (music.artistId.isEmpty()) {
+    fun getArtist(music: Music) = flow {
+        if (music.mediaArtistId.isEmpty()) {
             emit(Result.failure(Exception("Music artist id is empty!")))
             return@flow
         }
-        val response = endpoint.getArtist(music.artistId)
+        val response = endpoint.getArtist(music.mediaArtistId)
         val result = response.body()
         if (!response.isSuccessful || result == null) {
             emit(Result.failure<String>(Exception("request failed!")))
@@ -110,6 +136,4 @@ class RemoteDataSource : MusicDataSource {
             emit(Result.failure<String>(Exception("bad response: ${result.code}")))
         } else emit(Result.success(result))
     }
-
-    override fun getMusicList() = flow<Result<Any>> { emit(Result.failure(Exception("Not implemented!"))) }
 }

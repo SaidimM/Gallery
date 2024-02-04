@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gallery.ServiceLocator
 import com.example.gallery.Strings
 import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.main.music.enums.PlayerViewState
@@ -19,7 +20,7 @@ import java.io.File
 class MusicPlayerViewModel : ViewModel() {
     private val TAG = "MusicPlayerViewModel"
 
-    private val repository = MusicRepository.getInstance()
+    private val repository = ServiceLocator.provideMusicRepository()
 
     private var _lyrics = MutableLiveData<ArrayList<Lyric>>()
     val lyrics: LiveData<ArrayList<Lyric>> = _lyrics
@@ -29,27 +30,27 @@ class MusicPlayerViewModel : ViewModel() {
 
     fun initMusic(music: Music) {
         viewModelScope.launch(Dispatchers.IO) {
-            searchMusic(music)
-                .map { findLyrics(it).single() }
-                .map { getLyrics(it).single() }
-                .catch { LogUtil.e(TAG, it.message.toString()) }
-                .collect { _lyrics.postValue(it) }
+//            searchMusic(music)
+//                .map { findLyrics(it).single() }
+//                .map { getLyrics(it).single() }
+//                .catch { LogUtil.e(TAG, it.message.toString()) }
+//                .collect { _lyrics.postValue(it) }
         }
     }
 
-    private fun searchMusic(music: Music) = flow {
-        if (music.mediaId.isNotEmpty()) emit(music)
-        else repository.searchMusic(music).collect { emit(it) }
-    }.catch { LogUtil.e(TAG, it.message.toString()) }
-
-    private fun findLyrics(music: Music) = flow {
-        val path = Strings.LYRIC_DIR + music.mediaId + ".txt"
-        if (File(path).exists()) emit(music)
-        else repository.getLyrics(music.mediaId).collect {
-            LocalMediaUtils.writeStringToFile(Strings.LYRIC_DIR + music.mediaId + ".txt", it.lrc.lyric)
-            emit(music)
-        }
-    }.catch { LogUtil.e(TAG, it.message.toString()) }
+//    private fun searchMusic(music: Music) = flow {
+//        if (music.mediaId.isNotEmpty()) emit(music)
+//        else repository.searchMusic(music).collect { emit(it) }
+//    }.catch { LogUtil.e(TAG, it.message.toString()) }
+//
+//    private fun findLyrics(music: Music) = flow {
+//        val path = Strings.LYRIC_DIR + music.mediaId + ".txt"
+//        if (File(path).exists()) emit(music)
+//        else repository.getLyrics(music.mediaId).collect {
+//            LocalMediaUtils.writeStringToFile(Strings.LYRIC_DIR + music.mediaId + ".txt", it.lrc.lyric)
+//            emit(music)
+//        }
+//    }.catch { LogUtil.e(TAG, it.message.toString()) }
 
     private fun getLyrics(music: Music) = flow {
         val path = Strings.LYRIC_DIR + music.mediaId + ".txt"

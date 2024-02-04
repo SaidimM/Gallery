@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gallery.ServiceLocator
 import com.example.gallery.main.video.player.IMediaPlayer
 import com.example.gallery.main.video.player.controller.MusicPlayer
 import com.example.gallery.main.video.player.state.PlayState
-import com.example.gallery.media.music.MusicRepository
 import com.example.gallery.media.music.local.bean.Music
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class MusicViewModel : ViewModel() {
     private val TAG = "MusicViewModel"
 
-    private val repository = MusicRepository.getInstance()
+    private val repository = ServiceLocator.provideMusicRepository()
 
     private val musicPlayer: IMediaPlayer = MusicPlayer()
     private var index: Int = 0
@@ -37,7 +37,9 @@ class MusicViewModel : ViewModel() {
 
     fun loadMusic() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getMusics().catch { LogUtil.e(TAG, it.message.toString()) }.collect { _musics.postValue(it) }
+            repository.getMusicList()
+                .catch { LogUtil.e(TAG, it.message.toString()) }
+                .collect { _musics.postValue(it) }
         }
     }
 
@@ -73,10 +75,13 @@ class MusicViewModel : ViewModel() {
     }
 
     fun getLastPlayedMusic() {
-        val lastPlayedMusicId = repository.getLastPlayedMusic()
-        var music = musics.value?.let { list -> list.find { it.id == lastPlayedMusicId } }
-        if (_musics.value != null && _musics.value?.isEmpty() == false) music = _musics.value?.get(0)
-        music?.let { _music.value = music }
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getLastPlayedMusic()
+                .catch { LogUtil.e(TAG, it.message.toString()) }
+                .collect {
+                    _music.value = it
+                }
+        }
     }
 
     fun saveCurrentMusic() {

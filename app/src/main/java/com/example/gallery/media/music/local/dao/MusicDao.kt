@@ -11,10 +11,10 @@ import com.example.gallery.media.music.local.bean.Music
 interface MusicDao {
 
     @Insert
-    fun saveMusic(music: Music)
+    fun saveMusic(music: Music): Long
 
     @Update
-    fun updateMusic(music: Music)
+    fun updateMusic(music: Music): Int
 
     @Query("SELECT * FROM music WHERE id = :id LIMIT 1")
     fun getMusic(id: Long): Music?
@@ -23,5 +23,5 @@ interface MusicDao {
     fun getAll(): List<Music>
 
     @Delete
-    fun deleteMusic(music: Music)
+    fun deleteMusic(music: Music): Int
 }

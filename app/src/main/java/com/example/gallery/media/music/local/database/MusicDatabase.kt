@@ -6,16 +6,20 @@ import androidx.room.RoomDatabase
 import com.blankj.utilcode.util.Utils
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.media.music.local.dao.MusicDao
+import com.example.gallery.media.music.local.dao.PlayHistoryDao
+import com.example.gallery.media.music.local.dao.PlayListDao
 
 @Database(entities = [Music::class], version = 1)
-abstract class GalleryDatabase : RoomDatabase() {
+abstract class MusicDatabase : RoomDatabase() {
     abstract fun getMusicDao(): MusicDao
+    abstract fun getPlayListDao(): PlayListDao
+    abstract fun getPlayHistoryDao(): PlayHistoryDao
 
     companion object {
-        private var instance: GalleryDatabase? = null
-        fun getInstance(): GalleryDatabase {
+        private var instance: MusicDatabase? = null
+        fun getInstance(): MusicDatabase {
             if (instance == null) {
-                instance = Room.databaseBuilder(Utils.getApp(), GalleryDatabase::class.java, "gallery").build()
+                instance = Room.databaseBuilder(Utils.getApp(), MusicDatabase::class.java, "gallery").build()
             }
             return instance!!
         }

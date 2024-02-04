@@ -27,5 +27,5 @@ data class Album(
     val type: String? = null,
     val size: Int? = null,
     val picId_str: String? = null,
-    val info: Info? = null
+    val info: Info? = null,
 )
