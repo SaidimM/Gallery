@@ -1,7 +1,6 @@
 package com.example.gallery.base.utils
 
 import LogUtil
-import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -10,8 +9,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import com.blankj.utilcode.util.ArrayUtils
 import com.blankj.utilcode.util.Utils
-import com.example.gallery.R
-import com.example.gallery.Strings.LYRIC_DIR
+import com.example.gallery.Constants.LYRIC_DIR
 import com.example.gallery.main.album.models.AlbumItemModel
 import com.example.gallery.media.album.local.ImgFolderBean
 import com.example.gallery.media.music.local.bean.Music

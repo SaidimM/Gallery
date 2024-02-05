@@ -6,10 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gallery.ServiceLocator
-import com.example.gallery.main.video.player.IMediaPlayer
-import com.example.gallery.main.video.player.controller.MusicPlayer
-import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.music.local.bean.Music
+import com.example.gallery.player.enums.PlayState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -19,8 +17,8 @@ class MusicViewModel : ViewModel() {
     private val TAG = "MusicViewModel"
 
     private val repository = ServiceLocator.provideMusicRepository()
+    private val musicPlayer = ServiceLocator.provideMusicPlayer()
 
-    private val musicPlayer: IMediaPlayer = MusicPlayer()
     private var index: Int = 0
 
     private var _music = MutableLiveData<Music>()
@@ -48,29 +46,29 @@ class MusicViewModel : ViewModel() {
         if (musics.value == null) return
         val item = musics.value!![position]
         if (item.id != music.value?.id) {
-            _state.value = PlayState.PLAY
+            _state.value = PlayState.PLAYING
             _music.value = item
-            musicPlayer.play(item, musics.value)
+            musicPlayer.play()
         } else if (item.id == music.value?.id) {
-            _state.value = PlayState.PAUSE
+            _state.value = PlayState.PAUSED
             musicPlayer.pause()
         }
     }
 
     fun onPlayPressed() {
-        if (state.value == PlayState.PLAY) {
-            _state.postValue(PlayState.PAUSE)
+        if (state.value == PlayState.PLAYING) {
+            _state.postValue(PlayState.PAUSED)
         } else {
-            _state.postValue(PlayState.PLAY)
+            _state.postValue(PlayState.PLAYING)
         }
-        _state.postValue(if (state.value == PlayState.PLAY) PlayState.PAUSE else PlayState.PLAY)
+        _state.postValue(if (state.value == PlayState.PLAYING) PlayState.PAUSED else PlayState.PLAYING)
         play()
     }
 
-    fun seekTo(position: Int) = musicPlayer.seekTo(position)
+    fun seekTo(position: Long) = musicPlayer.seekTo(position)
 
     fun onNextPressed() {
-        musicPlayer.playNext()
+        musicPlayer.next()
         _music.postValue(musicPlayer.getCurrentMusic())
     }
 

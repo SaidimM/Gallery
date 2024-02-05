@@ -27,8 +27,8 @@ import com.example.gallery.main.music.enums.PlayerViewState
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
 import com.example.gallery.main.music.views.EaseCubicInterpolator
-import com.example.gallery.main.video.player.state.PlayState
 import com.example.gallery.media.music.local.bean.Music
+import com.example.gallery.player.enums.PlayState
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -81,7 +81,7 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
             initPlayDetails(it)
         }
         state.state.observe(viewLifecycleOwner) {
-            if (it == PlayState.PLAY) binding.play.setImageDrawable(
+            if (it == PlayState.PLAYING) binding.play.setImageDrawable(
                 ResourcesCompat.getDrawable(
                     requireActivity().resources,
                     R.drawable.ic_pause,

@@ -1,9 +1,8 @@
 package com.example.gallery.media.music.remote
 
 import LogUtil
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.example.gallery.Strings
+import com.example.gallery.Constants
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.media.music.remote.album.Album
 import kotlinx.coroutines.Dispatchers
@@ -11,8 +10,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
@@ -82,7 +79,7 @@ class RemoteDataSource {
     }
 
     fun downloadAlbumCover(music: Music, url: String) = flow {
-        val file = File(Strings.ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg")
+        val file = File(Constants.ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg")
         if (file.exists()) emit(BitmapFactory.decodeFile(file.path))
         else file.createNewFile()
         val request = Request.Builder().url(url).build()

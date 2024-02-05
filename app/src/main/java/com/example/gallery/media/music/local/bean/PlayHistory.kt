@@ -6,9 +6,9 @@ import androidx.room.PrimaryKey
 @Entity
 class PlayHistory {
     @PrimaryKey
-    val playTime: Long = 0
-    val musicId: Long = 0
-    val browseType: Int = 0
-    val playCompleted: Boolean = false
-    val playPosition: Int = 0
+    var playTime: Long = 0
+    var musicId: Long = 0
+    var browseType: Int = 0
+    var playCompleted: Boolean = false
+    var playPosition: Int = 0
 }

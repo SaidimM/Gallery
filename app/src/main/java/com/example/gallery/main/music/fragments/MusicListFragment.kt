@@ -1,15 +1,12 @@
 package com.example.gallery.main.music.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.SnackbarUtils
 import com.example.gallery.R
-import com.example.gallery.Strings
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
@@ -17,8 +14,6 @@ import com.example.gallery.databinding.FragmentMusicListBinding
 import com.example.gallery.databinding.ItemSongBinding
 import com.example.gallery.main.music.viewModels.MusicListViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
-import com.example.gallery.main.video.PlayerActivity
-import com.example.gallery.main.video.player.view.VideoInfo
 import com.example.gallery.media.music.local.bean.Music
 
 class MusicListFragment : BaseFragment() {
@@ -62,13 +57,13 @@ class MusicListFragment : BaseFragment() {
 
     private fun observe() {
         viewModel.musicVideo.observe(viewLifecycleOwner) {
-            val intent = Intent(requireContext(), PlayerActivity::class.java)
-            val link = it.data.brs.let { br ->
-                br.`1080` ?: br.`720` ?: br.`480` ?: br.`240`
-            }
-            val info = VideoInfo(it.data.name, link!!)
-            intent.putExtra("video", info)
-            startActivity(intent)
+//            val intent = Intent(requireContext(), PlayerActivity::class.java)
+//            val link = it.data.brs.let { br ->
+//                br.`1080` ?: br.`720` ?: br.`480` ?: br.`240`
+//            }
+//            val info = VideoInfo(it.data.name, link!!)
+//            intent.putExtra("video", info)
+//            startActivity(intent)
         }
         state.musics.observe(viewLifecycleOwner) {
             adapter.data = it

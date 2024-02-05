@@ -10,7 +10,6 @@ import com.example.gallery.databinding.ActivityMainBinding
 import com.example.gallery.main.album.AlbumActivity
 import com.example.gallery.main.music.MusicActivity
 import com.example.gallery.main.setting.SettingActivity
-import com.example.gallery.main.video.PlayerActivity
 import com.facebook.drawee.backends.pipeline.Fresco
 
 class MainActivity : BaseActivity() {
@@ -30,7 +29,7 @@ class MainActivity : BaseActivity() {
 
     fun toMusic(view: View) = startActivity(Intent(this, MusicActivity::class.java))
 
-    fun toVideo(view: View) = startActivity(Intent(this, PlayerActivity::class.java))
+    fun toVideo(view: View) = startActivity(Intent(this, MusicActivity::class.java))
 
     fun toSetting(view: View) = startActivity(Intent(this, SettingActivity::class.java))
 

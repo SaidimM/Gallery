@@ -10,7 +10,8 @@ import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
-import com.example.gallery.Strings
+import com.example.gallery.Constants
+import com.example.gallery.base.utils.AlbumCoverUtils.getArtwork
 import com.example.gallery.media.music.local.bean.Music
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -42,11 +43,11 @@ object ViewUtils {
     }
 
     suspend fun getAlbumBitmap(music: Music) = flow<Bitmap> {
-        val albumCoverPath = Strings.ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg"
+        val albumCoverPath = Constants.ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg"
         val bitmap = withContext(Dispatchers.IO) {
             if (File(albumCoverPath).exists()) {
                 BitmapFactory.decodeFile(albumCoverPath)
-            } else LocalMediaUtils.getArtwork(
+            } else getArtwork(
                 Utils.getApp(),
                 music.id,
                 music.albumId,

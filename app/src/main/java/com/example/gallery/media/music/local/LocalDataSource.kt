@@ -1,10 +1,9 @@
 package com.example.gallery.media.music.local
 
 import LogUtil
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.blankj.utilcode.util.Utils
-import com.example.gallery.Strings
+import com.example.gallery.Constants
 import com.example.gallery.base.utils.AlbumCoverUtils
 import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.media.music.local.bean.Music
@@ -32,10 +31,10 @@ class LocalDataSource(private val database: MusicDatabase) {
         else error("Music not found!")
     }
 
-    fun isMusicLyricsExist(music: Music) = File(Strings.LYRIC_DIR + music.id + ".txt").exists()
+    fun isMusicLyricsExist(music: Music) = File(Constants.LYRIC_DIR + music.id + ".txt").exists()
 
     fun getLyrics(music: Music) = flow {
-        val path = Strings.LYRIC_DIR + music.id + ".txt"
+        val path = Constants.LYRIC_DIR + music.id + ".txt"
         if (!File(path).exists()) error("Music [${music.name}] lyric not found!")
         val data = LocalMediaUtils.readFile(path)
         val strings: ArrayList<String> = data.split(Regex("\n"), 0) as ArrayList<String>
@@ -62,9 +61,9 @@ class LocalDataSource(private val database: MusicDatabase) {
     }
 
     fun saveMusicLyrics(music: Music, lyrics: String) = flow {
-        val path = Strings.LYRIC_DIR + music.id + ".txt"
+        val path = Constants.LYRIC_DIR + music.id + ".txt"
         val saveFile = File(path)
-        if (!File(Strings.LYRIC_DIR).exists()) File(Strings.LYRIC_DIR).mkdir()
+        if (!File(Constants.LYRIC_DIR).exists()) File(Constants.LYRIC_DIR).mkdir()
         if (!saveFile.exists()) saveFile.createNewFile()
         var fo: FileOutputStream? = null
         try {
@@ -91,7 +90,7 @@ class LocalDataSource(private val database: MusicDatabase) {
             allowdefalut = true,
             small = false
         )
-        val path = Strings.ALBUM_COVER_DIR + music.mediaAlbumId + ".jpg"
+        val path = Constants.ALBUM_COVER_DIR + music.mediaAlbumId + ".jpg"
         if (bitmap != null) {
             emit(bitmap)
         } else if (File(path).exists()) {
@@ -154,7 +153,7 @@ class LocalDataSource(private val database: MusicDatabase) {
     }
 
     private fun deleteMusicLyric(music: Music) = flow {
-        val path = Strings.LYRIC_DIR + music.mediaId + ".txt"
+        val path = Constants.LYRIC_DIR + music.mediaId + ".txt"
         if (!File(path).exists()) {
             emit(Result.failure(Exception("Music [${music.name}] lyric not found!")))
         } else if (!File(path).delete()) {
@@ -165,7 +164,7 @@ class LocalDataSource(private val database: MusicDatabase) {
     }
 
     private fun deleteMusicCover(music: Music) = flow {
-        val path = Strings.ALBUM_COVER_DIR + music.mediaAlbumId + ".jpg"
+        val path = Constants.ALBUM_COVER_DIR + music.mediaAlbumId + ".jpg"
         if (!File(path).exists()) {
             emit(Result.failure(Exception("Music [${music.name}] cover not found!")))
         } else if (!File(path).delete()) {

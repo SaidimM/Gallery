@@ -6,10 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gallery.ServiceLocator
-import com.example.gallery.Strings
+import com.example.gallery.Constants
 import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.main.music.enums.PlayerViewState
-import com.example.gallery.media.music.MusicRepository
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.media.music.remote.lyrics.Lyric
 import kotlinx.coroutines.Dispatchers
@@ -53,7 +52,7 @@ class MusicPlayerViewModel : ViewModel() {
 //    }.catch { LogUtil.e(TAG, it.message.toString()) }
 
     private fun getLyrics(music: Music) = flow {
-        val path = Strings.LYRIC_DIR + music.mediaId + ".txt"
+        val path = Constants.LYRIC_DIR + music.mediaId + ".txt"
         if (!File(path).exists()) error("$path does not exist!")
         val data = LocalMediaUtils.readFile(path)
         val strings: ArrayList<String> = data.split(Regex("\n"), 0) as ArrayList<String>

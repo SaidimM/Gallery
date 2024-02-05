@@ -2,13 +2,12 @@ package com.example.gallery.media.music
 
 import android.graphics.Bitmap
 import com.blankj.utilcode.util.SPUtils
-import com.example.gallery.Strings.MUSIC_ID
+import com.example.gallery.Constants.MUSIC_ID
 import com.example.gallery.media.music.local.LocalDataSource
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.media.music.local.bean.PlayHistory
 import com.example.gallery.media.music.local.bean.PlayList
 import com.example.gallery.media.music.remote.RemoteDataSource
-import com.example.gallery.media.music.remote.album.Album
 import com.example.gallery.media.music.remote.lyrics.Lyric
 import com.example.gallery.media.music.remote.search.Song
 import kotlinx.coroutines.CoroutineDispatcher
@@ -33,6 +32,7 @@ class MusicRepository(
     }
 
     override fun saveLastPlayedMusic(music: Music) = SPUtils.getInstance().put(MUSIC_ID, music.id.toString())
+
     override fun getMusicList() = localDataSource.getMusicList()
 
     override fun removeMusicFromDevice(music: Music) = localDataSource.removeMusic(music).flowOn(dispatcher)
@@ -71,6 +71,6 @@ class MusicRepository(
 
     override fun getMusicVideo(music: Music) = remoteDataSource.getMv(music).flowOn(dispatcher)
 
-    override fun getAlbumCover(music: Music): Flow<Bitmap> =
-        localDataSource.getMusicAlbumCover(music).transform { it ?: remoteDataSource.getAlbumCover(music) }
+    override fun getAlbumCover(music: Music): Flow<Bitmap> = localDataSource.getMusicAlbumCover(music)
+        .transform<Bitmap?, Bitmap> { it ?: remoteDataSource.getAlbumCover(music) }.flowOn(dispatcher)
 }
