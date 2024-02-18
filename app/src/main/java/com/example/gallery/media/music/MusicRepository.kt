@@ -22,13 +22,10 @@ class MusicRepository(
 ) : IMusicRepository {
     private val TAG = "MusicRepository"
 
-    override fun getLastPlayedMusic(): Flow<Music> {
+    override fun getLastPlayedMusic() = flow {
         val musicId = SPUtils.getInstance().getString(MUSIC_ID, "-1").toLong()
-        if (musicId == -1L) {
-            error("No music Stored!")
-        } else {
-            return localDataSource.getMusic(musicId).flowOn(dispatcher)
-        }
+        if (musicId == -1L) error("No music Stored!")
+        else emit(localDataSource.getMusic(musicId) ?: error("Didn't found music: $musicId"))
     }
 
     override fun saveLastPlayedMusic(music: Music) = SPUtils.getInstance().put(MUSIC_ID, music.id.toString())

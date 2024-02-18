@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
 import com.example.gallery.Constants
@@ -18,13 +19,14 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
 object ViewUtils {
 
-    const val TAG = ""
+    const val TAG = "ViewUtils"
     suspend fun loadAlbumCover(
         item: Music,
         imageView: ImageView,
@@ -32,7 +34,14 @@ object ViewUtils {
         height: Int = imageView.height
     ) {
         getAlbumBitmap(item)
-            .catch { LogUtil.e(TAG, it.message.toString()) }
+            .catch {
+                LogUtil.e(TAG, it.message.toString())
+                coroutineScope {
+                    launch(Dispatchers.Main) {
+                        Glide.with(imageView).load(null as Bitmap?).override(with, height).into(imageView)
+                    }
+                }
+            }
             .collect {
                 coroutineScope {
                     launch(Dispatchers.Main) {
@@ -44,16 +53,9 @@ object ViewUtils {
 
     suspend fun getAlbumBitmap(music: Music) = flow<Bitmap> {
         val albumCoverPath = Constants.ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg"
-        val bitmap = withContext(Dispatchers.IO) {
-            if (File(albumCoverPath).exists()) {
-                BitmapFactory.decodeFile(albumCoverPath)
-            } else getArtwork(
-                Utils.getApp(),
-                music.id,
-                music.albumId,
-                allowdefalut = true,
-                small = false
-            )
+        val bitmap = withContext(Dispatchers.Main) {
+            if (File(albumCoverPath).exists()) BitmapFactory.decodeFile(albumCoverPath)
+            else getArtwork(Utils.getApp(), music.id, music.albumId, allowdefalut = true, small = false)
         } ?: error("couldn't get album cover!")
         emit(bitmap)
     }

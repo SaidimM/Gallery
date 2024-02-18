@@ -1,25 +1,44 @@
 # Gallery
 
-I've recently become interested in some cool features found in certain apps, such as Apple Music and Samsung Gallery.
 
-Apple Music has unique user experience, every page can be described as elegant. These is some elements I feel very cool and I intend to implement.
+## Purpose
 
-## Player layer UX
+I have recently become interested in some cool features that are found in certain apps, such as Apple Music and Samsung Gallery.
 
-This is a pretty cool transition for navigate to player view from music list, and there is no extra elements on particular page, user can press player layer, and it will smoothly swipe up to whole page and display player view. 
+I intend to implement those awesome UI interactions from other apps in my own application for learning purposes. Specifically, I am looking to incorporate elements such as intuitive user flows, seamless transitions between screens, and visually appealing design elements. In doing so, I hope to gain a deeper understanding of effective UI design principles and how they can be applied in the context of my own project.
 
-![Untitled](images/Controller.png)
+- Application contains three individual modules: music player, photo album, video player.
+- Application has two theme: light and dark theme, corresponds to Android system’s two themes.
+- Design compliance Material Design.
+- Develop compliance jetpack MVVM architecture development.
 
-![Untitled](images/Lyrics.png)
+# Design
 
-![Untitled](images/Play list.png)
+Coloring:
 
-## Main player page
+- Teal (light theme)
+- Gray (dark theme)
 
-### Fluid background
+typeface:
 
-Clean page shows user to control player state. Background of page is blur layer of music album cover primary color, and it’s/ fluid animation, this is a quite unique UI in apps. I’ve searched for this and this effect can be implemented by gradient in Android.
+- open sans
 
-### Lyrics
+## Music player
 
-In music app lyrics can play important role, lyrics will slide along with music, in Apple Music lyrics smoothly slide and scale up when indexed, user’s eye attention will appeal to this line.
+[https://www.figma.com/file/1ww0cEyirnzG4YW8OhAn3I/Gallery?type=design&node-id=701-4&mode=design&t=L8GWLnlgQF5ZsKTG-0](https://www.figma.com/file/1ww0cEyirnzG4YW8OhAn3I/Gallery?type=design&node-id=701-4&mode=design&t=L8GWLnlgQF5ZsKTG-0)
+
+Design inspired from Apple Music.
+
+There is some features that I found pretty cool.
+
+There is fluid transition as player view background.
+
+The background will move and changes like fluid.
+
+I couldn't figure out how it works, so I found a project that implements this feature in a very easy way.
+
+Project address is: https://github.com/dokar3/amlv.git
+
+This is completed with three layers of gradient rectangle, every layer will rotate in difference speed.
+
+##

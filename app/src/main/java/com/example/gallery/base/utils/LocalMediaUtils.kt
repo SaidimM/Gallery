@@ -47,6 +47,8 @@ object LocalMediaUtils {
                 val size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE))
                 val album =
                     cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM))
+                val albumId =
+                    cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID))
                 //list.add(song);
                 //把歌曲名字和歌手切割开
                 //song.setName(name);
@@ -56,6 +58,7 @@ object LocalMediaUtils {
                 music.size = size
                 music.id = id
                 music.album = album
+                music.albumId = albumId.toLong()
                 if (size > 1000 * 800) {
                     if (name.contains("-")) {
                         val str = name.split("-".toRegex()).toTypedArray()

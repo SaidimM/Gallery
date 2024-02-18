@@ -20,10 +20,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:navigationIconTint="?attr/colorOnPrimary"
+                app:navigationIcon="@drawable/ic_back"
                 android:fitsSystemWindows="true"
                 android:id="@+id/toolbar"
                 android:background="@color/transparent"
-                app:title="@string/app_name"
                 app:titleTextColor="?attr/colorOnPrimary"
                 app:layout_constraintTop_toTopOf="parent"/>
 
@@ -35,23 +35,19 @@
                 android:name="com.example.gallery.main.music.fragments.MusicListFragment"
                 tools:layout="@layout/fragment_music_list"/>
 
-        <com.google.android.material.card.MaterialCardView
+        <androidx.fragment.app.FragmentContainerView
                 app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
                 app:behavior_hideable="false"
                 app:behavior_peekHeight="120dp"
                 app:behavior_draggable="true"
+                android:visibility="gone"
                 app:cardCornerRadius="8dp"
+                android:layout_margin="16dp"
                 android:id="@+id/card_view"
+                android:background="@color/transparent"
                 android:gravity="center_vertical"
+                tools:layout="@layout/fragment_player"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            <androidx.fragment.app.FragmentContainerView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/player_layout"
-                    tools:layout="@layout/fragment_player"/>
-
-        </com.google.android.material.card.MaterialCardView>
+                android:layout_height="match_parent"/>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

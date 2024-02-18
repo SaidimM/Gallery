@@ -41,8 +41,9 @@ class MusicViewModel : ViewModel() {
         }
     }
 
-    fun play(position: Int = index) {
+    fun playMusic(position: Int = index) {
         index = position
+        saveCurrentMusic()
         if (musics.value == null) return
         val item = musics.value!![position]
         if (item.id != music.value?.id) {
@@ -56,13 +57,8 @@ class MusicViewModel : ViewModel() {
     }
 
     fun onPlayPressed() {
-        if (state.value == PlayState.PLAYING) {
-            _state.postValue(PlayState.PAUSED)
-        } else {
-            _state.postValue(PlayState.PLAYING)
-        }
         _state.postValue(if (state.value == PlayState.PLAYING) PlayState.PAUSED else PlayState.PLAYING)
-        play()
+        playMusic()
     }
 
     fun seekTo(position: Long) = musicPlayer.seekTo(position)
@@ -76,13 +72,11 @@ class MusicViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getLastPlayedMusic()
                 .catch { LogUtil.e(TAG, it.message.toString()) }
-                .collect {
-                    _music.value = it
-                }
+                .collect { _music.postValue(it) }
         }
     }
 
-    fun saveCurrentMusic() {
+    private fun saveCurrentMusic() {
         music.value?.let { repository.saveLastPlayedMusic(it) }
     }
 

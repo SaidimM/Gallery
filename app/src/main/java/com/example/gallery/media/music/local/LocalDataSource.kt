@@ -25,11 +25,8 @@ class LocalDataSource(private val database: MusicDatabase) {
     private val musicDao = database.getMusicDao()
     private val playListDao = database.getPlayListDao()
     private val playHistoryDao = database.getPlayHistoryDao()
-    fun getMusic(id: Long) = flow {
-        val result = musicDao.getMusic(id)
-        if (result != null) emit(result)
-        else error("Music not found!")
-    }
+
+    fun getMusic(id: Long) = musicDao.getMusic(id)
 
     fun isMusicLyricsExist(music: Music) = File(Constants.LYRIC_DIR + music.id + ".txt").exists()
 
@@ -103,13 +100,15 @@ class LocalDataSource(private val database: MusicDatabase) {
     fun getMusicList() = flow {
         val local = LocalMediaUtils.getMusic(Utils.getApp())
         val fromDatabase = musicDao.getAll()
-        val saved = mutableListOf<Music>()
-        local.forEach { item -> fromDatabase.find { music -> music.id == item.id }?.let { saved.add(it) } }
-        val deletedMusics = fromDatabase.subtract(saved.toSet())
-        val upcomingMusics = local.subtract(saved.toSet())
+        val savedInBase = mutableListOf<Music>()
+        val storedFromLocal = mutableListOf<Music>()
+        local.forEach { item -> fromDatabase.find { music -> music.id == item.id }?.let { savedInBase.add(it) } }
+        fromDatabase.forEach { item -> local.find { music -> music.id == item.id }?.let { storedFromLocal.add(it) } }
+        val deletedMusics = fromDatabase.subtract(savedInBase.toSet())
+        val upcomingMusics = local.subtract(storedFromLocal.toSet())
         deletedMusics.forEach { item -> musicDao.deleteMusic(item) }
-        upcomingMusics.forEach { item -> musicDao.saveMusic(item) }
-        LogUtil.i(TAG, "local: ${local.size}, saved: ${saved.size}, deleted: ${deletedMusics.size}, upcoming: ${upcomingMusics.size}")
+        upcomingMusics.forEach { item -> musicDao.getMusic(item.id)?: musicDao.saveMusic(item) }
+        LogUtil.i(TAG, "local: ${local.size}, saved: ${savedInBase.size}, deleted: ${deletedMusics.size}, upcoming: ${upcomingMusics.size}")
         val stored = musicDao.getAll()
         emit(stored)
     }

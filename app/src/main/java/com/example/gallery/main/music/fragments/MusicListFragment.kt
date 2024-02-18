@@ -26,7 +26,6 @@ class MusicListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
-        initData()
         observe()
     }
 
@@ -36,14 +35,9 @@ class MusicListFragment : BaseFragment() {
             override fun onBindItem(binding: ItemSongBinding, item: Music, position: Int) {
                 binding.song = item
                 binding.albumImage.background = null
-                binding.mv.setOnClickListener {
-                    viewModel.getMv(item)
-                }
-                binding.root.setOnClickListener {
-                    state.play(position)
-                    state.saveCurrentMusic()
-                }
                 binding.mv.visibility = if (item.mvId == 0) View.GONE else View.VISIBLE
+                binding.mv.setOnClickListener { viewModel.getMv(item) }
+                binding.root.setOnClickListener { state.playMusic(position) }
                 lifecycleScope.launchWhenCreated { loadAlbumCover(item, binding.albumImage) }
             }
         }
@@ -51,23 +45,11 @@ class MusicListFragment : BaseFragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    private fun initData() {
-        state.loadMusic()
-    }
-
     private fun observe() {
         viewModel.musicVideo.observe(viewLifecycleOwner) {
-//            val intent = Intent(requireContext(), PlayerActivity::class.java)
-//            val link = it.data.brs.let { br ->
-//                br.`1080` ?: br.`720` ?: br.`480` ?: br.`240`
-//            }
-//            val info = VideoInfo(it.data.name, link!!)
-//            intent.putExtra("video", info)
-//            startActivity(intent)
         }
         state.musics.observe(viewLifecycleOwner) {
             adapter.data = it
-            state.getLastPlayedMusic()
         }
         state.progress.observe(viewLifecycleOwner) {
             SnackbarUtils.with(requireView()).setAction("progress: ${it * 100}%") { }
