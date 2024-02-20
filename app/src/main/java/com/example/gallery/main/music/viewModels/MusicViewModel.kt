@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gallery.ServiceLocator
+import com.example.gallery.main.music.enums.ControllerState
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.player.enums.PlayState
 import kotlinx.coroutines.Dispatchers
@@ -27,8 +28,14 @@ class MusicViewModel : ViewModel() {
     private var _musics = MutableLiveData<List<Music>>()
     val musics: LiveData<List<Music>> = _musics
 
-    private var _state = MutableLiveData<PlayState>()
-    val state: LiveData<PlayState> = _state
+    private var _playState = MutableLiveData<PlayState>()
+    val playState: LiveData<PlayState> = _playState
+
+    private var _controllerState = MutableLiveData(ControllerState.HIDDEN)
+    val controllerState: LiveData<ControllerState> = _controllerState
+
+    private var _controllerOffset = MutableLiveData(0f)
+    val controllerOffset: LiveData<Float> = _controllerOffset
 
     private var _progress = MutableLiveData<Float>()
     val progress: LiveData<Float> = _progress
@@ -47,17 +54,17 @@ class MusicViewModel : ViewModel() {
         if (musics.value == null) return
         val item = musics.value!![position]
         if (item.id != music.value?.id) {
-            _state.value = PlayState.PLAYING
+            _playState.value = PlayState.PLAYING
             _music.value = item
             musicPlayer.play()
         } else if (item.id == music.value?.id) {
-            _state.value = PlayState.PAUSED
+            _playState.value = PlayState.PAUSED
             musicPlayer.pause()
         }
     }
 
     fun onPlayPressed() {
-        _state.postValue(if (state.value == PlayState.PLAYING) PlayState.PAUSED else PlayState.PLAYING)
+        _playState.postValue(if (playState.value == PlayState.PLAYING) PlayState.PAUSED else PlayState.PLAYING)
         playMusic()
     }
 
@@ -74,6 +81,11 @@ class MusicViewModel : ViewModel() {
                 .catch { LogUtil.e(TAG, it.message.toString()) }
                 .collect { _music.postValue(it) }
         }
+    }
+
+    fun updateController(state: ControllerState? = null, offset: Float = -1f) {
+        if (state != null) _controllerState.value = state
+        if (offset != -1f) _controllerOffset.value = offset
     }
 
     private fun saveCurrentMusic() {

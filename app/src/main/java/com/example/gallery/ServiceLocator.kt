@@ -25,6 +25,6 @@ object ServiceLocator {
     }
 
     fun provideMusicPlayer(): IPlayerController {
-        return playerController ?: PlayerController(Utils.getApp())
+        return playerController ?: PlayerController()
     }
 }

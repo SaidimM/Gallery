@@ -17,6 +17,7 @@ import com.example.gallery.base.utils.ViewUtils.setHeight
 import com.example.gallery.base.utils.ViewUtils.setMargins
 import com.example.gallery.base.utils.ViewUtils.setWidth
 import com.example.gallery.databinding.FragmentPlayerBinding
+import com.example.gallery.main.music.enums.ControllerState
 import com.example.gallery.main.music.enums.PlayerViewState
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
@@ -28,10 +29,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
+class MusicPlayerFragment : BaseFragment() {
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
     private val viewModel: MusicPlayerViewModel by viewModels()
-    private val behavior: BottomSheetBehavior<View> by lazy { BottomSheetBehavior.from(containerView) }
     override val binding: FragmentPlayerBinding by lazy { FragmentPlayerBinding.inflate(layoutInflater) }
     private val bottomSheetBehaviorCallback = object : BottomSheetBehavior.BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) = onSheetStateChanges(newState)
@@ -46,26 +46,18 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     }
 
     private fun initView() {
+        binding.viewModel = viewModel
+        binding.state = state
         binding.play.setOnClickListener { state.onPlayPressed() }
-        binding.next.setOnClickListener { state.onNextPressed() }
-        behavior.addBottomSheetCallback(bottomSheetBehaviorCallback)
-        binding.album.setOnClickListener {
-            if (behavior.state == BottomSheetBehavior.STATE_COLLAPSED) behavior.state =
-                BottomSheetBehavior.STATE_EXPANDED
-            else viewModel.updateViewState()
-        }
-        binding.root.setOnClickListener {
-            if (behavior.state == BottomSheetBehavior.STATE_COLLAPSED) behavior.state =
-                BottomSheetBehavior.STATE_EXPANDED
-        }
         binding.lyricsView.setDragListener { animateController() }
     }
 
     private fun observeViewModel() {
         state.music.observe(viewLifecycleOwner) {
             initPlayDetails(it)
+            if (state.controllerState.value == ControllerState.HIDDEN) state.updateController(state = ControllerState.SHOWING)
         }
-        state.state.observe(viewLifecycleOwner) {
+        state.playState.observe(viewLifecycleOwner) {
             if (it == PlayState.PLAYING) binding.play.setImageDrawable(
                 ResourcesCompat.getDrawable(
                     requireActivity().resources,
@@ -80,6 +72,7 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
                 )
             )
         }
+        state.controllerOffset.observe(viewLifecycleOwner) { onSheetSlides(it) }
         viewModel.lyrics.observe(viewLifecycleOwner) {
             binding.lyricsView.data = it
             binding.lyricsView.measure(MeasureSpec.EXACTLY, MeasureSpec.EXACTLY)
@@ -134,15 +127,10 @@ class MusicPlayerFragment(private val containerView: View) : BaseFragment() {
     }
 
     private fun onSheetStateChanges(newState: Int) {
-        if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+        if (newState == BottomSheetBehavior.STATE_COLLAPSED)
             binding.play.animate().alphaBy(0f).alpha(1f).setDuration(200)
                 .setInterpolator(AccelerateDecelerateInterpolator()).start()
-            binding.next.animate().alphaBy(0f).alpha(1f).setDuration(200)
-                .setInterpolator(AccelerateDecelerateInterpolator()).start()
-        } else {
-            binding.play.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
-            binding.next.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
-        }
+        else binding.play.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
     }
 
     private fun onSheetSlides(slideOffset: Float) {

@@ -1,11 +1,10 @@
 package com.example.gallery.player.controller
 
-import android.content.Context
 import android.media.MediaPlayer
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.player.enums.PlayMode
 
-class PlayerController(context: Context): IPlayerController {
+class PlayerController : IPlayerController {
     private var player: MediaPlayer = MediaPlayer()
     private val playList: ArrayList<Music> = arrayListOf()
     private var index = -1
@@ -50,8 +49,8 @@ class PlayerController(context: Context): IPlayerController {
     override fun next() {
         if (playList.isEmpty()) return
         index = when (playMode) {
-            PlayMode.LOOP -> if (index >= playList.size) 0 else index ++
-            PlayMode.SHUFFLE -> if (index >= playList.size) 0 else index ++
+            PlayMode.LOOP -> if (index >= playList.size) 0 else index++
+            PlayMode.SHUFFLE -> if (index >= playList.size) 0 else index++
             PlayMode.SINGLE -> index
         }
     }
@@ -59,8 +58,8 @@ class PlayerController(context: Context): IPlayerController {
     override fun previous() {
         if (playList.isEmpty()) return
         index = when (playMode) {
-            PlayMode.LOOP -> if (index == 0) playList.size - 1 else index --
-            PlayMode.SHUFFLE -> if (index == 0) playList.size - 1 else index --
+            PlayMode.LOOP -> if (index == 0) playList.size - 1 else index--
+            PlayMode.SHUFFLE -> if (index == 0) playList.size - 1 else index--
             PlayMode.SINGLE -> index
         }
     }
