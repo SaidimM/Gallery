@@ -31,12 +31,6 @@ class MusicViewModel : ViewModel() {
     private var _playState = MutableLiveData<PlayState>()
     val playState: LiveData<PlayState> = _playState
 
-    private var _controllerState = MutableLiveData(ControllerState.HIDDEN)
-    val controllerState: LiveData<ControllerState> = _controllerState
-
-    private var _controllerOffset = MutableLiveData(0f)
-    val controllerOffset: LiveData<Float> = _controllerOffset
-
     private var _progress = MutableLiveData<Float>()
     val progress: LiveData<Float> = _progress
 
@@ -81,11 +75,6 @@ class MusicViewModel : ViewModel() {
                 .catch { LogUtil.e(TAG, it.message.toString()) }
                 .collect { _music.postValue(it) }
         }
-    }
-
-    fun updateController(state: ControllerState? = null, offset: Float = -1f) {
-        if (state != null) _controllerState.value = state
-        if (offset != -1f) _controllerOffset.value = offset
     }
 
     private fun saveCurrentMusic() {

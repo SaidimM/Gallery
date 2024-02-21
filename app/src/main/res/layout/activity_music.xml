@@ -31,29 +31,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/fragment_list"
-                android:layout_marginTop="56dp"
+                android:layout_marginTop="55dp"
                 android:name="com.example.gallery.main.music.fragments.MusicListFragment"
                 tools:layout="@layout/fragment_music_list"/>
 
-        <com.google.android.material.card.MaterialCardView
-                app:cardCornerRadius="16dp"
+        <androidx.fragment.app.FragmentContainerView
                 android:layout_width="match_parent"
-                android:layout_height="88dp"
+                android:layout_height="wrap_content"
                 android:background="?attr/colorSecondary"
+                android:backgroundTint="@color/transparent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:alpha="@{viewModel.controllerState == ControllerState.HIDDEN ? 0 : 1}"
-                android:layout_margin="16dp"
-                android:id="@+id/card_view">
-
-            <androidx.fragment.app.FragmentContainerView
-                    android:background="@color/transparent"
-                    android:gravity="center_vertical"
-                    android:id="@+id/fragment"
-                    tools:layout="@layout/fragment_player"
-                    android:name="com.example.gallery.main.music.fragments.MusicPlayerFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-
-        </com.google.android.material.card.MaterialCardView>
+                tools:layout="@layout/fragment_player"
+                android:name="com.example.gallery.main.music.fragments.MusicPlayerFragment"
+                android:id="@+id/fragment"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

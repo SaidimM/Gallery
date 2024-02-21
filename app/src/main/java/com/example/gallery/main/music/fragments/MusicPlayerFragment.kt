@@ -1,8 +1,8 @@
 package com.example.gallery.main.music.fragments
 
-import LogUtil
-import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.GestureDetector
 import android.view.View
 import android.view.View.MeasureSpec
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -13,15 +13,11 @@ import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.utils.AnimationUtils.setListeners
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
-import com.example.gallery.base.utils.ViewUtils.setHeight
-import com.example.gallery.base.utils.ViewUtils.setMargins
-import com.example.gallery.base.utils.ViewUtils.setWidth
 import com.example.gallery.databinding.FragmentPlayerBinding
 import com.example.gallery.main.music.enums.ControllerState
-import com.example.gallery.main.music.enums.PlayerViewState
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
-import com.example.gallery.main.music.views.EaseCubicInterpolator
+import com.example.gallery.main.music.views.MusicControllerGestureDetector
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.player.enums.PlayState
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -33,11 +29,8 @@ class MusicPlayerFragment : BaseFragment() {
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
     private val viewModel: MusicPlayerViewModel by viewModels()
     override val binding: FragmentPlayerBinding by lazy { FragmentPlayerBinding.inflate(layoutInflater) }
-    private val bottomSheetBehaviorCallback = object : BottomSheetBehavior.BottomSheetCallback() {
-        override fun onStateChanged(bottomSheet: View, newState: Int) = onSheetStateChanges(newState)
-        override fun onSlide(bottomSheet: View, slideOffset: Float) = onSheetSlides(slideOffset)
-    }
-    private val bezierInterpolator = EaseCubicInterpolator(0.25f, 0.25f, 0.15f, 1f)
+    private val simpleGestureDetector by lazy { MusicControllerGestureDetector(binding) }
+    private val gestureDetector by lazy { GestureDetector(requireContext(), simpleGestureDetector) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,17 +38,21 @@ class MusicPlayerFragment : BaseFragment() {
         initView()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initView() {
         binding.viewModel = viewModel
         binding.state = state
         binding.play.setOnClickListener { state.onPlayPressed() }
         binding.lyricsView.setDragListener { animateController() }
+        binding.root.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
+        simpleGestureDetector.stateChangedListener = { }
+        simpleGestureDetector.offsetChangedListener = { }
     }
 
     private fun observeViewModel() {
         state.music.observe(viewLifecycleOwner) {
             initPlayDetails(it)
-            if (state.controllerState.value == ControllerState.HIDDEN) state.updateController(state = ControllerState.SHOWING)
+            simpleGestureDetector.updateState(ControllerState.SHOWING)
         }
         state.playState.observe(viewLifecycleOwner) {
             if (it == PlayState.PLAYING) binding.play.setImageDrawable(
@@ -72,7 +69,6 @@ class MusicPlayerFragment : BaseFragment() {
                 )
             )
         }
-        state.controllerOffset.observe(viewLifecycleOwner) { onSheetSlides(it) }
         viewModel.lyrics.observe(viewLifecycleOwner) {
             binding.lyricsView.data = it
             binding.lyricsView.measure(MeasureSpec.EXACTLY, MeasureSpec.EXACTLY)
@@ -85,45 +81,6 @@ class MusicPlayerFragment : BaseFragment() {
             lifecycleScope.launch { binding.lyricsView.start() }
             animateController()
         }
-        viewModel.viewState.observe(viewLifecycleOwner) {
-            when (it) {
-                PlayerViewState.ALBUM -> {
-                    ObjectAnimator.ofFloat(0f, 1f).apply {
-                        interpolator = bezierInterpolator
-                        duration = 500
-                        addUpdateListener { animator -> changeAlbumCoverOffset(animator.animatedValue as Float) }
-                        start()
-                    }
-                    binding.lyricsView.clearAnimation()
-                    binding.lyricsView.animate().alphaBy(1f).alpha(0f).setDuration(500).start()
-                    binding.songName.animate().alphaBy(0f).alpha(1f)
-                        .translationYBy(4.dp.toFloat()).translationY(0f)
-                        .setInterpolator(bezierInterpolator).setDuration(500).start()
-                    binding.singerName.animate().alphaBy(0f).alpha(1f)
-                        .translationYBy(4.dp.toFloat()).translationY(0f)
-                        .setInterpolator(bezierInterpolator).setDuration(500).start()
-                }
-
-                PlayerViewState.LYRICS -> {
-                    ObjectAnimator.ofFloat(1f, 0f).apply {
-                        interpolator = bezierInterpolator
-                        duration = 380
-                        addUpdateListener { animator -> changeAlbumCoverOffset(animator.animatedValue as Float) }
-                        start()
-                    }
-                    binding.lyricsView.clearAnimation()
-                    binding.lyricsView.animate().alphaBy(0f).alpha(1f).setDuration(200).start()
-                    binding.songName.animate().alphaBy(1f).alpha(0f)
-                        .translationYBy(0f).translationY(8.dp.toFloat())
-                        .setInterpolator(bezierInterpolator).setDuration(320).start()
-                    binding.singerName.animate().alphaBy(1f).alpha(0f)
-                        .translationYBy(0f).translationY(8.dp.toFloat())
-                        .setInterpolator(bezierInterpolator).setDuration(320).start()
-                }
-
-                else -> {}
-            }
-        }
     }
 
     private fun onSheetStateChanges(newState: Int) {
@@ -131,31 +88,6 @@ class MusicPlayerFragment : BaseFragment() {
             binding.play.animate().alphaBy(0f).alpha(1f).setDuration(200)
                 .setInterpolator(AccelerateDecelerateInterpolator()).start()
         else binding.play.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
-    }
-
-    private fun onSheetSlides(slideOffset: Float) {
-        changeSliderOffset(slideOffset)
-        if (viewModel.viewState.value == PlayerViewState.LYRICS) return
-        changeAlbumCoverOffset(slideOffset)
-    }
-
-    private fun changeSliderOffset(offset: Float) {
-        val marginEnd = (96.dp * offset).toInt()
-        binding.button.alpha = offset
-        binding.musicName.setMargins(start = 88.dp, end = marginEnd)
-        binding.root.setPadding(0, (32.dp * offset).toInt(), 0, 0)
-    }
-
-    private fun changeAlbumCoverOffset(offset: Float) {
-        LogUtil.i(TAG, "offset: $offset")
-        val albumWidth = 56 + (320 - 56) * offset
-        val marginTop = 56 * offset
-        val marginStart = 16.dp + ((binding.root.width - 320.dp) / 2 - 16.dp) * offset
-        binding.album.setWidth(albumWidth.dp)
-        binding.album.setHeight(albumWidth.dp)
-        binding.album.setMargins(marginStart.toInt(), marginTop.dp)
-        binding.musicName.alpha = ((1 - offset) * (1 - offset))
-        binding.album.radius = 8 + (16 - 6).dp.toFloat() * offset
     }
 
     private fun animateController(): Boolean {
