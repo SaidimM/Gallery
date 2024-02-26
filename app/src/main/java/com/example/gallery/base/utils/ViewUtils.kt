@@ -84,6 +84,12 @@ object ViewUtils {
         this.layoutParams = layoutParams
     }
 
+    fun View.setHeight(height: Float) {
+        val layoutParams = this.layoutParams
+        layoutParams.height = height.toInt()
+        this.layoutParams = layoutParams
+    }
+
     fun View.setWidth(width: Int) {
         val layoutParams = this.layoutParams
         layoutParams.width = width

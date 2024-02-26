@@ -2,10 +2,8 @@ package com.example.gallery.main.music.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.GestureDetector
 import android.view.View
 import android.view.View.MeasureSpec
-import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -14,13 +12,11 @@ import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.utils.AnimationUtils.setListeners
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.databinding.FragmentPlayerBinding
-import com.example.gallery.main.music.enums.ControllerState
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
-import com.example.gallery.main.music.views.MusicControllerGestureDetector
+import com.example.gallery.main.music.views.MusicControllerDispatcher
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.player.enums.PlayState
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,8 +25,7 @@ class MusicPlayerFragment : BaseFragment() {
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
     private val viewModel: MusicPlayerViewModel by viewModels()
     override val binding: FragmentPlayerBinding by lazy { FragmentPlayerBinding.inflate(layoutInflater) }
-    private val simpleGestureDetector by lazy { MusicControllerGestureDetector(binding) }
-    private val gestureDetector by lazy { GestureDetector(requireContext(), simpleGestureDetector) }
+    private val dispatcher by lazy { MusicControllerDispatcher(binding) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,16 +38,11 @@ class MusicPlayerFragment : BaseFragment() {
         binding.viewModel = viewModel
         binding.state = state
         binding.play.setOnClickListener { state.onPlayPressed() }
-        binding.lyricsView.setDragListener { animateController() }
-        binding.root.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
-        simpleGestureDetector.stateChangedListener = { }
-        simpleGestureDetector.offsetChangedListener = { }
     }
 
     private fun observeViewModel() {
         state.music.observe(viewLifecycleOwner) {
             initPlayDetails(it)
-            simpleGestureDetector.updateState(ControllerState.SHOWING)
         }
         state.playState.observe(viewLifecycleOwner) {
             if (it == PlayState.PLAYING) binding.play.setImageDrawable(
@@ -69,6 +59,8 @@ class MusicPlayerFragment : BaseFragment() {
                 )
             )
         }
+        state.controllerState.observe(viewLifecycleOwner) { dispatcher.updateControllerState(it) }
+        state.controllerOffset.observe(viewLifecycleOwner) { dispatcher.updateOffset(it) }
         viewModel.lyrics.observe(viewLifecycleOwner) {
             binding.lyricsView.data = it
             binding.lyricsView.measure(MeasureSpec.EXACTLY, MeasureSpec.EXACTLY)
@@ -83,14 +75,7 @@ class MusicPlayerFragment : BaseFragment() {
         }
     }
 
-    private fun onSheetStateChanges(newState: Int) {
-        if (newState == BottomSheetBehavior.STATE_COLLAPSED)
-            binding.play.animate().alphaBy(0f).alpha(1f).setDuration(200)
-                .setInterpolator(AccelerateDecelerateInterpolator()).start()
-        else binding.play.animate().alphaBy(1f).alpha(0f).setDuration(200).start()
-    }
-
-    private fun animateController(): Boolean {
+    private fun animateController() {
         lifecycleScope.launch(Dispatchers.Main) {
             if (binding.controller.visibility != View.VISIBLE) binding.controller.animate().alphaBy(0f).alpha(1f)
                 .setDuration(500)
@@ -99,7 +84,6 @@ class MusicPlayerFragment : BaseFragment() {
             binding.controller.animate().alphaBy(1f).alpha(0f).setDuration(500)
                 .setListeners(onStart = { binding.controller.visibility = View.GONE }).start()
         }
-        return true
     }
 
     private fun initPlayDetails(music: Music) {

@@ -1,20 +1,11 @@
 package com.example.gallery.main.music.viewModels
 
-import LogUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.gallery.ServiceLocator
-import com.example.gallery.Constants
-import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.main.music.enums.PlayerViewState
-import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.media.music.remote.lyrics.Lyric
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import java.io.File
 
 class MusicPlayerViewModel : ViewModel() {
     private val TAG = "MusicPlayerViewModel"

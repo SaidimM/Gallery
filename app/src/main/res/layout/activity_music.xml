@@ -4,6 +4,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
         <import type="com.example.gallery.main.music.enums.ControllerState"/>
         <variable
                 name="viewModel"
@@ -35,14 +36,21 @@
                 android:name="com.example.gallery.main.music.fragments.MusicListFragment"
                 tools:layout="@layout/fragment_music_list"/>
 
-        <androidx.fragment.app.FragmentContainerView
+        <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorSecondary"
-                android:backgroundTint="@color/transparent"
+                app:cardCornerRadius="16dp"
+                android:layout_margin="16dp"
+                android:visibility="@{viewModel.controllerState == ControllerState.HIDDEN ? View.GONE : View.VISIBLE}"
                 app:layout_constraintBottom_toBottomOf="parent"
-                tools:layout="@layout/fragment_player"
-                android:name="com.example.gallery.main.music.fragments.MusicPlayerFragment"
-                android:id="@+id/fragment"/>
+                android:id="@+id/card_view">
+
+            <androidx.fragment.app.FragmentContainerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:layout="@layout/fragment_player"
+                    android:name="com.example.gallery.main.music.fragments.MusicPlayerFragment"
+                    android:id="@+id/fragment"/>
+        </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

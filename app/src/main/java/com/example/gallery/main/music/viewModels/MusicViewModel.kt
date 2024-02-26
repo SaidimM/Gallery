@@ -34,6 +34,12 @@ class MusicViewModel : ViewModel() {
     private var _progress = MutableLiveData<Float>()
     val progress: LiveData<Float> = _progress
 
+    private var _controllerOffset = MutableLiveData<Float>()
+    val controllerOffset : LiveData<Float> = _controllerOffset
+
+    private var _controllerState = MutableLiveData<ControllerState>()
+    val controllerState: LiveData<ControllerState> = _controllerState
+
     fun loadMusic() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getMusicList()
@@ -79,6 +85,14 @@ class MusicViewModel : ViewModel() {
 
     private fun saveCurrentMusic() {
         music.value?.let { repository.saveLastPlayedMusic(it) }
+    }
+
+    fun updateControllerOffset(offset: Float) {
+        _controllerOffset.value = offset
+    }
+
+    fun updateControllerState(state: ControllerState) {
+        _controllerState.value = state
     }
 
     fun recyclePlayer() {
