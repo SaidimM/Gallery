@@ -19,7 +19,6 @@ class MusicControllerGestureDetector(
 ) : SimpleOnGestureListener() {
     private val TAG = "MusicControllerGestureDetector"
     private var controllerAnimator = ValueAnimator()
-    private var state: ControllerState = ControllerState.HIDDEN
     private val collapsedHeight = 88.dp
     private val deltaHeight = ScreenUtils.getScreenHeight() - collapsedHeight
 
@@ -29,13 +28,12 @@ class MusicControllerGestureDetector(
     }
 
     private fun updateState(state: ControllerState) {
-        this.state = state
         viewModel.updateControllerState(state)
     }
 
     override fun onSingleTapUp(e: MotionEvent): Boolean {
-        LogUtil.d(TAG, "onSingleTapUp")
-        return if (state == ControllerState.COLLAPSED) {
+        LogUtil.d(TAG, "onSingleTapUp, state: ${viewModel.controllerState.value}")
+        return if (viewModel.controllerState.value == ControllerState.COLLAPSED) {
             updateState(ControllerState.EXPENDING)
             true
         } else false

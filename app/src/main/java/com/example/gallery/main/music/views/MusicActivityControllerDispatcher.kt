@@ -29,7 +29,6 @@ class MusicActivityControllerDispatcher(
     }
 
     fun changeControllerState(state: ControllerState) {
-        LogUtil.d(TAG, "updateState, state: $state")
         when (state) {
             ControllerState.EXPENDING -> {
                 ObjectAnimator.ofFloat(0f, 1f).apply {

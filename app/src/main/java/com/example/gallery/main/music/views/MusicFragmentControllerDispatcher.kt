@@ -17,13 +17,12 @@ class MusicFragmentControllerDispatcher(private val binding: FragmentPlayerBindi
     private var playerViewState: PlayerViewState = PlayerViewState.ALBUM
 
     fun updateControllerOffset(offset: Float) {
-        LogUtil.d(TAG, "updateControllerOffset, offset: $offset")
         changeSliderOffset(offset)
         changeAlbumCoverOffset(offset)
     }
 
     fun updateControllerState(state: ControllerState) {
-        LogUtil.d(TAG, "updateControllerState, state: $state")
+//        LogUtil.d(TAG, "updateControllerState, state: $state")
     }
 
     fun updateViewState(state: PlayerViewState) {

@@ -88,10 +88,12 @@ class MusicViewModel : ViewModel() {
     }
 
     fun updateControllerOffset(offset: Float) {
+        LogUtil.d(TAG, "updateControllerOffset, offset: $offset")
         _controllerOffset.value = offset
     }
 
     fun updateControllerState(state: ControllerState) {
+        LogUtil.d(TAG, "updateControllerState, state: $state")
         _controllerState.value = state
     }
 
