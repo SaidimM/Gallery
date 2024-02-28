@@ -34,10 +34,10 @@ class MusicViewModel : ViewModel() {
     private var _progress = MutableLiveData<Float>()
     val progress: LiveData<Float> = _progress
 
-    private var _controllerOffset = MutableLiveData<Float>()
+    private var _controllerOffset = MutableLiveData(0f)
     val controllerOffset : LiveData<Float> = _controllerOffset
 
-    private var _controllerState = MutableLiveData<ControllerState>()
+    private var _controllerState = MutableLiveData(ControllerState.HIDDEN)
     val controllerState: LiveData<ControllerState> = _controllerState
 
     fun loadMusic() {

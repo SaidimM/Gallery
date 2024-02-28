@@ -12,7 +12,7 @@ import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.databinding.FragmentPlayerBinding
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
-import com.example.gallery.main.music.views.MusicControllerDispatcher
+import com.example.gallery.main.music.views.MusicFragmentControllerDispatcher
 import com.example.gallery.media.music.local.bean.Music
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,7 +21,7 @@ class MusicPlayerFragment : BaseFragment() {
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
     private val viewModel: MusicPlayerViewModel by viewModels()
     override val binding: FragmentPlayerBinding by lazy { FragmentPlayerBinding.inflate(layoutInflater) }
-    private val dispatcher by lazy { MusicControllerDispatcher(binding) }
+    private val dispatcher by lazy { MusicFragmentControllerDispatcher(binding) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

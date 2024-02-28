@@ -8,13 +8,15 @@ import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.databinding.ActivityMusicBinding
 import com.example.gallery.main.music.enums.ControllerState
 import com.example.gallery.main.music.viewModels.MusicViewModel
+import com.example.gallery.main.music.views.MusicActivityControllerDispatcher
 import com.example.gallery.main.music.views.MusicControllerGestureDetector
 
 class MusicActivity : BaseActivity() {
     private val viewModel: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
     override val binding: ActivityMusicBinding by lazy { ActivityMusicBinding.inflate(layoutInflater) }
-    private val simpleGestureDetector by lazy { MusicControllerGestureDetector(binding, viewModel) }
+    private val simpleGestureDetector by lazy { MusicControllerGestureDetector(viewModel) }
     private val gestureDetector by lazy { GestureDetector(this, simpleGestureDetector) }
+    private val dispatcher by lazy { MusicActivityControllerDispatcher(binding, viewModel) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +42,13 @@ class MusicActivity : BaseActivity() {
     }
 
     override fun observe() {
-        viewModel.music.observe(this) { simpleGestureDetector.updateState(ControllerState.SHOWING) }
+        viewModel.music.observe(this) { viewModel.updateControllerState(ControllerState.SHOWING) }
+        viewModel.controllerState.observe(this) { dispatcher.changeControllerState(it) }
+        viewModel.controllerOffset.observe(this) { dispatcher.changeControllerOffset(it) }
     }
 
     override fun onBackPressed() {
-        val dispatched = simpleGestureDetector.backPressed()
+        val dispatched = dispatcher.backPressed()
         if (!dispatched) super.onBackPressed()
     }
 

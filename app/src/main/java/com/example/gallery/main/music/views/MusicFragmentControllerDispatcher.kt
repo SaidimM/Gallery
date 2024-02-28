@@ -2,7 +2,6 @@ package com.example.gallery.main.music.views
 
 import LogUtil
 import android.animation.ObjectAnimator
-import android.util.Log
 import com.example.gallery.Constants
 import com.example.gallery.base.utils.ViewUtils.dp
 import com.example.gallery.base.utils.ViewUtils.setHeight
@@ -12,7 +11,7 @@ import com.example.gallery.databinding.FragmentPlayerBinding
 import com.example.gallery.main.music.enums.ControllerState
 import com.example.gallery.main.music.enums.PlayerViewState
 
-class MusicControllerDispatcher(private val binding: FragmentPlayerBinding) {
+class MusicFragmentControllerDispatcher(private val binding: FragmentPlayerBinding) {
     private val TAG = "MusicControllerDispatcher"
 
     private var playerViewState: PlayerViewState = PlayerViewState.ALBUM
