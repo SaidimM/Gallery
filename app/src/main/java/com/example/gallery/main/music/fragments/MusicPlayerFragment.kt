@@ -1,24 +1,20 @@
 package com.example.gallery.main.music.fragments
 
+import LogUtil
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.View.MeasureSpec
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseFragment
-import com.example.gallery.base.utils.AnimationUtils.setListeners
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.databinding.FragmentPlayerBinding
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
 import com.example.gallery.main.music.views.MusicControllerDispatcher
 import com.example.gallery.media.music.local.bean.Music
-import com.example.gallery.player.enums.PlayState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MusicPlayerFragment : BaseFragment() {
@@ -37,7 +33,6 @@ class MusicPlayerFragment : BaseFragment() {
     private fun initView() {
         binding.viewModel = viewModel
         binding.state = state
-        binding.play.setOnClickListener { state.onPlayPressed() }
     }
 
     private fun observeViewModel() {
@@ -45,22 +40,10 @@ class MusicPlayerFragment : BaseFragment() {
             initPlayDetails(it)
         }
         state.playState.observe(viewLifecycleOwner) {
-            if (it == PlayState.PLAYING) binding.play.setImageDrawable(
-                ResourcesCompat.getDrawable(
-                    requireActivity().resources,
-                    R.drawable.ic_pause,
-                    requireActivity().theme
-                )
-            ) else binding.play.setImageDrawable(
-                ResourcesCompat.getDrawable(
-                    requireActivity().resources,
-                    R.drawable.ic_play,
-                    requireActivity().theme
-                )
-            )
+            LogUtil.d(TAG, "observeViewModel, playState: $it")
         }
         state.controllerState.observe(viewLifecycleOwner) { dispatcher.updateControllerState(it) }
-        state.controllerOffset.observe(viewLifecycleOwner) { dispatcher.updateOffset(it) }
+        state.controllerOffset.observe(viewLifecycleOwner) { dispatcher.updateControllerOffset(it) }
         viewModel.lyrics.observe(viewLifecycleOwner) {
             binding.lyricsView.data = it
             binding.lyricsView.measure(MeasureSpec.EXACTLY, MeasureSpec.EXACTLY)
@@ -71,18 +54,6 @@ class MusicPlayerFragment : BaseFragment() {
                 binding.lyricsView.bottom
             )
             lifecycleScope.launch { binding.lyricsView.start() }
-            animateController()
-        }
-    }
-
-    private fun animateController() {
-        lifecycleScope.launch(Dispatchers.Main) {
-            if (binding.controller.visibility != View.VISIBLE) binding.controller.animate().alphaBy(0f).alpha(1f)
-                .setDuration(500)
-                .setListeners(onStart = { binding.controller.visibility = View.VISIBLE }).start()
-            delay(5000)
-            binding.controller.animate().alphaBy(1f).alpha(0f).setDuration(500)
-                .setListeners(onStart = { binding.controller.visibility = View.GONE }).start()
         }
     }
 

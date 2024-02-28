@@ -13,7 +13,7 @@ import com.example.gallery.main.music.views.MusicControllerGestureDetector
 class MusicActivity : BaseActivity() {
     private val viewModel: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
     override val binding: ActivityMusicBinding by lazy { ActivityMusicBinding.inflate(layoutInflater) }
-    private val simpleGestureDetector by lazy { MusicControllerGestureDetector(binding) }
+    private val simpleGestureDetector by lazy { MusicControllerGestureDetector(binding, viewModel) }
     private val gestureDetector by lazy { GestureDetector(this, simpleGestureDetector) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +41,11 @@ class MusicActivity : BaseActivity() {
 
     override fun observe() {
         viewModel.music.observe(this) { simpleGestureDetector.updateState(ControllerState.SHOWING) }
+    }
+
+    override fun onBackPressed() {
+        val dispatched = simpleGestureDetector.backPressed()
+        if (!dispatched) super.onBackPressed()
     }
 
 }

@@ -18,9 +18,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        observe()
         if (!PermissionUtils.isGranted(android.Manifest.permission_group.STORAGE)) super.initPermission()
         else viewModel.permissionGranted(true)
     }

@@ -14,15 +14,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
             android:id="@+id/container">
 
         <com.google.android.material.appbar.MaterialToolbar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
                 app:navigationIconTint="?attr/colorOnPrimary"
                 app:navigationIcon="@drawable/ic_back"
-                android:fitsSystemWindows="true"
                 android:id="@+id/toolbar"
                 android:background="@color/transparent"
                 app:titleTextColor="?attr/colorOnPrimary"
@@ -30,9 +29,10 @@
 
         <androidx.fragment.app.FragmentContainerView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:id="@+id/fragment_list"
-                android:layout_marginTop="55dp"
+                app:layout_constraintTop_toBottomOf="@id/toolbar"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:name="com.example.gallery.main.music.fragments.MusicListFragment"
                 tools:layout="@layout/fragment_music_list"/>
 
@@ -40,8 +40,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
-                android:layout_margin="16dp"
-                android:visibility="@{viewModel.controllerState == ControllerState.HIDDEN ? View.GONE : View.VISIBLE}"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                android:alpha="0"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:id="@+id/card_view">
 

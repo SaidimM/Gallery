@@ -10,7 +10,7 @@ object AnimationUtils {
         onStart: (() -> Unit)? = null,
         onEnd: (() -> Unit)? = null,
         onRepeat: (() -> Unit)? = null
-    ) {
+    ): Animation {
         this.setAnimationListener(object : AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
                 if (onStart != null) {
@@ -30,22 +30,25 @@ object AnimationUtils {
                 }
             }
         })
+        return this
     }
 
-    fun Animation.onAnimationStart(onStart: (() -> Unit)) {
+    fun Animation.onAnimationStart(onStart: (() -> Unit)): Animation {
         this.setAnimationListener(object : AnimationListener {
             override fun onAnimationStart(animation: Animation?) = onStart()
             override fun onAnimationEnd(animation: Animation?) {}
             override fun onAnimationRepeat(animation: Animation?) {}
         })
+        return this
     }
 
-    fun Animation.onAnimationEnd(onEnd: (() -> Unit)) {
+    fun Animation.onAnimationEnd(onEnd: (() -> Unit)): Animation {
         this.setAnimationListener(object : AnimationListener {
             override fun onAnimationStart(animation: Animation?) {}
             override fun onAnimationEnd(animation: Animation?) = onEnd()
             override fun onAnimationRepeat(animation: Animation?) {}
         })
+        return this
     }
 
     fun ViewPropertyAnimator.onAnimationStart(onStart: (() -> Unit)): ViewPropertyAnimator {

@@ -96,7 +96,7 @@
     <color name="indigo_A400">#3D5AFE</color>
     <color name="indigo_A700">#304FFE</color>
 
-    // indigo
+    // cyan
     <color name="cyan_50">#E0F7FA</color>
     <color name="cyan_100">#B2EBF2</color>
     <color name="cyan_200">#80DEEA</color>
@@ -159,4 +159,24 @@
     <color name="black">#000</color>
     <color name="white">#fff</color>
     <color name="transparent">#0000</color>
+
+    <color name="primary">#009688</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#B2DFDB</color>
+    <color name="on_primary_container">#00261F</color>
+
+    <color name="secondary">#59807C</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="secondary_container">#E4FBF0</color>
+    <color name="on_secondary_container">#15271F</color>
+
+    <color name="surface">#E0F2F1</color>
+    <color name="surface_container">#C5E5E3</color>
+    <color name="surface_variant">#66807D</color>
+    <color name="on_surface">#011211</color>
+
+    <color name="error">#BA1A1A</color>
+    <color name="error_container">#FFDAD6</color>
+    <color name="on_error">#FFFFFF</color>
+    <color name="on_error_container">#011211</color>
 </resources>

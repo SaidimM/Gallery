@@ -2,6 +2,7 @@ package com.example.gallery.main.music.views
 
 import LogUtil
 import android.animation.ObjectAnimator
+import android.util.Log
 import com.example.gallery.Constants
 import com.example.gallery.base.utils.ViewUtils.dp
 import com.example.gallery.base.utils.ViewUtils.setHeight
@@ -16,13 +17,14 @@ class MusicControllerDispatcher(private val binding: FragmentPlayerBinding) {
 
     private var playerViewState: PlayerViewState = PlayerViewState.ALBUM
 
-    fun updateOffset(offset: Float) {
+    fun updateControllerOffset(offset: Float) {
+        LogUtil.d(TAG, "updateControllerOffset, offset: $offset")
         changeSliderOffset(offset)
         changeAlbumCoverOffset(offset)
     }
 
     fun updateControllerState(state: ControllerState) {
-
+        LogUtil.d(TAG, "updateControllerState, state: $state")
     }
 
     fun updateViewState(state: PlayerViewState) {

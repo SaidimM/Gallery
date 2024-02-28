@@ -2,16 +2,28 @@
     <!-- Base application theme. -->
     <style name="Theme.Gallery" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/teal_500</item>
-        <item name="colorPrimaryVariant">@color/teal_100</item>
-        <item name="colorPrimaryDark">@color/teal_800</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <item name="colorOnSurface">@color/teal_50</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorPrimaryContainer">@color/primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/on_primary_container</item>
 
-        <item name="colorAccent">@color/purple_100</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
+        <item name="colorSecondaryContainer">@color/secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/on_secondary_container</item>
 
-        <item name="android:textColor">?attr/colorOnPrimary</item>
-        <item name="android:textSize">18sp</item>
+        <!-- Surface color. -->
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorSurfaceVariant">@color/surface_variant</item>
+
+        <!-- Error color. -->
+        <item name="colorError">@color/error</item>
+        <item name="colorOnError">@color/on_error</item>
+        <item name="colorErrorContainer">@color/error_container</item>
+        <item name="colorOnErrorContainer">@color/on_error_container</item>
+
         <!-- Status bar color. -->
         <item name="android:windowTranslucentStatus">true</item>
 

@@ -23,4 +23,7 @@ class Music : Serializable {
     var mediaAlbumName: String = ""
     var mvId: Int = 0
     var albumCoverBlurHash: String = ""
+    override fun toString(): String {
+        return "Music(id=$id, name='$name', singer='$singer', album='$album', albumId=$albumId, size=$size, duration=$duration, path='$path', mediaId='$mediaId', mediaTitle='$mediaTitle', mediaArtistId='$mediaArtistId', mediaArtistName='$mediaArtistName', mediaAlbumId='$mediaAlbumId', mediaAlbumName='$mediaAlbumName', mvId=$mvId, albumCoverBlurHash='$albumCoverBlurHash')"
+    }
 }

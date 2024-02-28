@@ -49,9 +49,9 @@ class MusicViewModel : ViewModel() {
     }
 
     fun playMusic(position: Int = index) {
+        LogUtil.d(TAG, "playMusic, position: $position")
         index = position
         saveCurrentMusic()
-        if (musics.value == null) return
         val item = musics.value!![position]
         if (item.id != music.value?.id) {
             _playState.value = PlayState.PLAYING
@@ -84,7 +84,7 @@ class MusicViewModel : ViewModel() {
     }
 
     private fun saveCurrentMusic() {
-        music.value?.let { repository.saveLastPlayedMusic(it) }
+        music.value?.let { viewModelScope.launch(Dispatchers.IO) { repository.saveLastPlayedMusic(it) } }
     }
 
     fun updateControllerOffset(offset: Float) {
