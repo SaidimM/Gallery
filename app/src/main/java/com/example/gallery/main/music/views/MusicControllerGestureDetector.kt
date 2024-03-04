@@ -21,6 +21,7 @@ class MusicControllerGestureDetector(
     private var controllerAnimator = ValueAnimator()
     private val collapsedHeight = 88.dp
     private val deltaHeight = ScreenUtils.getScreenHeight() - collapsedHeight
+    var onSingleTapListener: (() -> Boolean) = { false }
 
     private fun updateOffset(offset: Float) {
         if (offset < 0) return
@@ -28,16 +29,11 @@ class MusicControllerGestureDetector(
     }
 
     private fun updateState(state: ControllerState) {
+        if (state == viewModel.controllerState.value) return
         viewModel.updateControllerState(state)
     }
 
-    override fun onSingleTapUp(e: MotionEvent): Boolean {
-        LogUtil.d(TAG, "onSingleTapUp, state: ${viewModel.controllerState.value}")
-        return if (viewModel.controllerState.value == ControllerState.COLLAPSED) {
-            updateState(ControllerState.EXPENDING)
-            true
-        } else false
-    }
+    override fun onSingleTapUp(e: MotionEvent) = onSingleTapListener.invoke()
 
     override fun onDown(e: MotionEvent): Boolean {
         LogUtil.d(TAG, "onDown, rawY: ${e.rawY}")
@@ -45,6 +41,8 @@ class MusicControllerGestureDetector(
     }
 
     override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+        if (viewModel.controllerState.value == ControllerState.EXPENDED) updateState(ControllerState.COLLAPSING)
+        else if (viewModel.controllerState.value == ControllerState.COLLAPSED) updateState(ControllerState.EXPENDING)
         val deltaOffset = (e1.y - e2.y) / deltaHeight
         LogUtil.i(TAG, "deltaHeight: $deltaHeight")
         LogUtil.i(TAG, "e1.y: ${e1.y}, e2.y: ${e2.y}, deltaOffset: $deltaOffset")
@@ -54,14 +52,42 @@ class MusicControllerGestureDetector(
 
     override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
         controllerAnimator.cancel()
-        LogUtil.i(TAG, "onFling, velocityY[$velocityY]")
+        LogUtil.i(TAG, "onFling, e1: ${e1.y}, e2: ${e2.y}, velocityY: $velocityY")
+        val isScrollUp = if (e2.y - e1.y > 0) true else false
         val startOffset = viewModel.controllerOffset.value!!
-        val endOffset = if (velocityY > 0) 0f else 1f
+        val endOffset = if (isScrollUp) 0f else 1f
         controllerAnimator = ObjectAnimator.ofFloat(startOffset, endOffset).apply {
             duration = 500
             interpolator = bezierInterpolator
             addUpdateListener { updateOffset(this.animatedValue as Float) }
-            doOnEnd { updateState(state = if (velocityY > 0) ControllerState.COLLAPSED else ControllerState.EXPENDED) }
+            doOnEnd { updateState(state = if (isScrollUp) ControllerState.COLLAPSED else ControllerState.EXPENDED) }
+            start()
+        }
+        return true
+    }
+
+    fun collapseController(): Boolean {
+        if (viewModel.controllerState.value != ControllerState.EXPENDED) return false
+        controllerAnimator.cancel()
+        controllerAnimator = ObjectAnimator.ofFloat(viewModel.controllerOffset.value!!, 0f).apply {
+            duration = 500
+            interpolator = bezierInterpolator
+            addUpdateListener { updateOffset(this.animatedValue as Float) }
+            doOnEnd { updateState(ControllerState.COLLAPSED) }
+            start()
+        }
+        return true
+    }
+
+    fun expandController(): Boolean {
+        if (viewModel.controllerState.value != ControllerState.COLLAPSED) return false
+        controllerAnimator.cancel()
+        updateState(ControllerState.EXPENDING)
+        controllerAnimator = ObjectAnimator.ofFloat(viewModel.controllerOffset.value!!, 1f).apply {
+            duration = 500
+            interpolator = bezierInterpolator
+            addUpdateListener { updateOffset(this.animatedValue as Float) }
+            doOnEnd { updateState(ControllerState.EXPENDED) }
             start()
         }
         return true

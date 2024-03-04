@@ -3,6 +3,7 @@ package com.example.gallery.main.music.fragments
 import LogUtil
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.GestureDetector
 import android.view.View
 import android.view.View.MeasureSpec
 import androidx.fragment.app.viewModels
@@ -10,10 +11,13 @@ import androidx.lifecycle.lifecycleScope
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.databinding.FragmentPlayerBinding
+import com.example.gallery.main.music.enums.ControllerState
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
 import com.example.gallery.main.music.viewModels.MusicViewModel
+import com.example.gallery.main.music.views.MusicControllerGestureDetector
 import com.example.gallery.main.music.views.MusicFragmentControllerDispatcher
 import com.example.gallery.media.music.local.bean.Music
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -21,6 +25,8 @@ class MusicPlayerFragment : BaseFragment() {
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
     private val viewModel: MusicPlayerViewModel by viewModels()
     override val binding: FragmentPlayerBinding by lazy { FragmentPlayerBinding.inflate(layoutInflater) }
+    private val simpleGestureDetector by lazy { MusicControllerGestureDetector(state) }
+    private val gestureDetector by lazy { GestureDetector(requireContext(), simpleGestureDetector) }
     private val dispatcher by lazy { MusicFragmentControllerDispatcher(binding) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,6 +39,11 @@ class MusicPlayerFragment : BaseFragment() {
     private fun initView() {
         binding.viewModel = viewModel
         binding.state = state
+        binding.album.setOnTouchListener { v, event -> gestureDetector.onTouchEvent(event) }
+        simpleGestureDetector.onSingleTapListener = {
+            if (simpleGestureDetector.expandController()) true
+            else dispatcher.onSingleTap()
+        }
     }
 
     private fun observeViewModel() {

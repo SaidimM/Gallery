@@ -1,14 +1,15 @@
 package com.example.gallery.player.controller
 
-import android.media.MediaPlayer
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.player.enums.PlayMode
+import com.example.gallery.player.enums.PlayState
 
 class PlayerController : IPlayerController {
-    private var player: MediaPlayer = MediaPlayer()
+    //    private var player: MediaPlayer = MediaPlayer()
     private val playList: ArrayList<Music> = arrayListOf()
     private var index = -1
     private var playMode = PlayMode.LOOP
+    private var playState: PlayState = PlayState.IDLE
 
     override fun refreshPlayList(list: ArrayList<Music>) {
         playList.clear()
@@ -19,23 +20,26 @@ class PlayerController : IPlayerController {
 
     override fun play(index: Int) {
         if (playList.isEmpty()) return
-        if (player.isPlaying) return
+//        if (player.isPlaying) return
         when (index) {
             -1 -> return
-            this.index -> player.start()
+//            this.index -> player.start()
             else -> {
                 this.index = index
-                player.stop()
-                player.setDataSource(playList[index].path)
-                player.prepare()
-                player.setOnPreparedListener { player.start() }
+//                player.stop()
+//                player.setDataSource(playList[index].path)
+//                player.prepare()
+//                player.setOnPreparedListener { player.start() }
             }
         }
     }
 
     override fun pause() {
         if (index == -1) return
-        if (player.isPlaying) player.pause()
+        if (playState == PlayState.PLAYING) {
+//            player.pause()
+            playState = PlayState.PAUSED
+        }
     }
 
     override fun playNext(music: Music) {
@@ -65,7 +69,8 @@ class PlayerController : IPlayerController {
     }
 
     override fun seekTo(position: Long) {
-        player.seekTo(position.toInt())
+        if (index == -1) return
+//        player.seekTo(position.toInt())
     }
 
     override fun setPlayMode(mode: PlayMode) {
@@ -75,7 +80,7 @@ class PlayerController : IPlayerController {
     override fun getCurrentMusic() = playList[index]
 
     override fun recycle() {
-        player.stop()
-        player.reset()
+//        player.stop()
+//        player.reset()
     }
 }

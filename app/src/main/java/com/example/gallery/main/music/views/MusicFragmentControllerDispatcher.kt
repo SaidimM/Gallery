@@ -13,19 +13,24 @@ import com.example.gallery.main.music.enums.PlayerViewState
 
 class MusicFragmentControllerDispatcher(private val binding: FragmentPlayerBinding) {
     private val TAG = "MusicControllerDispatcher"
+    private val sliderPadding = 32.dp + 16.dp
 
     private var playerViewState: PlayerViewState = PlayerViewState.ALBUM
+    private var controllerState: ControllerState = ControllerState.COLLAPSED
 
     fun updateControllerOffset(offset: Float) {
         changeSliderOffset(offset)
-        changeAlbumCoverOffset(offset)
+        val isControllerExpanded = controllerState == ControllerState.EXPENDED
+        val isControllerSliding = controllerState == ControllerState.EXPENDING || controllerState == ControllerState.COLLAPSING
+        val isPlayerInAlbumState = playerViewState == PlayerViewState.ALBUM
+        if ((isControllerSliding && isPlayerInAlbumState) || isControllerExpanded) changeAlbumCoverOffset(offset)
     }
 
     fun updateControllerState(state: ControllerState) {
-//        LogUtil.d(TAG, "updateControllerState, state: $state")
+        controllerState = state
     }
 
-    fun updateViewState(state: PlayerViewState) {
+    private fun updateViewState(state: PlayerViewState) {
         when (state) {
             PlayerViewState.ALBUM -> {
                 ObjectAnimator.ofFloat(0f, 1f).apply {
@@ -63,13 +68,14 @@ class MusicFragmentControllerDispatcher(private val binding: FragmentPlayerBindi
 
             PlayerViewState.LIST -> {}
         }
+        playerViewState = state
     }
 
     private fun changeSliderOffset(offset: Float) {
         val marginEnd = (96.dp * offset).toInt()
         binding.button.alpha = offset
         binding.musicName.setMargins(start = 88.dp, end = marginEnd)
-        binding.root.setPadding(0, (32.dp * offset).toInt(), 0, 0)
+        binding.root.setPadding(0, (sliderPadding * offset).toInt(), 0, 0)
     }
 
     private fun changeAlbumCoverOffset(offset: Float) {
@@ -82,5 +88,12 @@ class MusicFragmentControllerDispatcher(private val binding: FragmentPlayerBindi
         binding.album.setMargins(marginStart.toInt(), marginTop.dp)
         binding.musicName.alpha = ((1 - offset) * (1 - offset))
         binding.album.radius = 8 + (16 - 6).dp.toFloat() * offset
+    }
+
+    fun onSingleTap(): Boolean {
+        if (controllerState == ControllerState.EXPENDED) {
+            updateViewState(if (playerViewState == PlayerViewState.ALBUM) PlayerViewState.LYRICS else PlayerViewState.ALBUM)
+            return true
+        } else return false
     }
 }

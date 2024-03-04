@@ -34,6 +34,7 @@ class MusicActivity : BaseActivity() {
         title = getString(R.string.music)
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
         binding.cardView.setOnTouchListener { v, event -> gestureDetector.onTouchEvent(event) }
+        simpleGestureDetector.onSingleTapListener = { simpleGestureDetector.expandController() }
     }
 
     override fun onStop() {
@@ -48,7 +49,7 @@ class MusicActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        val dispatched = dispatcher.backPressed()
+        val dispatched = simpleGestureDetector.collapseController()
         if (!dispatched) super.onBackPressed()
     }
 

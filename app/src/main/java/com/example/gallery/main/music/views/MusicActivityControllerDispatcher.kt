@@ -1,5 +1,6 @@
 package com.example.gallery.main.music.views
 
+import LogUtil
 import android.animation.ObjectAnimator
 import android.view.View
 import androidx.core.animation.doOnEnd
@@ -14,7 +15,8 @@ import com.example.gallery.main.music.viewModels.MusicViewModel
 
 class MusicActivityControllerDispatcher(
     private val binding: ActivityMusicBinding,
-    private val viewModel: MusicViewModel) {
+    private val viewModel: MusicViewModel
+) {
     private val TAG = "MusicActivityControllerDispatcher"
     private val startMargin = 8.dp
 
@@ -30,26 +32,6 @@ class MusicActivityControllerDispatcher(
 
     fun changeControllerState(state: ControllerState) {
         when (state) {
-            ControllerState.EXPENDING -> {
-                ObjectAnimator.ofFloat(0f, 1f).apply {
-                    duration = 500
-                    interpolator = Constants.bezierInterpolator
-                    addUpdateListener { viewModel.updateControllerOffset(this.animatedValue as Float) }
-                    doOnEnd { viewModel.updateControllerState(ControllerState.EXPENDED) }
-                    start()
-                }
-            }
-
-            ControllerState.COLLAPSING -> {
-                ObjectAnimator.ofFloat(1f, 0f).apply {
-                    duration = 320
-                    interpolator = Constants.bezierInterpolator
-                    addUpdateListener { viewModel.updateControllerOffset(this.animatedValue as Float) }
-                    doOnEnd { viewModel.updateControllerState(ControllerState.COLLAPSED) }
-                    start()
-                }
-            }
-
             ControllerState.SHOWING -> {
                 LogUtil.d(TAG, "this state, state: $state")
                 binding.cardView.animate().alphaBy(0f).alpha(1f).setDuration(1000)
@@ -60,15 +42,6 @@ class MusicActivityControllerDispatcher(
             ControllerState.HIDDEN -> binding.cardView.alpha = 0f
 
             else -> {}
-        }
-    }
-
-    fun backPressed(): Boolean {
-        if (viewModel.controllerState.value == ControllerState.EXPENDED) {
-            viewModel.updateControllerState(ControllerState.COLLAPSING)
-            return true
-        } else {
-            return false
         }
     }
 }
