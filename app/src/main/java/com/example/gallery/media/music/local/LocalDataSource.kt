@@ -1,7 +1,11 @@
 package com.example.gallery.media.music.local
 
 import LogUtil
+import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
+import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.Utils
 import com.example.gallery.Constants
 import com.example.gallery.base.utils.AlbumCoverUtils
@@ -18,6 +22,7 @@ import kotlinx.coroutines.flow.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+
 
 class LocalDataSource(private val database: MusicDatabase) {
     private val TAG = "LocalDataSource"
@@ -87,7 +92,7 @@ class LocalDataSource(private val database: MusicDatabase) {
             allowdefalut = true,
             small = false
         )
-        val path = Constants.ALBUM_COVER_DIR + music.mediaAlbumId + ".jpg"
+        val path = Constants.ALBUM_COVER_DIR + music.id + ".jpg"
         if (bitmap != null) {
             emit(bitmap)
         } else if (File(path).exists()) {
@@ -163,7 +168,7 @@ class LocalDataSource(private val database: MusicDatabase) {
     }
 
     private fun deleteMusicCover(music: Music) = flow {
-        val path = Constants.ALBUM_COVER_DIR + music.mediaAlbumId + ".jpg"
+        val path = Constants.ALBUM_COVER_DIR + music.id + ".jpg"
         if (!File(path).exists()) {
             emit(Result.failure(Exception("Music [${music.name}] cover not found!")))
         } else if (!File(path).delete()) {

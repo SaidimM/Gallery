@@ -11,7 +11,7 @@ object BindingAdapters {
     @BindingAdapter(value = ["setMusicCover"], requireAll = false)
     fun setMusicCover(imageView: ImageView, music: Music?) {
         if (music == null) return
-        val path = ALBUM_COVER_DIR + music.mediaAlbumId + ".jpg"
+        val path = ALBUM_COVER_DIR + music.id + ".jpg"
         Glide.with(imageView.context).load(File(path)).into(imageView)
     }
 }

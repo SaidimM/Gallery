@@ -57,9 +57,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LogUtil.d(TAG, TAG)
         lifecycle.addObserver(NetworkStateManager.instance)
-        initPermission()
         binding.lifecycleOwner = this
         setContentView(binding.root)
         findViewById<MaterialToolbar>(R.id.toolbar)?.let { setSupportActionBar(it) }
@@ -166,27 +164,20 @@ abstract class BaseActivity : AppCompatActivity() {
     /**
      * android 6.0 以上需要动态申请权限
      */
-    fun initPermission() {
-        val permissions = arrayOf(
-            Manifest.permission.INTERNET,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
+    fun initPermission(permissions: Array<String>) {
         val toApplyList = ArrayList<String>()
         for (perm in permissions) {
-            if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(
-                    this,
-                    perm
-                )
-            ) {
+            if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this, perm))
                 toApplyList.add(perm)
-                // 进入到这里代表没有权限.
-            }
         }
         val tmpList = arrayOfNulls<String>(toApplyList.size)
         if (toApplyList.isNotEmpty()) {
             ActivityCompat.requestPermissions(this, toApplyList.toArray(tmpList), 123)
         }
+    }
+
+    fun isPermissionsGranted(permissions: Array<String>) = permissions.all { perm ->
+        PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, perm)
     }
 
     override fun onRequestPermissionsResult(
@@ -197,7 +188,7 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 123) {
             for (i in permissions.indices) {
-                Log.i("MainActivity", "申请的权限为：" + permissions[i] + ",申请结果：" + grantResults[i])
+                Log.i("MainActivity", "requested permission：" + permissions[i] + ",result：" + grantResults[i])
             }
         }
     }

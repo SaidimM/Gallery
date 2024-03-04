@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.blankj.utilcode.util.Utils
 import com.bumptech.glide.Glide
 import com.example.gallery.Constants
+import com.example.gallery.R
 import com.example.gallery.base.utils.AlbumCoverUtils.getArtwork
 import com.example.gallery.media.music.local.bean.Music
 import kotlinx.coroutines.Dispatchers
@@ -18,10 +19,10 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
 
 object ViewUtils {
 
@@ -34,10 +35,9 @@ object ViewUtils {
     ) {
         getAlbumBitmap(item)
             .catch {
-                LogUtil.e(TAG, it.message.toString())
                 coroutineScope {
                     launch(Dispatchers.Main) {
-                        Glide.with(imageView).load(null as Bitmap?).override(with, height).into(imageView)
+                        Glide.with(imageView).load(R.drawable.ic_music).override(with, height).into(imageView)
                     }
                 }
             }
@@ -51,12 +51,25 @@ object ViewUtils {
     }
 
     private suspend fun getAlbumBitmap(music: Music) = flow<Bitmap> {
-        val albumCoverPath = Constants.ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg"
+        val albumCoverPath = Constants.ALBUM_COVER_DIR + "${music.id}.jpg"
+        val isFileExists = File(albumCoverPath).exists()
         val bitmap = withContext(Dispatchers.Main) {
-            if (File(albumCoverPath).exists()) BitmapFactory.decodeFile(albumCoverPath)
+            if (isFileExists) BitmapFactory.decodeFile(albumCoverPath)
             else getArtwork(Utils.getApp(), music.id, music.albumId, allowdefalut = true, small = false)
         } ?: error("couldn't get album cover!")
+        if (!isFileExists) saveAlbumCover(music, bitmap)
         emit(bitmap)
+    }
+
+    private fun saveAlbumCover(music: Music, bitmap: Bitmap) {
+        try {
+            val albumCoverPath = Constants.ALBUM_COVER_DIR + "${music.id}.jpg"
+            FileOutputStream(albumCoverPath).use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun View.setMargins(start: Int = 0, top: Int = 0, end: Int = 0, bottom: Int = 0) {
@@ -105,21 +118,25 @@ object ViewUtils {
 
     fun View.toSizeString() = "height: ${this.measuredHeight}, top: ${this.top}"
 
-    val Int.dp: Int get() = run {
-        return toFloat().dp
-    }
+    val Int.dp: Int
+        get() = run {
+            return toFloat().dp
+        }
 
-    val Float.dp: Int get() = run {
-        val scale: Float = Utils.getApp().resources.displayMetrics.density
-        return (this * scale + 0.5f).toInt()
-    }
+    val Float.dp: Int
+        get() = run {
+            val scale: Float = Utils.getApp().resources.displayMetrics.density
+            return (this * scale + 0.5f).toInt()
+        }
 
-    val Int.px: Int get() = run {
-        return toFloat().px
-    }
+    val Int.px: Int
+        get() = run {
+            return toFloat().px
+        }
 
-    val Float.px: Int get() = run {
-        val scale: Float = Utils.getApp().resources.displayMetrics.density
-        return ((this - 0.5f) / scale).toInt()
-    }
+    val Float.px: Int
+        get() = run {
+            val scale: Float = Utils.getApp().resources.displayMetrics.density
+            return ((this - 0.5f) / scale).toInt()
+        }
 }

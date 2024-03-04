@@ -79,7 +79,7 @@ class RemoteDataSource {
     }
 
     fun downloadAlbumCover(music: Music, url: String) = flow {
-        val file = File(Constants.ALBUM_COVER_DIR + "${music.mediaAlbumId}.jpg")
+        val file = File(Constants.ALBUM_COVER_DIR + "${music.id}.jpg")
         if (file.exists()) emit(BitmapFactory.decodeFile(file.path))
         else file.createNewFile()
         val request = Request.Builder().url(url).build()
