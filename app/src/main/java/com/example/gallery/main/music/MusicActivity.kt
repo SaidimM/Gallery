@@ -14,8 +14,7 @@ import com.example.gallery.main.music.views.MusicControllerGestureDetector
 class MusicActivity : BaseActivity() {
     private val viewModel: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
     override val binding: ActivityMusicBinding by lazy { ActivityMusicBinding.inflate(layoutInflater) }
-    private val simpleGestureDetector by lazy { MusicControllerGestureDetector(viewModel) }
-    private val gestureDetector by lazy { GestureDetector(this, simpleGestureDetector) }
+    private val gestureDetector by lazy { MusicControllerGestureDetector(this, viewModel) }
     private val dispatcher by lazy { MusicActivityControllerDispatcher(binding, viewModel) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +33,7 @@ class MusicActivity : BaseActivity() {
         title = getString(R.string.music)
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
         binding.cardView.setOnTouchListener { v, event -> gestureDetector.onTouchEvent(event) }
-        simpleGestureDetector.onSingleTapListener = { simpleGestureDetector.expandController() }
+        gestureDetector.onSingleTapListener = { gestureDetector.expandController() }
     }
 
     override fun onStop() {
@@ -49,7 +48,7 @@ class MusicActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        val dispatched = simpleGestureDetector.collapseController()
+        val dispatched = gestureDetector.collapseController()
         if (!dispatched) super.onBackPressed()
     }
 

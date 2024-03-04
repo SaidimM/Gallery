@@ -90,10 +90,8 @@ class MusicFragmentControllerDispatcher(private val binding: FragmentPlayerBindi
         binding.album.radius = 8 + (16 - 6).dp.toFloat() * offset
     }
 
-    fun onSingleTap(): Boolean {
-        if (controllerState == ControllerState.EXPENDED) {
-            updateViewState(if (playerViewState == PlayerViewState.ALBUM) PlayerViewState.LYRICS else PlayerViewState.ALBUM)
-            return true
-        } else return false
-    }
+    fun onSingleTap() = if (controllerState == ControllerState.EXPENDED) {
+        updateViewState(if (playerViewState == PlayerViewState.ALBUM) PlayerViewState.LYRICS else PlayerViewState.ALBUM)
+        true
+    } else false
 }
