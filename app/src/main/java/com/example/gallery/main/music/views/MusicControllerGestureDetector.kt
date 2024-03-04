@@ -20,7 +20,7 @@ class MusicControllerGestureDetector(
     context: Context,
     private val viewModel: MusicViewModel
 ) : SimpleOnGestureListener() {
-    private val TAG = "MusicControllerGestureDetector"
+    private val TAG = "onTouchEvent"
     private var controllerAnimator = ValueAnimator()
     private val collapsedHeight = 88.dp
     private val deltaHeight = ScreenUtils.getScreenHeight() - collapsedHeight
@@ -30,7 +30,6 @@ class MusicControllerGestureDetector(
     fun onTouchEvent(event: MotionEvent?): Boolean {
         if (event == null) return false
         val isEventConsumed =  gestureDetector.onTouchEvent(event)
-        LogUtil.d(TAG, "onTouchEvent, event: ${event.action}, isEventConsumed: $isEventConsumed")
         val isActionUp = event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_OUTSIDE
         val isScrolling = viewModel.controllerState.value == ControllerState.EXPENDING || viewModel.controllerState.value == ControllerState.COLLAPSING
         return if (!isEventConsumed && isScrolling && isActionUp) onActionUp()
@@ -67,17 +66,9 @@ class MusicControllerGestureDetector(
 
     override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
         LogUtil.i(TAG, "onFling, e1: ${e1.y}, e2: ${e2.y}, velocityY: $velocityY")
-        val isScrollUp = if (e2.y - e1.y > 0) true else false
-        val startOffset = viewModel.controllerOffset.value!!
-        val endOffset = if (isScrollUp) 0f else 1f
-        controllerAnimator = ObjectAnimator.ofFloat(startOffset, endOffset).apply {
-            duration = 500
-            interpolator = bezierInterpolator
-            addUpdateListener { updateOffset(this.animatedValue as Float) }
-            doOnEnd { updateState(state = if (isScrollUp) ControllerState.COLLAPSED else ControllerState.EXPENDED) }
-            start()
-        }
-        return true
+        val isScrollUp = if (e2.y - e1.y < 0) true else false
+        return if (isScrollUp) expandController()
+        else collapseController()
     }
 
     private fun onActionUp(): Boolean {
