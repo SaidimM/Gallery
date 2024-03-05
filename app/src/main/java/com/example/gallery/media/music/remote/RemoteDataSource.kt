@@ -36,8 +36,10 @@ class RemoteDataSource {
     private var endpoint: NeteaseApi = retrofit.create(NeteaseApi::class.java)
 
     fun searchMusic(music: Music) = flow {
+        LogUtil.i(TAG, "start")
         val response = endpoint.searchMusic(criteria = "${music.name}%20${music.singer}")
         val result = response.body()
+        LogUtil.i(TAG, result.toString())
         if (!response.isSuccessful || result == null) {
             emit(Result.failure<String>(Exception("request failed!")))
         } else if (result.code != 200) {

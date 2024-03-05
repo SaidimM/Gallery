@@ -1,5 +1,6 @@
 package com.example.gallery.media.music
 
+import LogUtil
 import android.graphics.Bitmap
 import com.blankj.utilcode.util.SPUtils
 import com.example.gallery.Constants.MUSIC_ID
@@ -33,18 +34,25 @@ class MusicRepository(
     override fun removeMusicFromDevice(music: Music) = localDataSource.removeMusic(music).flowOn(dispatcher)
 
     @OptIn(FlowPreview::class)
-    override fun getMusicLyrics(music: Music) = flow<List<Lyric>> {
-        if (music.mediaId.isEmpty()) remoteDataSource.searchMusic(music)
-            .filter { it.isSuccess }
-            .flatMapConcat { result -> localDataSource.syncWithRemote(music, result.getOrNull() as Song) }
-            .flatMapConcat { remoteDataSource.getLyrics(music) }
-            .flatMapConcat { localDataSource.saveMusicLyrics(music, it.lrc.lyric) }
-            .map { localDataSource.getLyrics(music) }
-        else if (localDataSource.isMusicLyricsExist(music)) localDataSource.getLyrics(music)
-        else remoteDataSource.getLyrics(music)
-            .flatMapConcat { result -> localDataSource.saveMusicLyrics(music, result.lrc.lyric) }
-            .map { localDataSource.getLyrics(music) }
-    }.flowOn(dispatcher)
+    override fun getMusicLyrics(music: Music): Flow<List<Lyric>> {
+        LogUtil.i(TAG, music.toString())
+        return if (music.mediaId.isEmpty()) {
+            remoteDataSource.searchMusic(music)
+                .filter { it.isSuccess }
+                .flatMapConcat { result -> localDataSource.syncWithRemote(music, result.getOrNull() as Song) }
+                .flatMapConcat { remoteDataSource.getLyrics(music) }
+                .flatMapConcat { localDataSource.saveMusicLyrics(music, it.lrc.lyric) }
+                .flatMapConcat { localDataSource.getLyrics(music) }
+                .flowOn(dispatcher)
+        } else if (localDataSource.isMusicLyricsExist(music)) {
+            localDataSource.getLyrics(music).flowOn(dispatcher)
+        } else {
+            remoteDataSource.getLyrics(music)
+                .flatMapConcat { result -> localDataSource.saveMusicLyrics(music, result.lrc.lyric) }
+                .flatMapConcat { localDataSource.getLyrics(music) }
+                .flowOn(dispatcher)
+        }
+    }
 
     override fun getFavoriteMusicList() = localDataSource.getFavoriteMusicList().flowOn(dispatcher)
 

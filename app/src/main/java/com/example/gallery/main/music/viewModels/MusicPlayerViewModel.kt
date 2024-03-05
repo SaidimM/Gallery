@@ -3,9 +3,15 @@ package com.example.gallery.main.music.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.gallery.ServiceLocator
 import com.example.gallery.main.music.enums.PlayerViewState
+import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.media.music.remote.lyrics.Lyric
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 
 class MusicPlayerViewModel : ViewModel() {
     private val TAG = "MusicPlayerViewModel"
@@ -23,6 +29,14 @@ class MusicPlayerViewModel : ViewModel() {
             null -> _viewState.value = PlayerViewState.LYRICS
             PlayerViewState.ALBUM -> _viewState.value = PlayerViewState.LYRICS
             else -> _viewState.value = PlayerViewState.ALBUM
+        }
+    }
+
+    fun getLyrics(music: Music) {
+        viewModelScope.launch {
+            repository.getMusicLyrics(music).collect {
+                _lyrics.postValue(it as ArrayList<Lyric>)
+            }
         }
     }
 }

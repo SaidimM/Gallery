@@ -9,7 +9,7 @@ data class Song(
     val hearTime: Int? = null,
     val mp3Url: String? = null,
     val rtUrls: Any? = null,
-    val mark: Int? = null,
+    val mark: Long? = null,
     val noCopyrightRcmd: Any? = null,
     val originCoverType: Int? = null,
     val originSongSimpleData: Any? = null,

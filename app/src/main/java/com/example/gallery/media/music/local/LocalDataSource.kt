@@ -35,7 +35,7 @@ class LocalDataSource(private val database: MusicDatabase) {
 
     fun isMusicLyricsExist(music: Music) = File(Constants.LYRIC_DIR + music.id + ".txt").exists()
 
-    fun getLyrics(music: Music) = flow {
+    fun getLyrics(music: Music) = flow<List<Lyric>> {
         val path = Constants.LYRIC_DIR + music.id + ".txt"
         if (!File(path).exists()) error("Music [${music.name}] lyric not found!")
         val data = LocalMediaUtils.readFile(path)

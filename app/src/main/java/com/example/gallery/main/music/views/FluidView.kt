@@ -63,7 +63,7 @@ class FluidView(context: Context, attributeSet: AttributeSet? = null) : FrameLay
                 ), null, Shader.TileMode.CLAMP
             )
         }
-        canvas.withRotation(rotatedAngle, (width / 2).toFloat(), (height / 2).toFloat()) { drawRect(rect, paint) }
+        canvas.withRotation(rotatedAngle * 1.5f, (width / 2).toFloat(), (height / 2).toFloat()) { drawRect(rect, paint) }
     }
 
     private fun drawRectTop(canvas: Canvas) {
