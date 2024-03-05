@@ -7,6 +7,7 @@ import android.view.View
 import android.view.View.MeasureSpec
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.databinding.FragmentPlayerBinding
@@ -17,6 +18,8 @@ import com.example.gallery.main.music.views.MusicFragmentControllerDispatcher
 import com.example.gallery.media.music.local.bean.Music
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class MusicPlayerFragment : BaseFragment() {
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
@@ -65,7 +68,12 @@ class MusicPlayerFragment : BaseFragment() {
     }
 
     private fun initPlayDetails(music: Music) {
-        lifecycleScope.launch(Dispatchers.IO) { loadAlbumCover(music, binding.albumCover, 320.dp, 320.dp) }
+        lifecycleScope.launch {
+            loadAlbumCover(music) {
+                Glide.with(requireContext()).load(it).into(binding.albumCover)
+                launch(Dispatchers.Main) { binding.fluidView.initBackground(it) }
+            }
+        }
         binding.musicName.text = music.name
         binding.songName.text = music.name
         binding.singerName.text = music.singer

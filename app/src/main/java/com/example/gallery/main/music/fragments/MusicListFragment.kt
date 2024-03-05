@@ -1,11 +1,13 @@
 package com.example.gallery.main.music.fragments
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blankj.utilcode.util.SnackbarUtils
+import com.bumptech.glide.Glide
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseFragment
 import com.example.gallery.base.ui.pge.BaseRecyclerViewAdapter
@@ -38,7 +40,9 @@ class MusicListFragment : BaseFragment() {
                 binding.mv.visibility = if (item.mvId == 0) View.GONE else View.VISIBLE
                 binding.mv.setOnClickListener { viewModel.getMv(item) }
                 binding.root.setOnClickListener { state.playMusic(position) }
-                lifecycleScope.launchWhenCreated { loadAlbumCover(item, binding.albumImage) }
+                lifecycleScope.launchWhenCreated {
+                    loadAlbumCover(item) { Glide.with(requireContext()).load(it).into(binding.albumImage) }
+                }
             }
         }
         binding.recyclerView.adapter = adapter

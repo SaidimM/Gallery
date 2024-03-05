@@ -48,7 +48,7 @@
 
             <androidx.fragment.app.FragmentContainerView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     tools:layout="@layout/fragment_player"
                     android:name="com.example.gallery.main.music.fragments.MusicPlayerFragment"
                     android:id="@+id/fragment"/>

@@ -75,7 +75,7 @@ class MusicFragmentControllerDispatcher(private val binding: FragmentPlayerBindi
         val marginEnd = (96.dp * offset).toInt()
         binding.button.alpha = offset
         binding.musicName.setMargins(start = 88.dp, end = marginEnd)
-        binding.root.setPadding(0, (sliderPadding * offset).toInt(), 0, 0)
+        binding.button.setMargins(0, (sliderPadding * offset).toInt(), 0, 0)
     }
 
     private fun changeAlbumCoverOffset(offset: Float) {
