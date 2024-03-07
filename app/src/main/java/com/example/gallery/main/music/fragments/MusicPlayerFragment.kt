@@ -9,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.gallery.base.ui.pge.BaseFragment
-import com.example.gallery.base.utils.ViewUtils.loadAlbumCover
 import com.example.gallery.databinding.FragmentPlayerBinding
 import com.example.gallery.main.music.enums.PlayerViewState
 import com.example.gallery.main.music.viewModels.MusicPlayerViewModel
@@ -17,7 +16,6 @@ import com.example.gallery.main.music.viewModels.MusicViewModel
 import com.example.gallery.main.music.views.MusicControllerGestureDetector
 import com.example.gallery.main.music.views.MusicFragmentControllerDispatcher
 import com.example.gallery.media.music.local.bean.Music
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MusicPlayerFragment : BaseFragment() {
@@ -54,6 +52,11 @@ class MusicPlayerFragment : BaseFragment() {
             )
             lifecycleScope.launch { binding.lyricsView.start() }
         }
+        viewModel.albumCover.observe(viewLifecycleOwner) {
+            if (it == null) return@observe
+            Glide.with(requireContext()).load(it).into(binding.albumCover)
+            binding.fluidView.initBackground(it)
+        }
         viewModel.viewState.observe(this) {
             binding.lyricsView.visibility = if (it == PlayerViewState.LYRICS) View.VISIBLE else View.GONE
         }
@@ -62,14 +65,9 @@ class MusicPlayerFragment : BaseFragment() {
     private fun initPlayDetails(music: Music) {
         LogUtil.i(TAG, "music: ${music.name}")
         viewModel.getLyrics(music)
+        viewModel.getAlbumCover(music)
         binding.musicName.text = music.name
         binding.songName.text = music.name
         binding.singerName.text = music.singer
-        lifecycleScope.launch {
-            loadAlbumCover(music) {
-                Glide.with(requireContext()).load(it).into(binding.albumCover)
-                launch(Dispatchers.Main) { binding.fluidView.initBackground(it) }
-            }
-        }
     }
 }

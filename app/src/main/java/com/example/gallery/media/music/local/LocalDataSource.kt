@@ -52,7 +52,6 @@ class LocalDataSource(private val database: MusicDatabase) {
                 val lyric = Lyric(position, min + sec, text)
                 position = min + sec
                 lyrics.add(lyric)
-                LogUtil.i(TAG, lyric.toString())
                 if (lyrics.isNotEmpty()) lyrics.last().endPosition = min + sec
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -88,17 +87,14 @@ class LocalDataSource(private val database: MusicDatabase) {
     }.flowOn(Dispatchers.IO)
 
     fun getMusicAlbumCover(music: Music) = flow {
-        val bitmap = AlbumCoverUtils.getArtwork(Utils.getApp(), music.id, music.mediaAlbumId.toLong(),
-            allowdefalut = true,
-            small = false
-        )
-        val path = Constants.ALBUM_COVER_DIR + music.id + ".jpg"
-        if (bitmap != null) {
-            emit(bitmap)
-        } else if (File(path).exists()) {
-            emit(BitmapFactory.decodeFile(path))
+        val albumCoverPath = Constants.getAlbumCoverPath(music)
+        val albumCover = BitmapFactory.decodeFile(albumCoverPath)
+        if (albumCover != null) {
+            emit(albumCover)
         } else {
-            emit(null)
+            LogUtil.e(TAG, "Album cover not found!")
+            File(albumCoverPath).delete()
+            error("Album cover not found!")
         }
     }
 
@@ -168,7 +164,7 @@ class LocalDataSource(private val database: MusicDatabase) {
     }
 
     private fun deleteMusicCover(music: Music) = flow {
-        val path = Constants.ALBUM_COVER_DIR + music.id + ".jpg"
+        val path = Constants.getAlbumCoverPath(music)
         if (!File(path).exists()) {
             emit(Result.failure(Exception("Music [${music.name}] cover not found!")))
         } else if (!File(path).delete()) {

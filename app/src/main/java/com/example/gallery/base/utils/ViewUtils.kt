@@ -31,7 +31,7 @@ object ViewUtils {
     }
 
     private suspend fun getAlbumBitmap(music: Music) = flow<Bitmap> {
-        val albumCoverPath = Constants.ALBUM_COVER_DIR + "${music.id}.jpg"
+        val albumCoverPath = Constants.getAlbumCoverPath(music)
         val isFileExists = File(albumCoverPath).exists()
         val bitmap = withContext(Dispatchers.Main) {
             if (isFileExists) BitmapFactory.decodeFile(albumCoverPath)
@@ -43,7 +43,7 @@ object ViewUtils {
 
     private fun saveAlbumCover(music: Music, bitmap: Bitmap) {
         try {
-            val albumCoverPath = Constants.ALBUM_COVER_DIR + "${music.id}.jpg"
+            val albumCoverPath = Constants.getAlbumCoverPath(music)
             FileOutputStream(albumCoverPath).use { outputStream ->
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
             }

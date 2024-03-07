@@ -4,7 +4,7 @@ import LogUtil
 import android.graphics.BitmapFactory
 import com.example.gallery.Constants
 import com.example.gallery.media.music.local.bean.Music
-import com.example.gallery.media.music.remote.album.Album
+import com.example.gallery.media.music.remote.music.MusicDetailResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.flatMapConcat
@@ -71,7 +71,7 @@ class RemoteDataSource {
             emit(Result.failure<String>(Exception("Music album id is empty!")))
             return@flow
         }
-        val response = endpoint.getMv(music.mvId.toString())
+        val response = endpoint.getAlbumInfo(music.mediaId)
         val result = response.body()
         if (!response.isSuccessful || result == null) {
             emit(Result.failure<String>(Exception("request failed!")))
@@ -97,14 +97,15 @@ class RemoteDataSource {
     }.flowOn(Dispatchers.IO)
 
     @OptIn(FlowPreview::class)
-    fun getAlbumCover(music: Music) = getAlbum(music).flatMapConcat { downloadAlbumCover(music, (it.getOrNull() as Album).picUrl.toString()) }
+    fun getAlbumCover(music: Music) = getMusicDetail(music)
+        .flatMapConcat { downloadAlbumCover(music, (it.getOrNull() as MusicDetailResult).songs[0].album.blurPicUrl) }
 
-    fun getMusicDetail(music: Music) = flow {
+    private fun getMusicDetail(music: Music) = flow {
         if (music.mediaId.isEmpty()) {
             Result.failure<String>(Exception("Music id is empty!"))
             return@flow
         }
-        val response = endpoint.getMusicDetail(music.mediaId, "[$music.mediaId]")
+        val response = endpoint.getMusicDetail(music.mediaId, "[${music.mediaId}]")
         val result = response.body()
         if (!response.isSuccessful || result == null) {
             emit(Result.failure<String>(Exception("request failed!")))

@@ -1,5 +1,7 @@
 package com.example.gallery.main.music.viewModels
 
+import LogUtil
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,9 +10,8 @@ import com.example.gallery.ServiceLocator
 import com.example.gallery.main.music.enums.PlayerViewState
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.media.music.remote.lyrics.Lyric
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
 class MusicPlayerViewModel : ViewModel() {
@@ -24,6 +25,9 @@ class MusicPlayerViewModel : ViewModel() {
     private var _viewState = MutableLiveData<PlayerViewState>()
     val viewState: LiveData<PlayerViewState> = _viewState
 
+    private var _albumCover = MutableLiveData<Bitmap>()
+    val albumCover: LiveData<Bitmap> = _albumCover
+
     fun updateViewState() {
         when (viewState.value) {
             null -> _viewState.value = PlayerViewState.LYRICS
@@ -34,9 +38,19 @@ class MusicPlayerViewModel : ViewModel() {
 
     fun getLyrics(music: Music) {
         viewModelScope.launch {
-            repository.getMusicLyrics(music).collect {
-                _lyrics.postValue(it as ArrayList<Lyric>)
-            }
+            repository.getMusicLyrics(music)
+                .catch { LogUtil.e(TAG, "getLyrics: $it")}
+                .collect { _lyrics.postValue(it as ArrayList<Lyric>) }
+        }
+    }
+
+    fun getAlbumCover(music: Music) {
+        viewModelScope.launch {
+            repository.getAlbumCover(music)
+                .catch {
+                    LogUtil.e(TAG, "getAlbumCover: $it")
+                    it.printStackTrace()
+                }.collect { _albumCover.postValue(it) }
         }
     }
 }

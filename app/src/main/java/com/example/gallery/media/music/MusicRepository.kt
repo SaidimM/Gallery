@@ -4,6 +4,7 @@ import LogUtil
 import android.graphics.Bitmap
 import com.blankj.utilcode.util.SPUtils
 import com.example.gallery.Constants.MUSIC_ID
+import com.example.gallery.Constants.getAlbumCoverPath
 import com.example.gallery.media.music.local.LocalDataSource
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.media.music.local.bean.PlayHistory
@@ -11,8 +12,11 @@ import com.example.gallery.media.music.local.bean.PlayList
 import com.example.gallery.media.music.remote.RemoteDataSource
 import com.example.gallery.media.music.remote.lyrics.Lyric
 import com.example.gallery.media.music.remote.search.Song
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
+import java.io.File
 
 class MusicRepository(
     private val localDataSource: LocalDataSource,
@@ -35,7 +39,6 @@ class MusicRepository(
 
     @OptIn(FlowPreview::class)
     override fun getMusicLyrics(music: Music): Flow<List<Lyric>> {
-        LogUtil.i(TAG, music.toString())
         return if (music.mediaId.isEmpty()) {
             remoteDataSource.searchMusic(music)
                 .filter { it.isSuccess }
@@ -74,6 +77,9 @@ class MusicRepository(
 
     override fun getMusicVideo(music: Music) = remoteDataSource.getMv(music).flowOn(dispatcher)
 
-    override fun getAlbumCover(music: Music): Flow<Bitmap> = localDataSource.getMusicAlbumCover(music)
-        .transform<Bitmap?, Bitmap> { it ?: remoteDataSource.getAlbumCover(music) }.flowOn(dispatcher)
+    override fun getAlbumCover(music: Music): Flow<Bitmap> {
+        val isCoverExist = File(getAlbumCoverPath(music)).exists()
+        return if (isCoverExist) localDataSource.getMusicAlbumCover(music).flowOn(dispatcher)
+        else remoteDataSource.getAlbumCover(music).flowOn(dispatcher)
+    }
 }

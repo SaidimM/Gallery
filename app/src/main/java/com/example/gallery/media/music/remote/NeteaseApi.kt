@@ -11,7 +11,6 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.util.concurrent.Flow
 
 interface NeteaseApi {
 
@@ -53,5 +52,5 @@ interface NeteaseApi {
 
     //http://music.163.com/api/song/detail/?id=31090820&ids=%5B31090820%5D
     @GET(value = "/api/song/detail/")
-    fun getMusicDetail(@Query("id") id: String, @Query("ids") ids: String): Response<MusicDetailResult>
+    suspend fun getMusicDetail(@Query("id") id: String, @Query("ids") ids: String): Response<MusicDetailResult>
 }

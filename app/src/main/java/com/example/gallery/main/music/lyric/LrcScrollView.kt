@@ -84,7 +84,6 @@ class LrcScrollView : FrameLayout {
             linearLayout.addView(bottomView)
             linearLayout.doOnLayout {
                 linearLayout.children.forEachIndexed { index, view ->
-                    LogUtil.d(TAG, "index: $index, view height: ${view.height.px}, top: ${view.top.px}")
                     offsets.add(view.top)
                     texts.add(view as TextView)
                 }
@@ -103,9 +102,7 @@ class LrcScrollView : FrameLayout {
             .onEach { delay(it.endPosition.toLong() - it.position) }
             .flatMapConcat {
                 flow {
-                    LogUtil.d(TAG, it.toString())
                     index = data.indexOf(it)
-                    LogUtil.d(TAG, "index: $index")
                     if (index == -1) return@flow
                     emit(index)
                 }
