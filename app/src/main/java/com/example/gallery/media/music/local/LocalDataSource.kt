@@ -1,14 +1,9 @@
 package com.example.gallery.media.music.local
 
 import LogUtil
-import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
-import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.Utils
 import com.example.gallery.Constants
-import com.example.gallery.base.utils.AlbumCoverUtils
 import com.example.gallery.base.utils.LocalMediaUtils
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.media.music.local.bean.PlayHistory
@@ -35,7 +30,9 @@ class LocalDataSource(private val database: MusicDatabase) {
 
     fun isMusicLyricsExist(music: Music) = File(Constants.LYRIC_DIR + music.id + ".txt").exists()
 
-    fun getLyrics(music: Music) = flow<List<Lyric>> {
+    fun isMusicAlbumCOverExist(music: Music) = File(Constants.ALBUM_COVER_DIR + music.id + ".jpg").exists()
+
+    fun getLyrics(music: Music) = flow {
         val path = Constants.LYRIC_DIR + music.id + ".txt"
         if (!File(path).exists()) error("Music [${music.name}] lyric not found!")
         val data = LocalMediaUtils.readFile(path)

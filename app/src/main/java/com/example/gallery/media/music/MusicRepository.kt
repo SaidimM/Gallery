@@ -1,7 +1,5 @@
 package com.example.gallery.media.music
 
-import LogUtil
-import android.graphics.Bitmap
 import com.blankj.utilcode.util.SPUtils
 import com.example.gallery.Constants.MUSIC_ID
 import com.example.gallery.Constants.getAlbumCoverPath
@@ -10,12 +8,15 @@ import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.media.music.local.bean.PlayHistory
 import com.example.gallery.media.music.local.bean.PlayList
 import com.example.gallery.media.music.remote.RemoteDataSource
-import com.example.gallery.media.music.remote.lyrics.Lyric
+import com.example.gallery.media.music.remote.music.MusicDetailResult
 import com.example.gallery.media.music.remote.search.Song
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.io.File
 
 class MusicRepository(
@@ -38,24 +39,16 @@ class MusicRepository(
     override fun removeMusicFromDevice(music: Music) = localDataSource.removeMusic(music).flowOn(dispatcher)
 
     @OptIn(FlowPreview::class)
-    override fun getMusicLyrics(music: Music): Flow<List<Lyric>> {
-        return if (music.mediaId.isEmpty()) {
-            remoteDataSource.searchMusic(music)
-                .filter { it.isSuccess }
-                .flatMapConcat { result -> localDataSource.syncWithRemote(music, result.getOrNull() as Song) }
-                .flatMapConcat { remoteDataSource.getLyrics(music) }
-                .flatMapConcat { localDataSource.saveMusicLyrics(music, it.lrc.lyric) }
-                .flatMapConcat { localDataSource.getLyrics(music) }
-                .flowOn(dispatcher)
-        } else if (localDataSource.isMusicLyricsExist(music)) {
-            localDataSource.getLyrics(music).flowOn(dispatcher)
-        } else {
-            remoteDataSource.getLyrics(music)
-                .flatMapConcat { result -> localDataSource.saveMusicLyrics(music, result.lrc.lyric) }
-                .flatMapConcat { localDataSource.getLyrics(music) }
-                .flowOn(dispatcher)
-        }
-    }
+    override fun getMusicLyrics(music: Music) =
+        if (music.mediaId.isEmpty()) remoteDataSource.searchMusic(music).filter { it.isSuccess }
+            .flatMapConcat { result -> localDataSource.syncWithRemote(music, result.getOrNull() as Song) }
+            .flatMapConcat { remoteDataSource.getLyrics(music) }
+            .flatMapConcat { localDataSource.saveMusicLyrics(music, it.lrc.lyric) }
+            .flatMapConcat { localDataSource.getLyrics(music) }.flowOn(dispatcher)
+        else if (localDataSource.isMusicLyricsExist(music)) localDataSource.getLyrics(music).flowOn(dispatcher)
+        else remoteDataSource.getLyrics(music)
+            .flatMapConcat { result -> localDataSource.saveMusicLyrics(music, result.lrc.lyric) }
+            .flatMapConcat { localDataSource.getLyrics(music) }.flowOn(dispatcher)
 
     override fun getFavoriteMusicList() = localDataSource.getFavoriteMusicList().flowOn(dispatcher)
 
@@ -77,9 +70,16 @@ class MusicRepository(
 
     override fun getMusicVideo(music: Music) = remoteDataSource.getMv(music).flowOn(dispatcher)
 
-    override fun getAlbumCover(music: Music): Flow<Bitmap> {
-        val isCoverExist = File(getAlbumCoverPath(music)).exists()
-        return if (isCoverExist) localDataSource.getMusicAlbumCover(music).flowOn(dispatcher)
-        else remoteDataSource.getAlbumCover(music).flowOn(dispatcher)
-    }
+    @OptIn(FlowPreview::class)
+    override fun getAlbumCover(music: Music) =
+        if (music.mediaId.isEmpty()) remoteDataSource.searchMusic(music).filter { it.isSuccess }
+            .flatMapConcat { localDataSource.syncWithRemote(music, it.getOrNull() as Song) }
+            .flatMapConcat { remoteDataSource.getMusicDetail(music) }
+            .flatMapConcat { remoteDataSource.downloadAlbumCover(music, it.getOrNull() as MusicDetailResult) }
+            .flatMapConcat { localDataSource.getMusicAlbumCover(music) }.flowOn(dispatcher)
+        else if (File(getAlbumCoverPath(music)).exists()) localDataSource.getMusicAlbumCover(music).flowOn(dispatcher)
+        else remoteDataSource.getMusicDetail(music)
+            .flatMapConcat { remoteDataSource.downloadAlbumCover(music, it.getOrNull() as MusicDetailResult) }
+            .flatMapConcat { localDataSource.getMusicAlbumCover(music) }
+
 }

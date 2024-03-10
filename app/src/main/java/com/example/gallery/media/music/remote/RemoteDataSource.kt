@@ -1,13 +1,10 @@
 package com.example.gallery.media.music.remote
 
 import LogUtil
-import android.graphics.BitmapFactory
 import com.example.gallery.Constants
 import com.example.gallery.media.music.local.bean.Music
 import com.example.gallery.media.music.remote.music.MusicDetailResult
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okhttp3.OkHttpClient
@@ -27,7 +24,7 @@ class RemoteDataSource {
     private val client = OkHttpClient.Builder()
         .callTimeout(3000, TimeUnit.MILLISECONDS)
         .connectTimeout(3000, TimeUnit.MILLISECONDS)
-        .addInterceptor(loggingInterceptor)
+//        .addInterceptor(loggingInterceptor)
         .build()
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://music.163.com").client(client)
@@ -39,7 +36,6 @@ class RemoteDataSource {
         LogUtil.i(TAG, "start")
         val response = endpoint.searchMusic(criteria = "${music.name}%20${music.singer}")
         val result = response.body()
-        LogUtil.i(TAG, result.toString())
         if (!response.isSuccessful || result == null) {
             emit(Result.failure<String>(Exception("request failed!")))
         } else if (result.code != 200) {
@@ -80,27 +76,28 @@ class RemoteDataSource {
         } else emit(Result.success(result))
     }
 
-    fun downloadAlbumCover(music: Music, url: String) = flow {
+    fun downloadAlbumCover(music: Music, result: MusicDetailResult) = flow {
         val file = File(Constants.ALBUM_COVER_DIR + "${music.id}.jpg")
-        if (file.exists()) emit(BitmapFactory.decodeFile(file.path))
+        LogUtil.d(TAG, "music: ${music.name} isExists: ${file.exists()}")
+        if (file.exists()) emit(true)
         else file.createNewFile()
-        val request = Request.Builder().url(url).build()
+        val request = Request.Builder().url(result.songs[0].album.blurPicUrl).build()
         val response = client.newCall(request).execute()
         val inputStream = response.body?.byteStream()
         val outputStream = FileOutputStream(file)
+        LogUtil.d(TAG, "Start save music: ${music.name}")
         inputStream?.use { input ->
-            outputStream.use { output ->
-                input.copyTo(output)
+            val buf = ByteArray(2048)
+            var len: Int
+            while (input.read(buf).also { len = it } != -1) {
+                outputStream.write(buf, 0, len)
             }
+            LogUtil.d(TAG, "saved the music: ${music.name}")
+            emit(true)
         }
-        emit(BitmapFactory.decodeFile(file.path))
     }.flowOn(Dispatchers.IO)
 
-    @OptIn(FlowPreview::class)
-    fun getAlbumCover(music: Music) = getMusicDetail(music)
-        .flatMapConcat { downloadAlbumCover(music, (it.getOrNull() as MusicDetailResult).songs[0].album.blurPicUrl) }
-
-    private fun getMusicDetail(music: Music) = flow {
+    fun getMusicDetail(music: Music) = flow {
         if (music.mediaId.isEmpty()) {
             Result.failure<String>(Exception("Music id is empty!"))
             return@flow

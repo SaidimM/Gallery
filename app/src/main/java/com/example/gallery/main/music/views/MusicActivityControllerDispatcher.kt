@@ -1,10 +1,7 @@
 package com.example.gallery.main.music.views
 
 import LogUtil
-import android.animation.ObjectAnimator
 import android.view.View
-import androidx.core.animation.doOnEnd
-import com.example.gallery.Constants
 import com.example.gallery.base.utils.AnimationUtils.setListeners
 import com.example.gallery.base.utils.ViewUtils.dp
 import com.example.gallery.base.utils.ViewUtils.setHeight
@@ -37,6 +34,7 @@ class MusicActivityControllerDispatcher(
                 binding.cardView.animate().alphaBy(0f).alpha(1f).setDuration(1000)
                     .setListeners(onStart = { binding.cardView.visibility = View.VISIBLE },
                         onEnd = { viewModel.updateControllerState(ControllerState.COLLAPSED) }).start()
+                binding.fragmentList.setMargins(0, 0, 0, 104.dp)
             }
 
             ControllerState.HIDDEN -> binding.cardView.alpha = 0f

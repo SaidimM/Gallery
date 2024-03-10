@@ -31,4 +31,5 @@
     <string name="player_background">player background</string>
     <string name="slider">separator</string>
     <string name="pointer">pointer</string>
+    <string name="review_storage">Review storage</string>
 </resources>

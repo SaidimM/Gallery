@@ -1,14 +1,12 @@
 package com.example.gallery.main
 
+import LogUtil
 import android.Manifest
 import android.content.Intent
-import android.icu.number.Scale
 import android.os.Bundle
 import android.view.View
-import android.view.animation.ScaleAnimation
 import androidx.activity.viewModels
 import com.example.gallery.base.ui.pge.BaseActivity
-import com.example.gallery.base.utils.ViewUtils.setHeight
 import com.example.gallery.databinding.ActivityMainBinding
 import com.example.gallery.main.album.AlbumActivity
 import com.example.gallery.main.music.MusicActivity
@@ -35,18 +33,21 @@ class MainActivity : BaseActivity() {
 
     fun toSetting(view: View) = startActivity(Intent(this, SettingActivity::class.java))
 
+    fun grantPermissions(view: View) = initPermission(permissions)
+
     override fun observe() {
         viewModel.createDirectories()
         viewModel.isPermissionGranted.observe(this) {
-            binding.music.visibility = if (it) View.VISIBLE else View.GONE
-            binding.album.visibility = if (it) View.VISIBLE else View.GONE
-            binding.video.visibility = if (it) View.VISIBLE else View.GONE
+            LogUtil.d(TAG, "isPermissionGranted: $it")
+            binding.greeting.visibility = if (it) View.GONE else View.VISIBLE
+            binding.linearLayout.visibility = if (it) View.VISIBLE else View.GONE
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        viewModel.permissionGranted(true)
+        if (grantResults.contains(-1)) viewModel.permissionGranted(false)
+        else viewModel.permissionGranted(true)
     }
 
     override fun onDestroy() {

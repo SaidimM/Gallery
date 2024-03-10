@@ -1,7 +1,6 @@
 package com.example.gallery.base.ui.pge
 
 import LogUtil
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -18,7 +17,6 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -182,13 +180,13 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        @NonNull permissions: Array<String>,
-        @NonNull grantResults: IntArray
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 123) {
             for (i in permissions.indices) {
-                Log.i("MainActivity", "requested permission：" + permissions[i] + ",result：" + grantResults[i])
+                Log.i(TAG, "requested permission：" + permissions[i] + ",result：" + grantResults[i])
             }
         }
     }
