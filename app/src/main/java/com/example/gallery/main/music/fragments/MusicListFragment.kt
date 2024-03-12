@@ -1,11 +1,13 @@
 package com.example.gallery.main.music.fragments
 
-import android.graphics.BitmapFactory
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.blankj.utilcode.util.SnackbarUtils
 import com.bumptech.glide.Glide
 import com.example.gallery.R

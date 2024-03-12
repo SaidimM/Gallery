@@ -2,7 +2,6 @@ package com.example.gallery.main.music
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.GestureDetector
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.databinding.ActivityMusicBinding

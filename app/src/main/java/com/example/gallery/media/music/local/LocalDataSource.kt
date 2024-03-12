@@ -113,11 +113,12 @@ class LocalDataSource(private val database: MusicDatabase) {
 
     fun syncWithRemote(music: Music, song: Song) = flow {
         music.mediaId = song.id.toString()
-        music.mediaTitle = song.name
         music.mediaAlbumId = song.album.id.toString()
         music.mediaArtistId = song.artists[0].id.toString()
-        music.mediaAlbumName = song.album.name
-        music.mediaArtistName = song.artists.joinToString { artist -> artist.name }
+        music.mvId = song.mvid
+        music.name = song.name
+        music.album = song.album.name
+        music.singer = song.artists.joinToString { artist -> artist.name }
         val result = musicDao.updateMusic(music)
         if (result > 0) emit(true)
         else error("Update music failed!")
