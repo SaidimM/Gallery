@@ -42,8 +42,7 @@ class Preview : FrameLayout {
     private val bezierInterpolator = EaseCubicInterpolator(0.25f, 0.25f, 0.15f, 1f)
     private val scaleGestureDetector: ScaleGestureDetector by lazy {
         ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            override fun onScale(detector: ScaleGestureDetector?): Boolean {
-                if (detector == null) return false
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
                 Log.d("onScale", "scaleFactor = " + detector.scaleFactor)
                 if (detector.scaleFactor * scale < 1) return false
                 scale *= detector.scaleFactor
@@ -58,8 +57,7 @@ class Preview : FrameLayout {
 
     private val gestureDetector: GestureDetector by lazy {
         GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onDoubleTap(e: MotionEvent?): Boolean {
-                if (e == null) return false
+            override fun onDoubleTap(e: MotionEvent): Boolean {
                 LogUtil.d(TAG, "on Double Tap occurred")
                 val startFloat: Float
                 val endFloat: Float
@@ -93,12 +91,11 @@ class Preview : FrameLayout {
             }
 
             override fun onScroll(
-                e1: MotionEvent?,
-                e2: MotionEvent?,
+                e1: MotionEvent,
+                e2: MotionEvent,
                 distanceX: Float,
                 distanceY: Float
             ): Boolean {
-                if (e1 == null || e2 == null) return false
                 if (!isLongImage && (imageView.left >= left || imageView.right <= right)) return false
                 if (isLongImage && (imageView.top >= top || imageView.bottom <= bottom)) return false
                 imageView.x -= distanceX
