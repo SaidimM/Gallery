@@ -1,7 +1,6 @@
 package com.example.gallery.base.ui.pge
 
 import LogUtil
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -18,7 +17,6 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -57,13 +55,12 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LogUtil.d(TAG, TAG)
         lifecycle.addObserver(NetworkStateManager.instance)
-        initPermission()
         binding.lifecycleOwner = this
         setContentView(binding.root)
         findViewById<MaterialToolbar>(R.id.toolbar)?.let { setSupportActionBar(it) }
         setStatusBar()
+        observe()
     }
 
     private fun getAppFactory(activity: Activity): ViewModelProvider.Factory {
@@ -116,6 +113,8 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
+    protected open fun observe() {}
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         super.onOptionsItemSelected(item)
         return if (item.itemId == android.R.id.home) {
@@ -163,22 +162,11 @@ abstract class BaseActivity : AppCompatActivity() {
     /**
      * android 6.0 以上需要动态申请权限
      */
-    fun initPermission() {
-        val permissions = arrayOf(
-            Manifest.permission.INTERNET,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
+    fun initPermission(permissions: Array<String>) {
         val toApplyList = ArrayList<String>()
         for (perm in permissions) {
-            if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(
-                    this,
-                    perm
-                )
-            ) {
+            if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this, perm))
                 toApplyList.add(perm)
-                // 进入到这里代表没有权限.
-            }
         }
         val tmpList = arrayOfNulls<String>(toApplyList.size)
         if (toApplyList.isNotEmpty()) {
@@ -186,15 +174,19 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
+    fun isPermissionsGranted(permissions: Array<String>) = permissions.all { perm ->
+        PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, perm)
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        @NonNull permissions: Array<String>,
-        @NonNull grantResults: IntArray
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 123) {
             for (i in permissions.indices) {
-                Log.i("MainActivity", "申请的权限为：" + permissions[i] + ",申请结果：" + grantResults[i])
+                Log.i(TAG, "requested permission：" + permissions[i] + ",result：" + grantResults[i])
             }
         }
     }
@@ -214,14 +206,16 @@ abstract class BaseActivity : AppCompatActivity() {
         return false
     }
 
-    protected val Int.dp: Int get() = run {
-        return toFloat().dp
-    }
+    protected val Int.dp: Int
+        get() = run {
+            return toFloat().dp
+        }
 
-    protected val Float.dp: Int get() = run {
-        val scale: Float = resources.displayMetrics.density
-        return (this * scale + 0.5f).toInt()
-    }
+    protected val Float.dp: Int
+        get() = run {
+            val scale: Float = resources.displayMetrics.density
+            return (this * scale + 0.5f).toInt()
+        }
 
     override fun onStart() {
         super.onStart()

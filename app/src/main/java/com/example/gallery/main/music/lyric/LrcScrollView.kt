@@ -19,7 +19,7 @@ import androidx.core.widget.NestedScrollView
 import com.example.gallery.R
 import com.example.gallery.base.utils.ViewUtils.dp
 import com.example.gallery.base.utils.ViewUtils.px
-import com.example.gallery.media.remote.lyrics.Lyric
+import com.example.gallery.media.music.remote.lyrics.Lyric
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -84,7 +84,6 @@ class LrcScrollView : FrameLayout {
             linearLayout.addView(bottomView)
             linearLayout.doOnLayout {
                 linearLayout.children.forEachIndexed { index, view ->
-                    LogUtil.d(TAG, "index: $index, view height: ${view.height.px}, top: ${view.top.px}")
                     offsets.add(view.top)
                     texts.add(view as TextView)
                 }
@@ -103,9 +102,7 @@ class LrcScrollView : FrameLayout {
             .onEach { delay(it.endPosition.toLong() - it.position) }
             .flatMapConcat {
                 flow {
-                    LogUtil.d(TAG, it.toString())
                     index = data.indexOf(it)
-                    LogUtil.d(TAG, "index: $index")
                     if (index == -1) return@flow
                     emit(index)
                 }

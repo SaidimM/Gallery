@@ -12,8 +12,8 @@ import com.example.gallery.databinding.ItemAlbumImageBinding
 import com.example.gallery.databinding.ItemAlbumTitleBinding
 import com.example.gallery.main.album.models.AlbumItemModel
 import com.example.gallery.main.album.models.AlbumSortModel
-import com.example.gallery.media.local.enums.MediaType
-import com.example.gallery.media.local.enums.SortType
+import com.example.gallery.media.music.local.enums.MediaType
+import com.example.gallery.media.music.local.enums.SortType
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.view.SimpleDraweeView
 import com.facebook.imagepipeline.common.ResizeOptions

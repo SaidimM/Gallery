@@ -1,0 +1,32 @@
+package com.example.gallery.media.music.remote.music
+
+data class Album(
+    val alias: List<Any> = listOf(),
+    val artist: ArtistXX = ArtistXX(),
+    val artists: List<ArtistXX> = listOf(),
+    val blurPicUrl: String = "",
+    val briefDesc: String = "",
+    val commentThreadId: String = "",
+    val company: String = "",
+    val companyId: Int = 0,
+    val copyrightId: Int = 0,
+    val description: String = "",
+    val dolbyMark: Int = 0,
+    val gapless: Int = 0,
+    val id: Int = 0,
+    val mark: Int = 0,
+    val name: String = "",
+    val onSale: Boolean = false,
+    val pic: Long = 0,
+    val picId: Long = 0,
+    val picId_str: String = "",
+    val picUrl: String = "",
+    val publishTime: Long = 0,
+    val size: Int = 0,
+    val songs: List<Any> = listOf(),
+    val status: Int = 0,
+    val subType: String = "",
+    val tags: String = "",
+    val transName: Any = Any(),
+    val type: String = ""
+)

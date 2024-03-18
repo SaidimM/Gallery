@@ -1,20 +1,20 @@
 package com.example.gallery.main.music
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.appcompat.content.res.AppCompatResources
 import com.example.gallery.R
 import com.example.gallery.base.ui.pge.BaseActivity
 import com.example.gallery.databinding.ActivityMusicBinding
-import com.example.gallery.main.music.fragments.MusicPlayerFragment
+import com.example.gallery.main.music.enums.ControllerState
 import com.example.gallery.main.music.viewModels.MusicViewModel
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.card.MaterialCardView
-
+import com.example.gallery.main.music.views.MusicActivityControllerDispatcher
+import com.example.gallery.main.music.views.MusicControllerGestureDetector
 
 class MusicActivity : BaseActivity() {
     private val viewModel: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
     override val binding: ActivityMusicBinding by lazy { ActivityMusicBinding.inflate(layoutInflater) }
-    private val behavior: BottomSheetBehavior<MaterialCardView> by lazy { BottomSheetBehavior.from(binding.cardView) }
+    private val gestureDetector by lazy { MusicControllerGestureDetector(this, viewModel) }
+    private val dispatcher by lazy { MusicActivityControllerDispatcher(binding, viewModel) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,15 +24,15 @@ class MusicActivity : BaseActivity() {
 
     private fun initData() {
         viewModel.loadMusic()
+        viewModel.getLastPlayedMusic()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initView() {
         title = getString(R.string.music)
-        val playerFragment = MusicPlayerFragment(binding.cardView)
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.add(binding.playerLayout.id, playerFragment).commit()
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
-        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(this, R.drawable.ic_back)
+        binding.cardView.setOnTouchListener { v, event -> gestureDetector.onTouchEvent(event) }
+        gestureDetector.onSingleTapListener = { gestureDetector.expandController() }
     }
 
     override fun onStop() {
@@ -40,9 +40,15 @@ class MusicActivity : BaseActivity() {
         super.onStop()
     }
 
-    override fun onBackPressed() {
-        if (behavior.state == BottomSheetBehavior.STATE_EXPANDED) behavior.state =
-            BottomSheetBehavior.STATE_COLLAPSED
-        else super.onBackPressed()
+    override fun observe() {
+        viewModel.music.observe(this) { viewModel.updateControllerState(ControllerState.SHOWING) }
+        viewModel.controllerState.observe(this) { dispatcher.changeControllerState(it) }
+        viewModel.controllerOffset.observe(this) { dispatcher.changeControllerOffset(it) }
     }
+
+    override fun onBackPressed() {
+        val dispatched = gestureDetector.collapseController()
+        if (!dispatched) super.onBackPressed()
+    }
+
 }

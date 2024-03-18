@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gallery.main.album.models.AlbumItemModel
 import com.example.gallery.main.album.models.AlbumSortModel
-import com.example.gallery.media.ImageRepository
-import com.example.gallery.media.local.enums.MediaType
-import com.example.gallery.media.local.enums.SortType
+import com.example.gallery.media.album.ImageRepository
+import com.example.gallery.media.music.local.enums.MediaType
+import com.example.gallery.media.music.local.enums.SortType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

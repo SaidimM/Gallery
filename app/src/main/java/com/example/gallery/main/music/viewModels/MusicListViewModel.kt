@@ -4,15 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gallery.media.MusicRepository
-import com.example.gallery.media.local.bean.Music
-import com.example.gallery.media.remote.mv.MusicVideoResult
+import com.example.gallery.ServiceLocator
+import com.example.gallery.media.music.MusicRepository
+import com.example.gallery.media.music.local.bean.Music
+import com.example.gallery.media.music.remote.mv.MusicVideoResult
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MusicListViewModel : ViewModel() {
 
-    private val repository = MusicRepository.getInstance()
+    private val repository = ServiceLocator.provideMusicRepository()
     var index: Int = 0
 
     private var _musicVideo: MutableLiveData<MusicVideoResult> = MutableLiveData()
@@ -20,11 +21,6 @@ class MusicListViewModel : ViewModel() {
 
     fun getMv(music: Music) {
         viewModelScope.launch {
-            repository.getMv(music).collect {
-                if (it.isSuccessful) {
-                    _musicVideo.postValue(it.body())
-                }
-            }
         }
     }
 }

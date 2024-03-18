@@ -1,10 +1,9 @@
 package com.example.gallery.main.album.view
 
 import LogUtil
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Matrix
-import android.graphics.PointF
 import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
@@ -12,20 +11,19 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.VelocityTracker
-import android.view.animation.ScaleAnimation
+import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.example.gallery.R
+import com.bumptech.glide.Glide
+import com.example.gallery.base.utils.GeneralUtils
 import com.example.gallery.main.music.views.EaseCubicInterpolator
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.drawable.ScalingUtils
+import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder
 import com.facebook.drawee.view.SimpleDraweeView
 import com.facebook.imagepipeline.request.ImageRequestBuilder
-import java.util.*
-import kotlin.properties.Delegates
 
 @SuppressLint("ClickableViewAccessibility")
-class Preview : ConstraintLayout {
+class Preview : FrameLayout {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
@@ -36,27 +34,23 @@ class Preview : ConstraintLayout {
         defStyleRes: Int
     ) : super(context, attributeSet, defStyleAttrs, defStyleRes)
 
-    companion object {
-        private const val TAG = "Preview"
-        private const val DOUBLE_TAP_SCALE = 3f
-    }
-
+    private val TAG = "Preview"
     private var scale = 1f
+    private val DOUBLE_TAP_SCALE = 3f
     private var isLongImage = false
-    private var pivotX: Float = 0f
-    private var pivotY: Float = 0f
     private val imageView: SimpleDraweeView by lazy { SimpleDraweeView(context) }
     private val bezierInterpolator = EaseCubicInterpolator(0.25f, 0.25f, 0.15f, 1f)
     private val scaleGestureDetector: ScaleGestureDetector by lazy {
         ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-
             override fun onScale(detector: ScaleGestureDetector): Boolean {
-                Log.d(TAG, "scaleFactor = " + detector.scaleFactor)
+                Log.d("onScale", "scaleFactor = " + detector.scaleFactor)
                 if (detector.scaleFactor * scale < 1) return false
                 scale *= detector.scaleFactor
-                invalidate()
-                Log.d(TAG, "scale = $scale")
-                return false
+                imageView.pivotX = detector.focusX
+                imageView.pivotY = detector.focusY
+                imageView.scaleX = scale
+                imageView.scaleY = scale
+                return true
             }
         })
     }
@@ -65,29 +59,34 @@ class Preview : ConstraintLayout {
         GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
                 LogUtil.d(TAG, "on Double Tap occurred")
-                if (imageView.animation?.hasEnded() == false) return false
                 val startFloat: Float
+                val endFloat: Float
                 val duration: Long
-                if (scale >= DOUBLE_TAP_SCALE) {
+                if (imageView.scaleX >= DOUBLE_TAP_SCALE) {
                     duration = 500
                     startFloat = scale
-                    scale = 1f
+                    endFloat = 1f
                 } else if (scale < 1f) {
                     startFloat = scale
-                    scale = 1f
+                    endFloat = 1f
                     duration = 500
                 } else {
+                    imageView.pivotX = e.x
+                    imageView.pivotY = e.y
                     startFloat = scale
-                    scale = DOUBLE_TAP_SCALE
+                    endFloat = DOUBLE_TAP_SCALE
                     duration = 800
-                    pivotX = e.x
-                    pivotY = e.y
                 }
-                val animation = ScaleAnimation(startFloat, scale, startFloat, scale, pivotX, pivotY)
-                animation.duration = duration
-                animation.fillAfter = true
-                animation.interpolator = bezierInterpolator
-                imageView.startAnimation(animation)
+                ObjectAnimator.ofFloat(startFloat, endFloat).apply {
+                    this.duration = duration
+                    interpolator = bezierInterpolator
+                    addUpdateListener {
+                        scale = animatedValue as Float
+                        imageView.scaleX = scale
+                        imageView.scaleY = scale
+                    }
+                    start()
+                }
                 return true
             }
 
@@ -95,7 +94,7 @@ class Preview : ConstraintLayout {
                 e1: MotionEvent,
                 e2: MotionEvent,
                 distanceX: Float,
-                distanceY: Float,
+                distanceY: Float
             ): Boolean {
                 if (!isLongImage && (imageView.left >= left || imageView.right <= right)) return false
                 if (isLongImage && (imageView.top >= top || imageView.bottom <= bottom)) return false
@@ -116,11 +115,9 @@ class Preview : ConstraintLayout {
     private val velocityTracker: VelocityTracker = VelocityTracker.obtain()
 
     init {
-        this.id = R.id.preview
         setOnTouchListener { v, event ->
             gestureDetector.onTouchEvent(event)
             scaleGestureDetector.onTouchEvent(event)
-            if (scale != 1f) v.parent.requestDisallowInterceptTouchEvent(true)
             true
         }
     }
@@ -130,14 +127,13 @@ class Preview : ConstraintLayout {
             .newBuilderWithSource(uri)
             .setProgressiveRenderingEnabled(true)
             .build()
+        val genericDraweeHierarchy = GenericDraweeHierarchyBuilder(context.resources).setActualImageScaleType(
+            ScalingUtils.ScaleType.FIT_CENTER).build()
         imageView.controller = Fresco.newDraweeControllerBuilder()
             .setImageRequest(imageRequest)
             .build()
-        imageView.hierarchy.actualImageScaleType = ScalingUtils.ScaleType.FIT_CENTER
+        imageView.hierarchy = genericDraweeHierarchy
         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
-        val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-        layoutParams.topToTop = this.id
-        layoutParams.bottomToBottom = this.id
-        addView(imageView, layoutParams)
+        addView(imageView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
     }
 }
